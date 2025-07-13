@@ -14,11 +14,11 @@ struct LoginView: View {
                 // Welcome text
                 VStack(spacing: 8) {
                     Text("Welcome Back!")
-                        .font(.system(size: 32, weight: .bold))
+                        .font(.sora(32, weight: .bold))
                         .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
                     
                     Text("Sign in to continue")
-                        .font(.system(size: 16))
+                        .font(.sora(16))
                         .foregroundColor(.gray)
                 }
                 .padding(.bottom, 60)
@@ -32,7 +32,7 @@ struct LoginView: View {
                             .frame(width: 20, height: 20)
                         
                         TextField("Email", text: $viewModel.email)
-                            .font(.system(size: 16))
+                            .font(.sora(16))
                             .textFieldStyle(PlainTextFieldStyle())
                             .autocapitalization(.none)
                             .keyboardType(.emailAddress)
@@ -68,7 +68,7 @@ struct LoginView: View {
                         
                         if viewModel.isPasswordVisible {
                             TextField("Password", text: $viewModel.password)
-                                .font(.system(size: 16))
+                                .font(.sora(16))
                                 .textFieldStyle(PlainTextFieldStyle())
                                 .focused($focusField, equals: .password)
                                 .onChange(of: viewModel.password) { _ in
@@ -76,7 +76,7 @@ struct LoginView: View {
                                 }
                         } else {
                             SecureField("Password", text: $viewModel.password)
-                                .font(.system(size: 16))
+                                .font(.sora(16))
                                 .textFieldStyle(PlainTextFieldStyle())
                                 .focused($focusField, equals: .password)
                                 .onChange(of: viewModel.password) { _ in
@@ -112,7 +112,7 @@ struct LoginView: View {
                 // Error message
                 if !viewModel.errorMessage.isEmpty {
                     Text(viewModel.errorMessage)
-                        .font(.system(size: 14))
+                        .font(.sora(14))
                         .foregroundColor(.red)
                         .padding(.horizontal, 20)
                         .padding(.bottom, 16)
@@ -131,7 +131,7 @@ struct LoginView: View {
                                 .scaleEffect(0.8)
                         } else {
                             Text("Sign In")
-                                .font(.system(size: 16, weight: .medium))
+                                .font(.sora(16, weight: .medium))
                                 .foregroundColor(.white)
                         }
                         Spacer()
@@ -153,7 +153,7 @@ struct LoginView: View {
                         .frame(height: 1)
                     
                     Text("OR")
-                        .font(.system(size: 14))
+                        .font(.sora(14))
                         .foregroundColor(.gray)
                         .padding(.horizontal, 16)
                     
@@ -167,14 +167,14 @@ struct LoginView: View {
                 // Sign up link
                 HStack {
                     Text("Don't have an account?")
-                        .font(.system(size: 16))
+                        .font(.sora(16))
                         .foregroundColor(.gray)
                     
                     Button(action: {
                         viewModel.showSignUp()
                     }) {
                         Text("Sign Up")
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.sora(16, weight: .medium))
                             .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)

@@ -16,11 +16,11 @@ struct SignUpView: View {
                     // Welcome text
                     VStack(spacing: 8) {
                         Text("Create Account")
-                            .font(.system(size: 32, weight: .bold))
+                            .font(.sora(32, weight: .bold))
                             .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
                         
                         Text("Sign up to get started")
-                            .font(.system(size: 16))
+                            .font(.sora(16))
                             .foregroundColor(.gray)
                     }
                     .padding(.bottom, 40)
@@ -34,7 +34,7 @@ struct SignUpView: View {
                                 .frame(width: 20, height: 20)
                             
                             TextField("Full Name", text: $viewModel.fullName)
-                                .font(.system(size: 16))
+                                .font(.sora(16))
                                 .textFieldStyle(PlainTextFieldStyle())
                                 .autocapitalization(.words)
                                 .focused($focusedField, equals: .fullName)
@@ -67,7 +67,7 @@ struct SignUpView: View {
                                 .frame(width: 20, height: 20)
                             
                             TextField("Email", text: $viewModel.email)
-                                .font(.system(size: 16))
+                                .font(.sora(16))
                                 .textFieldStyle(PlainTextFieldStyle())
                                 .autocapitalization(.none)
                                 .keyboardType(.emailAddress)
@@ -102,7 +102,7 @@ struct SignUpView: View {
                             
                             if viewModel.isPasswordVisible {
                                 TextField("Password", text: $viewModel.password)
-                                    .font(.system(size: 16))
+                                    .font(.sora(16))
                                         .textFieldStyle(PlainTextFieldStyle())
                                     .focused($focusedField, equals: .password)
                                     .onChange(of: viewModel.password) { _ in
@@ -110,7 +110,7 @@ struct SignUpView: View {
                                     }
                             } else {
                                 SecureField("Password", text: $viewModel.password)
-                                    .font(.system(size: 16))
+                                    .font(.sora(16))
                                         .textFieldStyle(PlainTextFieldStyle())
                                     .focused($focusedField, equals: .password)
                                     .onChange(of: viewModel.password) { _ in
@@ -148,11 +148,11 @@ struct SignUpView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
                                 Text("Password Strength:")
-                                    .font(.system(size: 12))
+                                    .font(.sora(12))
                                     .foregroundColor(.gray)
                                 
                                 Text(viewModel.passwordStrength.text)
-                                    .font(.system(size: 12, weight: .medium))
+                                    .font(.sora(12, weight: .medium))
                                     .foregroundColor(viewModel.passwordStrength.color)
                                 
                                 Spacer()
@@ -167,7 +167,7 @@ struct SignUpView: View {
                                             .font(.system(size: 12))
                                         
                                         Text(requirement.text)
-                                            .font(.system(size: 12))
+                                            .font(.sora(12))
                                             .foregroundColor(requirement.isMet ? .green : .gray)
                                         
                                         Spacer()
@@ -188,7 +188,7 @@ struct SignUpView: View {
                             
                             if viewModel.isConfirmPasswordVisible {
                                 TextField("Confirm Password", text: $viewModel.confirmPassword)
-                                    .font(.system(size: 16))
+                                    .font(.sora(16))
                                         .textFieldStyle(PlainTextFieldStyle())
                                     .focused($focusedField, equals: .confirmPassword)
                                     .onChange(of: viewModel.confirmPassword) { _ in
@@ -196,7 +196,7 @@ struct SignUpView: View {
                                     }
                             } else {
                                 SecureField("Confirm Password", text: $viewModel.confirmPassword)
-                                    .font(.system(size: 16))
+                                    .font(.sora(16))
                                         .textFieldStyle(PlainTextFieldStyle())
                                     .focused($focusedField, equals: .confirmPassword)
                                     .onChange(of: viewModel.confirmPassword) { _ in
@@ -232,7 +232,7 @@ struct SignUpView: View {
                     // Error message
                     if !viewModel.errorMessage.isEmpty {
                         Text(viewModel.errorMessage)
-                            .font(.system(size: 14))
+                            .font(.sora(14))
                             .foregroundColor(.red)
                             .padding(.horizontal, 20)
                             .padding(.bottom, 16)
@@ -242,7 +242,7 @@ struct SignUpView: View {
                     // Success message
                     if !viewModel.successMessage.isEmpty {
                         Text(viewModel.successMessage)
-                            .font(.system(size: 14))
+                            .font(.sora(14))
                             .foregroundColor(.green)
                             .padding(.horizontal, 20)
                             .padding(.bottom, 16)
@@ -261,7 +261,7 @@ struct SignUpView: View {
                                     .scaleEffect(0.8)
                             } else {
                                 Text("Sign Up")
-                                    .font(.system(size: 16, weight: .medium))
+                                    .font(.sora(16, weight: .medium))
                                     .foregroundColor(.white)
                             }
                             Spacer()
@@ -279,14 +279,14 @@ struct SignUpView: View {
                     // Sign in link
                     HStack {
                         Text("Already have an account?")
-                            .font(.system(size: 16))
+                            .font(.sora(16))
                             .foregroundColor(.gray)
                         
                         Button(action: {
                             presentationMode.wrappedValue.dismiss()
                         }) {
                             Text("Sign In")
-                                .font(.system(size: 16, weight: .medium))
+                                .font(.sora(16, weight: .medium))
                                 .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)

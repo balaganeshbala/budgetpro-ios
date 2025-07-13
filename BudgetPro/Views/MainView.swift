@@ -10,11 +10,10 @@ struct MainView: View {
                 HStack {
                     VStack(alignment: .leading) {
                         Text("Welcome!")
-                            .font(.title2)
-                            .fontWeight(.bold)
+                            .font(.sora(20, weight: .bold))
                         
                         Text(viewModel.userEmail)
-                            .font(.subheadline)
+                            .font(.sora(14))
                             .foregroundColor(.gray)
                     }
                     
@@ -47,17 +46,16 @@ struct MainView: View {
                         .padding(.bottom, 20)
                     
                     Text("Authentication Complete!")
-                        .font(.title)
-                        .fontWeight(.bold)
+                        .font(.sora(24, weight: .bold))
                         .padding(.bottom, 10)
                     
                     Text("Welcome, \(viewModel.userDisplayName)!")
-                        .font(.title2)
+                        .font(.sora(20, weight: .medium))
                         .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
                         .padding(.bottom, 10)
                     
                     Text("You are now signed in with Supabase")
-                        .font(.body)
+                        .font(.sora(16))
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                 }
@@ -66,7 +64,7 @@ struct MainView: View {
                 if !viewModel.errorMessage.isEmpty {
                     VStack {
                         Text(viewModel.errorMessage)
-                            .font(.system(size: 14))
+                            .font(.sora(14))
                             .foregroundColor(.red)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 20)
@@ -74,7 +72,7 @@ struct MainView: View {
                         Button("Dismiss") {
                             viewModel.dismissError()
                         }
-                        .font(.system(size: 14))
+                        .font(.sora(14))
                         .foregroundColor(.blue)
                         .padding(.top, 8)
                     }
