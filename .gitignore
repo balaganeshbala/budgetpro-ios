@@ -1,0 +1,6 @@
+*xcworkspace/xcuserdata/*
+xcuserdata/
+.DS_Store
+
+# Configuration files with sensitive data
+BudgetPro/Config.plist
