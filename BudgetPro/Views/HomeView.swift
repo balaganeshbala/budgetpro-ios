@@ -103,46 +103,26 @@ struct HomeView: View {
                 
                 Spacer()
                 
-                HStack(spacing: 12) {
-                    if !viewModel.budgetCategories.isEmpty {
-                        // Edit Budget Button
-                        NavigationLink(destination: EditBudgetView(
-                            budgetCategories: viewModel.budgetCategories,
-                            month: selectedMonth,
-                            year: selectedYear
-                        )) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "pencil")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
-                                
-                                Text("Edit")
-                                    .font(.sora(14))
-                                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color(red: 1.0, green: 0.4, blue: 0.4).opacity(0.1))
-                            .cornerRadius(16)
+                if !viewModel.budgetCategories.isEmpty {
+                    // Edit Budget Button
+                    NavigationLink(destination: EditBudgetView(
+                        budgetCategories: viewModel.budgetCategories,
+                        month: selectedMonth,
+                        year: selectedYear
+                    )) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "pencil")
+                                .font(.system(size: 12))
+                                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
+                            
+                            Text("Edit")
+                                .font(.sora(14))
+                                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
                         }
-                        
-                        // More Details Button
-                        NavigationLink(destination: BudgetCategoriesView(
-                            budgetCategories: viewModel.budgetCategories,
-                            totalBudget: viewModel.totalBudget,
-                            month: selectedMonth,
-                            year: selectedYear
-                        )) {
-                            HStack(spacing: 4) {
-                                Text("More")
-                                    .font(.sora(14))
-                                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
-                                
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
-                            }
-                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color(red: 1.0, green: 0.4, blue: 0.4).opacity(0.1))
+                        .cornerRadius(16)
                     }
                 }
             }
@@ -175,56 +155,93 @@ struct HomeView: View {
                 }
                 .padding(.vertical, 20)
             } else {
-                // Budget exists - show summary
-                VStack(spacing: 12) {
-                    // Total Budget vs Spent
+                // Budget exists - show summary like the screenshot
+                VStack(spacing: 20) {
+                    // Monthly Budget Amount
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Monthly Budget")
+                            .font(.sora(16))
+                            .foregroundColor(.gray)
+                        
+                        Text("₹\(formatAmount(viewModel.totalBudget))")
+                            .font(.sora(28, weight: .bold))
+                            .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    // Spent amount and progress
+                    VStack(spacing: 12) {
+                        HStack {
+                            Text("Spent: ₹\(formatAmount(viewModel.totalSpent))")
+                                .font(.sora(16, weight: .medium))
+                                .foregroundColor(.black)
+                            
+                            Spacer()
+                            
+                            Text("\(Int((viewModel.totalSpent / max(viewModel.totalBudget, 1)) * 100))%")
+                                .font(.sora(16, weight: .semibold))
+                                .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : .orange)
+                        }
+                        
+                        // Progress Bar
+                        GeometryReader { geometry in
+                            ZStack(alignment: .leading) {
+                                Rectangle()
+                                    .fill(Color.gray.opacity(0.2))
+                                    .frame(height: 8)
+                                    .cornerRadius(4)
+                                
+                                Rectangle()
+                                    .fill(viewModel.totalSpent > viewModel.totalBudget ? Color.red : Color.orange)
+                                    .frame(width: min(geometry.size.width, geometry.size.width * (viewModel.totalSpent / max(viewModel.totalBudget, 1))), height: 8)
+                                    .cornerRadius(4)
+                            }
+                        }
+                        .frame(height: 8)
+                    }
+                    
+                    // Remaining amount card
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Total Budget")
-                                .font(.sora(12))
+                            Text("Remaining")
+                                .font(.sora(14))
                                 .foregroundColor(.gray)
                             
-                            Text("₹\(Int(viewModel.totalBudget))")
+                            Text("₹\(formatAmount(max(0, viewModel.totalBudget - viewModel.totalSpent)))")
                                 .font(.sora(20, weight: .bold))
-                                .foregroundColor(.black)
+                                .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : Color(red: 0.2, green: 0.6, blue: 0.5))
                         }
                         
                         Spacer()
                         
-                        VStack(alignment: .trailing, spacing: 4) {
-                            Text("Total Spent")
-                                .font(.sora(12))
-                                .foregroundColor(.gray)
-                            
-                            Text("₹\(Int(viewModel.totalSpent))")
-                                .font(.sora(20, weight: .bold))
-                                .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : Color(red: 0.2, green: 0.6, blue: 0.5))
-                        }
+                        Circle()
+                            .fill(Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.2))
+                            .frame(width: 50, height: 50)
+                            .overlay(
+                                Image(systemName: "banknote")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                            )
                     }
+                    .padding(16)
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(12)
                     
-                    // Progress Bar
-                    GeometryReader { geometry in
-                        ZStack(alignment: .leading) {
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.2))
-                                .frame(height: 8)
-                                .cornerRadius(4)
-                            
-                            Rectangle()
-                                .fill(viewModel.totalSpent > viewModel.totalBudget ? Color.red : Color(red: 0.2, green: 0.6, blue: 0.5))
-                                .frame(width: min(geometry.size.width, geometry.size.width * (viewModel.totalSpent / max(viewModel.totalBudget, 1))), height: 8)
-                                .cornerRadius(4)
+                    // More Details Button
+                    NavigationLink(destination: BudgetCategoriesView(
+                        budgetCategories: viewModel.budgetCategories,
+                        totalBudget: viewModel.totalBudget,
+                        month: selectedMonth,
+                        year: selectedYear
+                    )) {
+                        HStack {
+                            Spacer()
+                            Text("More Details")
+                                .font(.sora(16, weight: .medium))
+                                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
+                            Spacer()
                         }
-                    }
-                    .frame(height: 8)
-                    
-                    // Budget Categories Preview (Top 3)
-                    if viewModel.budgetCategories.count > 0 {
-                        VStack(spacing: 8) {
-                            ForEach(Array(viewModel.budgetCategories.prefix(3).enumerated()), id: \.offset) { index, category in
-                                BudgetCategoryRow(category: category)
-                            }
-                        }
+                        .padding(.vertical, 16)
                     }
                 }
             }
@@ -395,6 +412,15 @@ struct HomeView: View {
         .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
         .redacted(reason: .placeholder)
     }
+    
+    // MARK: - Helper Functions
+    private func formatAmount(_ amount: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+        return formatter.string(from: NSNumber(value: amount)) ?? "0.00"
+    }
 }
 
 // MARK: - Supporting Views
@@ -475,31 +501,6 @@ struct EmptyStateCard: View {
         .background(Color.white)
         .cornerRadius(16)
         .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
-    }
-}
-
-struct BudgetCategoryRow: View {
-    let category: BudgetCategory
-    
-    var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(category.name)
-                    .font(.sora(14, weight: .medium))
-                    .foregroundColor(.black)
-                
-                Text("₹\(Int(category.spent)) / ₹\(Int(category.budget))")
-                    .font(.sora(12))
-                    .foregroundColor(.gray)
-            }
-            
-            Spacer()
-            
-            // Progress indicator
-            Circle()
-                .fill(category.spent > category.budget ? Color.red : Color(red: 0.2, green: 0.6, blue: 0.5))
-                .frame(width: 8, height: 8)
-        }
     }
 }
 
