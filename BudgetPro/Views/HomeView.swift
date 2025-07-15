@@ -557,7 +557,7 @@ struct IncomeRow: View {
                 )
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(income.name)
+                Text(income.source)
                     .font(.sora(14, weight: .medium))
                     .foregroundColor(.black)
                 

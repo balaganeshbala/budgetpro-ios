@@ -55,51 +55,55 @@ class HomeViewModel: ObservableObject {
             throw HomeError.userNotFound
         }
         
-        // Create target date for budget lookup (matches Flutter format)
-        let targetDate = getMonthStartDate(month: month, year: year)
-        
-        // Load budget categories for the month/year
-        let budgetResponse: [BudgetResponse] = try await supabaseManager.client
-            .from("budget")  // Changed from "budgets" to "budget"
-            .select("*")
-            .eq("user_id", value: userId)
-            .eq("date", value: targetDate)  // Changed to use date instead of month/year
-            .execute()
-            .value
-        
-        var categories: [BudgetCategory] = []
-        var totalBudget: Double = 0
-        
-        // Load expenses for calculating spent amounts
-        let expensesResponse: [ExpenseResponse] = try await supabaseManager.client
-            .from("expenses")
-            .select("*")
-            .eq("user_id", value: userId)
-            .gte("date", value: getMonthStartDate(month: month, year: year))
-            .lt("date", value: getMonthEndDate(month: month, year: year))
-            .execute()
-            .value
-        
-        // Group expenses by category
-        let expensesByCategory = Dictionary(grouping: expensesResponse) { $0.category }
-        
-        for budget in budgetResponse {
-            let spent = expensesByCategory[budget.category]?.reduce(0) { $0 + $1.amount } ?? 0
+        do {
+            // Create target date for budget lookup (matches Flutter format)
+            let targetDate = getMonthStartDate(month: month, year: year)
             
-            let category = BudgetCategory(
-                id: UUID().uuidString,  // Generate ID since it's not stored in budget table
-                name: budget.category,
-                budget: budget.amount,
-                spent: spent
-            )
+            // Load budget categories for the month/year
+            let budgetResponse: [BudgetResponse] = try await supabaseManager.client
+                .from("budget")  // Changed from "budgets" to "budget"
+                .select("*")
+                .eq("user_id", value: userId)
+                .eq("date", value: targetDate)  // Changed to use date instead of month/year
+                .execute()
+                .value
             
-            categories.append(category)
-            totalBudget += budget.amount
+            var categories: [BudgetCategory] = []
+            var totalBudget: Double = 0
+            
+            // Load expenses for calculating spent amounts
+            let expensesResponse: [ExpenseResponse] = try await supabaseManager.client
+                .from("expenses")
+                .select("*")
+                .eq("user_id", value: userId)
+                .gte("date", value: getMonthStartDate(month: month, year: year))
+                .lt("date", value: getMonthEndDate(month: month, year: year))
+                .execute()
+                .value
+            
+            // Group expenses by category
+            let expensesByCategory = Dictionary(grouping: expensesResponse) { $0.category }
+            
+            for budget in budgetResponse {
+                let spent = expensesByCategory[budget.category]?.reduce(0) { $0 + $1.amount } ?? 0
+                
+                let category = BudgetCategory(
+                    id: UUID().uuidString,  // Generate ID since it's not stored in budget table
+                    name: budget.category,
+                    budget: budget.amount,
+                    spent: spent
+                )
+                
+                categories.append(category)
+                totalBudget += budget.amount
+            }
+            
+            let totalSpent = expensesResponse.reduce(0) { $0 + $1.amount }
+            
+            return (categories: categories, total: totalBudget, spent: totalSpent)
+        } catch {
+            throw HomeError.decodingError
         }
-        
-        let totalSpent = expensesResponse.reduce(0) { $0 + $1.amount }
-        
-        return (categories: categories, total: totalBudget, spent: totalSpent)
     }
     
     private func loadExpensesData(month: Int, year: Int) async throws -> [Expense] {
@@ -125,7 +129,6 @@ class HomeViewModel: ObservableObject {
                 amount: expenseResponse.amount,
                 category: expenseResponse.category,
                 date: ISO8601DateFormatter().date(from: expenseResponse.date) ?? Date(),
-                notes: expenseResponse.notes,
                 categoryIcon: getCategoryIcon(for: expenseResponse.category),
                 categoryColor: getCategoryColor(for: expenseResponse.category)
             )
@@ -151,11 +154,10 @@ class HomeViewModel: ObservableObject {
         return response.map { incomeResponse in
             Income(
                 id: incomeResponse.id,
-                name: incomeResponse.name,
+                source: incomeResponse.source,
                 amount: incomeResponse.amount,
                 category: incomeResponse.category,
                 date: ISO8601DateFormatter().date(from: incomeResponse.date) ?? Date(),
-                notes: incomeResponse.notes,
                 categoryIcon: getIncomeCategoryIcon(for: incomeResponse.category)
             )
         }
@@ -249,12 +251,11 @@ struct BudgetCategory: Identifiable {
 }
 
 struct Expense: Identifiable {
-    let id: String
+    let id: Int
     let name: String
     let amount: Double
     let category: String
     let date: Date
-    let notes: String?
     let categoryIcon: String
     let categoryColor: Color
     
@@ -266,12 +267,11 @@ struct Expense: Identifiable {
 }
 
 struct Income: Identifiable {
-    let id: String
-    let name: String
+    let id: Int
+    let source: String
     let amount: Double
     let category: String
     let date: Date
-    let notes: String?
     let categoryIcon: String
     
     var dateString: String {
@@ -284,12 +284,14 @@ struct Income: Identifiable {
 // MARK: - API Response Models
 
 struct BudgetResponse: Codable {
+    let id: Int
     let category: String    // Removed id, month, year - only keeping essential fields
     let amount: Double
     let date: String       // Added date field to match Flutter structure
     let userId: String
     
     enum CodingKeys: String, CodingKey {
+        case id
         case category
         case amount
         case date
@@ -298,41 +300,37 @@ struct BudgetResponse: Codable {
 }
 
 struct ExpenseResponse: Codable {
-    let id: String
-    let name: String
-    let amount: Double
-    let category: String
+    let id: Int
     let date: String
-    let notes: String?
+    let name: String
+    let category: String
+    let amount: Double
     let userId: String
     
     enum CodingKeys: String, CodingKey {
         case id
-        case name
-        case amount
-        case category
         case date
-        case notes
+        case name
+        case category
+        case amount
         case userId = "user_id"
     }
 }
 
 struct IncomeResponse: Codable {
-    let id: String
-    let name: String
+    let id: Int
+    let source: String
     let amount: Double
     let category: String
     let date: String
-    let notes: String?
     let userId: String
     
     enum CodingKeys: String, CodingKey {
         case id
-        case name
+        case source
         case amount
         case category
         case date
-        case notes
         case userId = "user_id"
     }
 }
