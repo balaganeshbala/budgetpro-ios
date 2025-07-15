@@ -14,7 +14,7 @@ struct HomeView: View {
                     headerView
                     
                     // Main content
-                    LazyVStack(spacing: 20) {
+                    LazyVStack(spacing: 24) {
                         // Budget Overview Card
                         if viewModel.isLoading {
                             budgetSkeletonCard
@@ -33,8 +33,8 @@ struct HomeView: View {
                         
                         Spacer(minLength: 100)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 20)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
                 }
             }
             .background(Color.gray.opacity(0.1))
@@ -254,10 +254,8 @@ struct HomeView: View {
     
     // MARK: - Recent Expenses Section
     private var recentExpensesSection: some View {
-        VStack(spacing: 12) {
-            SectionHeader(title: "Expenses") {
-                // Navigate to all expenses
-            }
+        VStack(spacing: 16) {
+            SectionHeader(title: "Expenses", showMoreButton: false)
             
             if viewModel.recentExpenses.isEmpty {
                 EmptyStateCard(
@@ -307,10 +305,8 @@ struct HomeView: View {
     
     // MARK: - Recent Incomes Section
     private var recentIncomesSection: some View {
-        VStack(spacing: 12) {
-            SectionHeader(title: "Incomes") {
-                // Navigate to all incomes
-            }
+        VStack(spacing: 16) {
+            SectionHeader(title: "Incomes", showMoreButton: false)
             
             if viewModel.recentIncomes.isEmpty {
                 EmptyStateCard(
@@ -360,7 +356,7 @@ struct HomeView: View {
     
     // MARK: - Options Section
     private var optionsSection: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 16) {
             SectionHeader(title: "Quick Actions", showMoreButton: false)
             
             VStack(spacing: 0) {
@@ -458,7 +454,7 @@ struct SectionHeader: View {
                 }
             }
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, 4)
     }
 }
 
@@ -496,8 +492,8 @@ struct EmptyStateCard: View {
                     .cornerRadius(8)
             }
         }
-        .padding(.vertical, 32)
-        .padding(.horizontal, 16)
+        .frame(maxWidth: .infinity)
+        .padding(16)
         .background(Color.white)
         .cornerRadius(16)
         .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
