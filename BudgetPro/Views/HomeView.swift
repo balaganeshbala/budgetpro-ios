@@ -14,7 +14,7 @@ struct HomeView: View {
                     headerView
                     
                     // Main content
-                    LazyVStack(spacing: 24) {
+                    LazyVStack(spacing: 20) {
                         // Budget Overview Card
                         if viewModel.isLoading {
                             budgetSkeletonCard
@@ -33,8 +33,8 @@ struct HomeView: View {
                         
                         Spacer(minLength: 100)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 16)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 20)
                 }
             }
             .background(Color.gray.opacity(0.1))
@@ -254,8 +254,10 @@ struct HomeView: View {
     
     // MARK: - Recent Expenses Section
     private var recentExpensesSection: some View {
-        VStack(spacing: 16) {
-            SectionHeader(title: "Expenses", showMoreButton: false)
+        VStack(spacing: 12) {
+            SectionHeader(title: "Expenses") {
+                // Navigate to all expenses
+            }
             
             if viewModel.recentExpenses.isEmpty {
                 EmptyStateCard(
@@ -305,8 +307,10 @@ struct HomeView: View {
     
     // MARK: - Recent Incomes Section
     private var recentIncomesSection: some View {
-        VStack(spacing: 16) {
-            SectionHeader(title: "Incomes", showMoreButton: false)
+        VStack(spacing: 12) {
+            SectionHeader(title: "Incomes") {
+                // Navigate to all incomes
+            }
             
             if viewModel.recentIncomes.isEmpty {
                 EmptyStateCard(
@@ -356,7 +360,7 @@ struct HomeView: View {
     
     // MARK: - Options Section
     private var optionsSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 12) {
             SectionHeader(title: "Quick Actions", showMoreButton: false)
             
             VStack(spacing: 0) {
@@ -454,7 +458,7 @@ struct SectionHeader: View {
                 }
             }
         }
-        .padding(.horizontal, 4)
+        .padding(.horizontal, 16)
     }
 }
 
@@ -492,8 +496,8 @@ struct EmptyStateCard: View {
                     .cornerRadius(8)
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding(16)
+        .padding(.vertical, 32)
+        .padding(.horizontal, 16)
         .background(Color.white)
         .cornerRadius(16)
         .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
@@ -504,40 +508,43 @@ struct ExpenseRow: View {
     let expense: Expense
     
     var body: some View {
-        HStack {
-            // Category icon
-            Circle()
-                .fill(expense.categoryColor.opacity(0.2))
-                .frame(width: 40, height: 40)
-                .overlay(
-                    Image(systemName: expense.categoryIcon)
-                        .foregroundColor(expense.categoryColor)
-                        .font(.system(size: 16))
-                )
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(expense.name)
-                    .font(.sora(14, weight: .medium))
-                    .foregroundColor(.black)
+        NavigationLink(destination: ExpenseDetailsView(expense: expense)) {
+            HStack {
+                // Category icon
+                Circle()
+                    .fill(expense.categoryColor.opacity(0.2))
+                    .frame(width: 40, height: 40)
+                    .overlay(
+                        Image(systemName: expense.categoryIcon)
+                            .foregroundColor(expense.categoryColor)
+                            .font(.system(size: 16))
+                    )
                 
-                Text(expense.category)
-                    .font(.sora(12))
-                    .foregroundColor(.gray)
-            }
-            
-            Spacer()
-            
-            VStack(alignment: .trailing, spacing: 4) {
-                Text("₹\(Int(expense.amount))")
-                    .font(.sora(14, weight: .semibold))
-                    .foregroundColor(.black)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(expense.name)
+                        .font(.sora(14, weight: .medium))
+                        .foregroundColor(.black)
+                    
+                    Text(expense.category)
+                        .font(.sora(12))
+                        .foregroundColor(.gray)
+                }
                 
-                Text(expense.dateString)
-                    .font(.sora(11))
-                    .foregroundColor(.gray)
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text("₹\(Int(expense.amount))")
+                        .font(.sora(14, weight: .semibold))
+                        .foregroundColor(.black)
+                    
+                    Text(expense.dateString)
+                        .font(.sora(11))
+                        .foregroundColor(.gray)
+                }
             }
+            .padding(16)
         }
-        .padding(16)
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
