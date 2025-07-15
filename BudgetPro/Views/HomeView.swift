@@ -5,6 +5,7 @@ struct HomeView: View {
     @State private var selectedMonth = Calendar.current.component(.month, from: Date())
     @State private var selectedYear = Calendar.current.component(.year, from: Date())
     @State private var showingProfile = false
+    @State private var showingAllExpenses = false
     
     var body: some View {
         NavigationView {
@@ -46,10 +47,24 @@ struct HomeView: View {
         .sheet(isPresented: $showingProfile) {
             ProfileView()
         }
+        .sheet(isPresented: $showingAllExpenses) {
+            AllExpensesView(
+                expenses: viewModel.recentExpenses,
+                month: selectedMonth,
+                year: selectedYear
+            )
+        }
         .onAppear {
             Task {
                 await viewModel.loadData(month: selectedMonth, year: selectedYear)
             }
+        }
+        .alert("Error", isPresented: .constant(!viewModel.errorMessage.isEmpty)) {
+            Button("OK") {
+                viewModel.errorMessage = ""
+            }
+        } message: {
+            Text(viewModel.errorMessage)
         }
     }
     
@@ -256,7 +271,7 @@ struct HomeView: View {
     private var recentExpensesSection: some View {
         VStack(spacing: 12) {
             SectionHeader(title: "Expenses") {
-                // Navigate to all expenses
+                showingAllExpenses = true
             }
             
             if viewModel.recentExpenses.isEmpty {
@@ -282,7 +297,7 @@ struct HomeView: View {
                     
                     if viewModel.recentExpenses.count > 5 {
                         Button(action: {
-                            // Navigate to all expenses
+                            showingAllExpenses = true
                         }) {
                             HStack {
                                 Spacer()
@@ -314,8 +329,8 @@ struct HomeView: View {
             
             if viewModel.recentIncomes.isEmpty {
                 EmptyStateCard(
-                    icon: "plus.circle",
-                    title: "No income recorded",
+                    icon: "dollarsign.circle",
+                    title: "No incomes yet",
                     subtitle: "Add your income sources to track earnings",
                     buttonTitle: "Add Income",
                     action: {
@@ -417,9 +432,9 @@ struct HomeView: View {
     private func formatAmount(_ amount: Double) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
-        formatter.minimumFractionDigits = 2
-        formatter.maximumFractionDigits = 2
-        return formatter.string(from: NSNumber(value: amount)) ?? "0.00"
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
 }
 
@@ -525,26 +540,28 @@ struct ExpenseRow: View {
                         .font(.sora(14, weight: .medium))
                         .foregroundColor(.black)
                     
-                    Text(expense.category)
+                    Text(expense.dateString)
                         .font(.sora(12))
                         .foregroundColor(.gray)
                 }
                 
                 Spacer()
                 
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text("₹\(Int(expense.amount))")
-                        .font(.sora(14, weight: .semibold))
-                        .foregroundColor(.black)
-                    
-                    Text(expense.dateString)
-                        .font(.sora(11))
-                        .foregroundColor(.gray)
-                }
+                Text("₹\(formatExpenseAmount(expense.amount))")
+                    .font(.sora(14, weight: .semibold))
+                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
             }
-            .padding(16)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
         }
         .buttonStyle(PlainButtonStyle())
+    }
+    
+    private func formatExpenseAmount(_ amount: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
 }
 
@@ -552,40 +569,45 @@ struct IncomeRow: View {
     let income: Income
     
     var body: some View {
-        HStack {
-            // Category icon
-            Circle()
-                .fill(Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.2))
-                .frame(width: 40, height: 40)
-                .overlay(
-                    Image(systemName: income.categoryIcon)
-                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
-                        .font(.system(size: 16))
-                )
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(income.source)
-                    .font(.sora(14, weight: .medium))
-                    .foregroundColor(.black)
+        NavigationLink(destination: Text("Income Details")) { // Replace with actual income details view
+            HStack {
+                // Category icon
+                Circle()
+                    .fill(Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.2))
+                    .frame(width: 40, height: 40)
+                    .overlay(
+                        Image(systemName: income.categoryIcon)
+                            .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                            .font(.system(size: 16))
+                    )
                 
-                Text(income.category)
-                    .font(.sora(12))
-                    .foregroundColor(.gray)
-            }
-            
-            Spacer()
-            
-            VStack(alignment: .trailing, spacing: 4) {
-                Text("₹\(Int(income.amount))")
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(income.source)
+                        .font(.sora(14, weight: .medium))
+                        .foregroundColor(.black)
+                    
+                    Text(income.dateString)
+                        .font(.sora(12))
+                        .foregroundColor(.gray)
+                }
+                
+                Spacer()
+                
+                Text("₹\(formatIncomeAmount(income.amount))")
                     .font(.sora(14, weight: .semibold))
                     .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
-                
-                Text(income.dateString)
-                    .font(.sora(11))
-                    .foregroundColor(.gray)
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
         }
-        .padding(16)
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    private func formatIncomeAmount(_ amount: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
 }
 
@@ -608,20 +630,96 @@ struct OptionRow: View {
                     )
                 
                 Text(title)
-                    .font(.sora(16))
+                    .font(.sora(16, weight: .medium))
                     .foregroundColor(.black)
                 
                 Spacer()
                 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 14))
-                    .foregroundColor(.gray.opacity(0.6))
+                    .font(.system(size: 12))
+                    .foregroundColor(.gray)
             }
-            .padding(16)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 16)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+struct MonthYearSelector: View {
+    @Binding var selectedMonth: Int
+    @Binding var selectedYear: Int
+    let onSelectionChanged: () -> Void
+    
+    private let monthNames = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    
+    var body: some View {
+        HStack {
+            Spacer()
+            
+            Menu {
+                ForEach(1...12, id: \.self) { month in
+                    Button(action: {
+                        selectedMonth = month
+                        onSelectionChanged()
+                    }) {
+                        HStack {
+                            Text(monthNames[month])
+                            if selectedMonth == month {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+            } label: {
+                HStack {
+                    Text(monthNames[selectedMonth])
+                        .font(.sora(16, weight: .medium))
+                        .foregroundColor(.white)
+                    
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 12))
+                        .foregroundColor(.white)
+                }
+            }
+            
+            Text("-")
+                .font(.sora(16, weight: .medium))
+                .foregroundColor(.white)
+            
+            Menu {
+                ForEach((2020...2030).reversed(), id: \.self) { year in
+                    Button(action: {
+                        selectedYear = year
+                        onSelectionChanged()
+                    }) {
+                        HStack {
+                            Text("\(year)")
+                            if selectedYear == year {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+            } label: {
+                HStack {
+                    Text("\(selectedYear)")
+                        .font(.sora(16, weight: .medium))
+                        .foregroundColor(.white)
+                    
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 12))
+                        .foregroundColor(.white)
+                }
+            }
+            
+            Spacer()
         }
     }
 }
 
+// MARK: - Preview
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
