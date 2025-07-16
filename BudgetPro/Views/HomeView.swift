@@ -170,77 +170,119 @@ struct HomeView: View {
                 }
                 .padding(.vertical, 20)
             } else {
-                // Budget exists - show summary like the screenshot
+                // Budget exists - show summary with remaining amount highlighted on top
                 VStack(spacing: 20) {
-                    // Monthly Budget Amount
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Monthly Budget")
-                            .font(.sora(16))
-                            .foregroundColor(.gray)
-                        
-                        Text("₹\(formatAmount(viewModel.totalBudget))")
-                            .font(.sora(28, weight: .bold))
-                            .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    // Spent amount and progress
-                    VStack(spacing: 12) {
+                    // Remaining Amount - Highlighted at the top
+                    VStack(spacing: 16) {
                         HStack {
-                            Text("Spent: ₹\(formatAmount(viewModel.totalSpent))")
-                                .font(.sora(16, weight: .medium))
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Remaining Budget")
+                                    .font(.sora(18, weight: .medium))
+                                    .foregroundColor(.gray)
+                                
+                                Text("₹\(formatAmount(max(0, viewModel.totalBudget - viewModel.totalSpent)))")
+                                    .font(.sora(36, weight: .bold))
+                                    .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : Color(red: 0.2, green: 0.6, blue: 0.5))
+                            }
+                            
+                            Spacer()
+                            
+                            Circle()
+                                .fill(viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.15) : Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.15))
+                                .frame(width: 70, height: 70)
+                                .overlay(
+                                    Image(systemName: viewModel.totalSpent > viewModel.totalBudget ? "exclamationmark.triangle.fill" : "banknote.fill")
+                                        .font(.system(size: 28))
+                                        .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : Color(red: 0.2, green: 0.6, blue: 0.5))
+                                )
+                        }
+                        .padding(20)
+                        .background(
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.05) : Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.05),
+                                    viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.1) : Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.1)
+                                ]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .cornerRadius(16)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.2) : Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.2), lineWidth: 1)
+                        )
+                    }
+                    
+                    // Budget Summary Row
+                    HStack(spacing: 16) {
+                        // Total Budget
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Total Budget")
+                                .font(.sora(14))
+                                .foregroundColor(.gray)
+                            
+                            Text("₹\(formatAmount(viewModel.totalBudget))")
+                                .font(.sora(20, weight: .semibold))
                                 .foregroundColor(.black)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        Divider()
+                            .frame(height: 30)
+                        
+                        // Total Spent
+                        VStack(alignment: .trailing, spacing: 4) {
+                            Text("Total Spent")
+                                .font(.sora(14))
+                                .foregroundColor(.gray)
+                            
+                            Text("₹\(formatAmount(viewModel.totalSpent))")
+                                .font(.sora(20, weight: .semibold))
+                                .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : .orange)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                    
+                    // Progress Bar with Percentage
+                    VStack(spacing: 8) {
+                        HStack {
+                            Text("Budget Usage")
+                                .font(.sora(14, weight: .medium))
+                                .foregroundColor(.gray)
                             
                             Spacer()
                             
                             Text("\(Int((viewModel.totalSpent / max(viewModel.totalBudget, 1)) * 100))%")
-                                .font(.sora(16, weight: .semibold))
+                                .font(.sora(16, weight: .bold))
                                 .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : .orange)
                         }
                         
-                        // Progress Bar
                         GeometryReader { geometry in
                             ZStack(alignment: .leading) {
                                 Rectangle()
-                                    .fill(Color.gray.opacity(0.2))
-                                    .frame(height: 8)
-                                    .cornerRadius(4)
+                                    .fill(Color.gray.opacity(0.15))
+                                    .frame(height: 10)
+                                    .cornerRadius(5)
                                 
                                 Rectangle()
-                                    .fill(viewModel.totalSpent > viewModel.totalBudget ? Color.red : Color.orange)
-                                    .frame(width: min(geometry.size.width, geometry.size.width * (viewModel.totalSpent / max(viewModel.totalBudget, 1))), height: 8)
-                                    .cornerRadius(4)
+                                    .fill(
+                                        LinearGradient(
+                                            gradient: Gradient(colors: [
+                                                viewModel.totalSpent > viewModel.totalBudget ? Color.red : Color.orange,
+                                                viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.8) : Color.orange.opacity(0.8)
+                                            ]),
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    )
+                                    .frame(width: min(geometry.size.width, geometry.size.width * (viewModel.totalSpent / max(viewModel.totalBudget, 1))), height: 10)
+                                    .cornerRadius(5)
+                                    .animation(.easeInOut(duration: 0.5), value: viewModel.totalSpent)
                             }
                         }
-                        .frame(height: 8)
+                        .frame(height: 10)
                     }
-                    
-                    // Remaining amount card
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Remaining")
-                                .font(.sora(14))
-                                .foregroundColor(.gray)
-                            
-                            Text("₹\(formatAmount(max(0, viewModel.totalBudget - viewModel.totalSpent)))")
-                                .font(.sora(20, weight: .bold))
-                                .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : Color(red: 0.2, green: 0.6, blue: 0.5))
-                        }
-                        
-                        Spacer()
-                        
-                        Circle()
-                            .fill(Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.2))
-                            .frame(width: 50, height: 50)
-                            .overlay(
-                                Image(systemName: "banknote")
-                                    .font(.system(size: 20))
-                                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
-                            )
-                    }
-                    .padding(16)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(12)
                     
                     // More Details Button
                     NavigationLink(destination: BudgetCategoriesView(
@@ -250,13 +292,18 @@ struct HomeView: View {
                         year: selectedYear
                     )) {
                         HStack {
-                            Spacer()
-                            Text("More Details")
+                            Text("View Budget Details")
                                 .font(.sora(16, weight: .medium))
                                 .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
+                            
                             Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
                         }
                         .padding(.vertical, 16)
+                        .padding(.horizontal, 4)
                     }
                 }
             }
@@ -301,10 +348,10 @@ struct HomeView: View {
                                 Spacer()
                                 Text("More Details")
                                     .font(.sora(14, weight: .medium))
-                                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
                                 Image(systemName: "chevron.right")
                                     .font(.system(size: 12))
-                                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
                                 Spacer()
                             }
                             .padding(16)
@@ -352,10 +399,10 @@ struct HomeView: View {
                                 Spacer()
                                 Text("More Details")
                                     .font(.sora(14, weight: .medium))
-                                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
                                 Image(systemName: "chevron.right")
                                     .font(.system(size: 12))
-                                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
                                 Spacer()
                             }
                             .padding(16)

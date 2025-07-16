@@ -26,21 +26,38 @@ class EditBudgetViewModel: ObservableObject {
         var editableList: [EditableBudgetCategory] = []
         
         // First, add existing budget categories
+        
         for budgetCategory in budgetCategories {
-            if let expenseCategory = ExpenseCategory.allCases.first(where: { $0.displayName == budgetCategory.name }) {
+            // Match by case name (rawValue) since that's what's stored in the database
+            if let expenseCategory = ExpenseCategory.allCases.first(where: { "\($0)" == budgetCategory.name }) {
+                // Skip the Unknown category from budget planning
+                if expenseCategory == .unknown {
+                    continue
+                }
+                
                 let editableBudget = EditableBudgetCategory(
                     category: expenseCategory,
                     amount: budgetCategory.budget
                 )
                 editableList.append(editableBudget)
-                originalBudgetMap[budgetCategory.name] = budgetCategory.budget
+                
+                // Use the ExpenseCategory's displayName as the key for consistency
+                originalBudgetMap[expenseCategory.displayName] = budgetCategory.budget
             }
         }
         
         // Then, add remaining categories that don't have budgets yet
-        let existingCategoryNames = Set(budgetCategories.map { $0.name })
+        // Create a set of existing case names from the database
+        let existingCaseNames = Set(budgetCategories.map { $0.name })
+        
         for expenseCategory in ExpenseCategory.allCases {
-            if !existingCategoryNames.contains(expenseCategory.displayName) {
+            // Skip the Unknown category from budget planning
+            if expenseCategory == .unknown {
+                continue
+            }
+            
+            // Check if this category's case name is not in the existing budgets
+            if !existingCaseNames.contains("\(expenseCategory)") {
                 let editableBudget = EditableBudgetCategory(
                     category: expenseCategory,
                     amount: 0

@@ -231,8 +231,21 @@ struct EditBudgetCategoryInput: View {
     let originalAmount: Double
     let onAmountChanged: (Double) -> Void
     
-    @State private var textAmount: String = ""
+    @State private var textAmount: String
     @FocusState private var isFocused: Bool
+    
+    init(budgetCategory: EditableBudgetCategory, originalAmount: Double, onAmountChanged: @escaping (Double) -> Void) {
+        self.budgetCategory = budgetCategory
+        self.originalAmount = originalAmount
+        self.onAmountChanged = onAmountChanged
+        
+        // Initialize textAmount with the budget amount from the EditableBudgetCategory
+        // For existing budgets, show the amount even if the system thinks it should be 0
+        // Use originalAmount as fallback if budgetCategory.amount is 0
+        let amountToShow = budgetCategory.amount > 0 ? budgetCategory.amount : originalAmount
+        let initialText = amountToShow > 0 ? String(Int(amountToShow)) : ""
+        self._textAmount = State(initialValue: initialText)
+    }
     
     private var hasChanged: Bool {
         return budgetCategory.amount != originalAmount
@@ -317,9 +330,6 @@ struct EditBudgetCategoryInput: View {
         )
         .cornerRadius(12)
         .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
-        .onAppear {
-            textAmount = budgetCategory.amount > 0 ? String(Int(budgetCategory.amount)) : ""
-        }
         .onChange(of: textAmount) { newValue in
             let cleanedValue = newValue.replacingOccurrences(of: "[^0-9.]", with: "", options: .regularExpression)
             if cleanedValue != newValue {
@@ -330,7 +340,8 @@ struct EditBudgetCategoryInput: View {
             onAmountChanged(numericValue)
         }
         .onChange(of: budgetCategory.amount) { newAmount in
-            if !isFocused {
+            // Only update if field is not focused and the amount actually changed
+            if !isFocused && textAmount != String(Int(newAmount)) {
                 textAmount = newAmount > 0 ? String(Int(newAmount)) : ""
             }
         }
