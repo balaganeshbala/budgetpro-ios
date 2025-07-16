@@ -277,21 +277,7 @@ struct CategoryBreakdownRow: View {
     let percentage: Double
     
     private var categoryColor: Color {
-        switch category.lowercased() {
-        case "food": return .orange
-        case "transport": return .blue
-        case "entertainment": return .purple
-        case "shopping": return .pink
-        case "health/beauty": return .red
-        case "groceries": return .mint
-        case "housing": return .brown
-        case "education": return Color(red: 0.2, green: 0.6, blue: 0.5)
-        case "vehicle": return .gray
-        case "travel": return .cyan
-        case "family": return .green
-        case "emi": return .indigo
-        default: return Color(red: 0.2, green: 0.6, blue: 0.5)
-        }
+        return ExpenseCategory.from(categoryName: category).color
     }
     
     var body: some View {

@@ -214,13 +214,6 @@ class EditBudgetViewModel: ObservableObject {
     }
 }
 
-// MARK: - Data Models
-
-struct EditableBudgetCategory: Identifiable {
-    let id = UUID()
-    let category: ExpenseCategory
-    var amount: Double
-}
 
 // MARK: - Errors
 

@@ -48,6 +48,35 @@ class HomeViewModel: ObservableObject {
         await loadData(month: month, year: year)
     }
     
+    func loadAllExpenses(month: Int, year: Int) async throws -> [Expense] {
+        guard let userId = supabaseManager.currentUser?.id else {
+            throw HomeError.userNotFound
+        }
+        
+        let response: [ExpenseResponse] = try await supabaseManager.client
+            .from("expenses")
+            .select("*")
+            .eq("user_id", value: userId)
+            .gte("date", value: getMonthStartDate(month: month, year: year))
+            .lt("date", value: getMonthEndDate(month: month, year: year))
+            .order("date", ascending: false)
+            .execute()
+            .value
+        
+        return response.map { expenseResponse in
+            let categoryEnum = ExpenseCategory.from(categoryName: expenseResponse.category)
+            return Expense(
+                id: expenseResponse.id,
+                name: expenseResponse.name,
+                amount: expenseResponse.amount,
+                category: expenseResponse.category,
+                date: ISO8601DateFormatter().date(from: expenseResponse.date) ?? Date(),
+                categoryIcon: categoryEnum.iconName,
+                categoryColor: categoryEnum.color
+            )
+        }
+    }
+    
     // MARK: - Private Methods
     
     private func loadBudgetData(month: Int, year: Int) async throws -> (categories: [BudgetCategory], total: Double, spent: Double) {
@@ -123,14 +152,15 @@ class HomeViewModel: ObservableObject {
             .value
         
         return response.map { expenseResponse in
-            Expense(
+            let categoryEnum = ExpenseCategory.from(categoryName: expenseResponse.category)
+            return Expense(
                 id: expenseResponse.id,
                 name: expenseResponse.name,
                 amount: expenseResponse.amount,
                 category: expenseResponse.category,
                 date: ISO8601DateFormatter().date(from: expenseResponse.date) ?? Date(),
-                categoryIcon: getCategoryIcon(for: expenseResponse.category),
-                categoryColor: getCategoryColor(for: expenseResponse.category)
+                categoryIcon: categoryEnum.iconName,
+                categoryColor: categoryEnum.color
             )
         }
     }
@@ -187,45 +217,6 @@ class HomeViewModel: ObservableObject {
         return formatter.string(from: endDate)
     }
     
-    private func getCategoryIcon(for category: String) -> String {
-        switch category.lowercased() {
-        case "food": return "fork.knife"
-        case "transport": return "car.fill"
-        case "entertainment": return "tv"
-        case "shopping": return "bag.fill"
-        case "health": return "heart.fill"
-        case "utilities": return "bolt.fill"
-        case "education": return "book.fill"
-        case "travel": return "airplane"
-        case "personal care": return "scissors"
-        case "groceries": return "cart.fill"
-        case "rent": return "house.fill"
-        case "insurance": return "shield.fill"
-        case "investment": return "chart.line.uptrend.xyaxis"
-        case "miscellaneous": return "ellipsis.circle"
-        default: return "dollarsign.circle"
-        }
-    }
-    
-    private func getCategoryColor(for category: String) -> Color {
-        switch category.lowercased() {
-        case "food": return .orange
-        case "transport": return .blue
-        case "entertainment": return .purple
-        case "shopping": return .pink
-        case "health": return .red
-        case "utilities": return .yellow
-        case "education": return .green
-        case "travel": return .cyan
-        case "personal care": return .indigo
-        case "groceries": return .brown
-        case "rent": return .gray
-        case "insurance": return .mint
-        case "investment": return .teal
-        case "miscellaneous": return .secondary
-        default: return Color(red: 0.2, green: 0.6, blue: 0.5)
-        }
-    }
     
     private func getIncomeCategoryIcon(for category: String) -> String {
         switch category.lowercased() {
@@ -241,99 +232,6 @@ class HomeViewModel: ObservableObject {
     }
 }
 
-// MARK: - Data Models
-
-struct BudgetCategory: Identifiable {
-    let id: String
-    let name: String
-    let budget: Double
-    let spent: Double
-}
-
-struct Expense: Identifiable {
-    let id: Int
-    let name: String
-    let amount: Double
-    let category: String
-    let date: Date
-    let categoryIcon: String
-    let categoryColor: Color
-    
-    var dateString: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM dd"
-        return formatter.string(from: date)
-    }
-}
-
-struct Income: Identifiable {
-    let id: Int
-    let source: String
-    let amount: Double
-    let category: String
-    let date: Date
-    let categoryIcon: String
-    
-    var dateString: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM dd"
-        return formatter.string(from: date)
-    }
-}
-
-// MARK: - API Response Models
-
-struct BudgetResponse: Codable {
-    let id: Int
-    let category: String    // Removed id, month, year - only keeping essential fields
-    let amount: Double
-    let date: String       // Added date field to match Flutter structure
-    let userId: String
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case category
-        case amount
-        case date
-        case userId = "user_id"
-    }
-}
-
-struct ExpenseResponse: Codable {
-    let id: Int
-    let date: String
-    let name: String
-    let category: String
-    let amount: Double
-    let userId: String
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case date
-        case name
-        case category
-        case amount
-        case userId = "user_id"
-    }
-}
-
-struct IncomeResponse: Codable {
-    let id: Int
-    let source: String
-    let amount: Double
-    let category: String
-    let date: String
-    let userId: String
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case source
-        case amount
-        case category
-        case date
-        case userId = "user_id"
-    }
-}
 
 // MARK: - Errors
 

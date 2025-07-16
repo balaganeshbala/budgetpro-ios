@@ -48,8 +48,8 @@ struct HomeView: View {
             ProfileView()
         }
         .sheet(isPresented: $showingAllExpenses) {
-            AllExpensesView(
-                expenses: viewModel.recentExpenses,
+            AllExpensesViewWrapper(
+                viewModel: viewModel,
                 month: selectedMonth,
                 year: selectedYear
             )
@@ -270,9 +270,7 @@ struct HomeView: View {
     // MARK: - Recent Expenses Section
     private var recentExpensesSection: some View {
         VStack(spacing: 12) {
-            SectionHeader(title: "Expenses") {
-                showingAllExpenses = true
-            }
+            SectionHeader(title: "Expenses", showMoreButton: false)
             
             if viewModel.recentExpenses.isEmpty {
                 EmptyStateCard(
@@ -301,7 +299,7 @@ struct HomeView: View {
                         }) {
                             HStack {
                                 Spacer()
-                                Text("View All (\(viewModel.recentExpenses.count))")
+                                Text("More Details")
                                     .font(.sora(14, weight: .medium))
                                     .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
                                 Image(systemName: "chevron.right")
@@ -323,9 +321,7 @@ struct HomeView: View {
     // MARK: - Recent Incomes Section
     private var recentIncomesSection: some View {
         VStack(spacing: 12) {
-            SectionHeader(title: "Incomes") {
-                // Navigate to all incomes
-            }
+            SectionHeader(title: "Incomes", showMoreButton: false)
             
             if viewModel.recentIncomes.isEmpty {
                 EmptyStateCard(
@@ -354,7 +350,7 @@ struct HomeView: View {
                         }) {
                             HStack {
                                 Spacer()
-                                Text("View All (\(viewModel.recentIncomes.count))")
+                                Text("More Details")
                                     .font(.sora(14, weight: .medium))
                                     .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
                                 Image(systemName: "chevron.right")
@@ -715,6 +711,66 @@ struct MonthYearSelector: View {
             }
             
             Spacer()
+        }
+    }
+}
+
+// MARK: - All Expenses View Wrapper
+struct AllExpensesViewWrapper: View {
+    let viewModel: HomeViewModel
+    let month: Int
+    let year: Int
+    
+    @State private var allExpenses: [Expense] = []
+    @State private var isLoading = true
+    @State private var errorMessage = ""
+    
+    var body: some View {
+        Group {
+            if isLoading {
+                ProgressView("Loading all expenses...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.gray.opacity(0.1))
+            } else if !errorMessage.isEmpty {
+                VStack(spacing: 16) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 48))
+                        .foregroundColor(.red)
+                    
+                    Text("Error Loading Expenses")
+                        .font(.sora(18, weight: .semibold))
+                        .foregroundColor(.black)
+                    
+                    Text(errorMessage)
+                        .font(.sora(14))
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.gray.opacity(0.1))
+            } else {
+                AllExpensesView(
+                    expenses: allExpenses,
+                    month: month,
+                    year: year
+                )
+            }
+        }
+        .onAppear {
+            Task {
+                await loadAllExpenses()
+            }
+        }
+    }
+    
+    private func loadAllExpenses() async {
+        do {
+            allExpenses = try await viewModel.loadAllExpenses(month: month, year: year)
+            isLoading = false
+        } catch {
+            errorMessage = "Failed to load expenses: \(error.localizedDescription)"
+            isLoading = false
         }
     }
 }

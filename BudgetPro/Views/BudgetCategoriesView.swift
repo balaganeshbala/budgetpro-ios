@@ -222,43 +222,11 @@ struct BudgetCategoryCard: View {
     
     // Helper computed properties for category styling
     private var categoryColor: Color {
-        // You can customize colors based on category name
-        switch category.name.lowercased() {
-        case "food": return .orange
-        case "transport": return .blue
-        case "entertainment": return .purple
-        case "shopping": return .pink
-        case "health/beauty": return .red
-        case "groceries": return .mint
-        case "housing": return .brown
-        case "education": return Color(red: 0.2, green: 0.6, blue: 0.5)
-        case "vehicle": return .gray
-        case "travel": return .cyan
-        case "family": return .green
-        case "emi": return .indigo
-        default: return Color(red: 0.2, green: 0.6, blue: 0.5)
-        }
+        return ExpenseCategory.from(categoryName: category.name).color
     }
     
     private var categoryIcon: String {
-        switch category.name.lowercased() {
-        case "food": return "fork.knife"
-        case "transport": return "car.fill"
-        case "entertainment": return "tv"
-        case "shopping": return "bag.fill"
-        case "health/beauty": return "heart.fill"
-        case "groceries": return "cart.fill"
-        case "housing": return "house.fill"
-        case "education": return "book.fill"
-        case "vehicle": return "car"
-        case "travel": return "airplane"
-        case "family": return "person.3.fill"
-        case "emi": return "creditcard.and.123"
-        case "charges/fees": return "dollarsign.circle"
-        case "charity/gift": return "gift.fill"
-        case "holiday/trip": return "airplane"
-        default: return "dollarsign.circle"
-        }
+        return ExpenseCategory.from(categoryName: category.name).iconName
     }
 }
 

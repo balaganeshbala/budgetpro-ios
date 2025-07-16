@@ -180,21 +180,6 @@ class CreateBudgetViewModel: ObservableObject {
     }
 }
 
-// MARK: - Data Models
-
-struct BudgetEntry: Codable {
-    let date: String        // Changed from separate id, month, year, createdAt
-    let category: String
-    let amount: Double
-    let userId: String
-    
-    enum CodingKeys: String, CodingKey {
-        case date
-        case category
-        case amount
-        case userId = "user_id"
-    }
-}
 
 // MARK: - Errors
 
