@@ -20,7 +20,26 @@ class HomeViewModel: ObservableObject {
     
     private let supabaseManager = SupabaseManager.shared
     
+    // Add this to prevent concurrent executions
+    private var currentLoadingTask: Task<Void, Never>?
+    
     func loadData(month: Int, year: Int) async {
+        // Cancel any existing task
+        currentLoadingTask?.cancel()
+        
+        // Create new task
+        currentLoadingTask = Task {
+            await performLoadData(month: month, year: year)
+        }
+        
+        // Wait for completion
+        await currentLoadingTask?.value
+    }
+    
+    private func performLoadData(month: Int, year: Int) async {
+        // Check if cancelled before starting
+        guard !Task.isCancelled else { return }
+        
         isLoading = true
         errorMessage = ""
         
@@ -31,6 +50,9 @@ class HomeViewModel: ObservableObject {
         do {
             let (budget, expenses, incomes) = try await (budgetData, expensesData, incomesData)
             
+            // Check if cancelled before updating UI
+            guard !Task.isCancelled else { return }
+            
             self.budgetCategories = budget.categories
             self.totalBudget = budget.total
             self.totalSpent = budget.spent
@@ -38,6 +60,15 @@ class HomeViewModel: ObservableObject {
             self.recentIncomes = incomes
             
         } catch {
+            // Check if cancelled
+            guard !Task.isCancelled else { return }
+            
+            // Handle cancellation errors
+            if let urlError = error as? URLError, urlError.code == .cancelled {
+                print("Request cancelled - this is normal")
+                return
+            }
+            
             self.errorMessage = "Failed to load data: \(error.localizedDescription)"
         }
         
@@ -70,7 +101,7 @@ class HomeViewModel: ObservableObject {
                 name: expenseResponse.name,
                 amount: expenseResponse.amount,
                 category: expenseResponse.category,
-                date: ISO8601DateFormatter().date(from: expenseResponse.date) ?? Date(),
+                date: parseDate(expenseResponse.date),
                 categoryIcon: categoryEnum.iconName,
                 categoryColor: categoryEnum.color
             )
@@ -159,7 +190,7 @@ class HomeViewModel: ObservableObject {
                     name: expenseResponse.name,
                     amount: expenseResponse.amount,
                     category: expenseResponse.category,
-                    date: ISO8601DateFormatter().date(from: expenseResponse.date) ?? Date(),
+                    date: parseDate(expenseResponse.date),
                     categoryIcon: categoryEnum.iconName,
                     categoryColor: categoryEnum.color
                 )
@@ -192,7 +223,7 @@ class HomeViewModel: ObservableObject {
                     source: incomeResponse.source,
                     amount: incomeResponse.amount,
                     category: incomeResponse.category,
-                    date: ISO8601DateFormatter().date(from: incomeResponse.date) ?? Date(),
+                    date: parseDate(incomeResponse.date),
                     categoryIcon: getIncomeCategoryIcon(for: incomeResponse.category)
                 )
             }
@@ -237,6 +268,25 @@ class HomeViewModel: ObservableObject {
         case "other": return "plus.circle"
         default: return "dollarsign.circle"
         }
+    }
+    
+    // Add this method to your HomeViewModel class
+    private func parseDate(_ dateString: String) -> Date {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        
+        if let date = formatter.date(from: dateString) {
+            return date
+        }
+        
+        // Fallback: try ISO8601 format for older data
+        let isoFormatter = ISO8601DateFormatter()
+        if let date = isoFormatter.date(from: dateString) {
+            return date
+        }
+        
+        // Final fallback
+        return Date()
     }
 }
 
