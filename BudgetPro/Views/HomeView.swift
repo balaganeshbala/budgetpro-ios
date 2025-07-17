@@ -6,6 +6,7 @@ struct HomeView: View {
     @State private var selectedYear = Calendar.current.component(.year, from: Date())
     @State private var showingProfile = false
     @State private var showingAllExpenses = false
+    @State private var showingAddExpense = false
     
     var body: some View {
         NavigationView {
@@ -53,6 +54,16 @@ struct HomeView: View {
                 month: selectedMonth,
                 year: selectedYear
             )
+        }
+        .sheet(isPresented: $showingAddExpense) {
+            AddExpenseView()
+        }
+        .onChange(of: showingAddExpense) { isPresented in
+            if !isPresented {
+                Task {
+                    await viewModel.refreshData(month: selectedMonth, year: selectedYear)
+                }
+            }
         }
         .onAppear {
             Task {
@@ -186,15 +197,6 @@ struct HomeView: View {
                             }
                             
                             Spacer()
-                            
-                            Circle()
-                                .fill(viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.15) : Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.15))
-                                .frame(width: 70, height: 70)
-                                .overlay(
-                                    Image(systemName: viewModel.totalSpent > viewModel.totalBudget ? "exclamationmark.triangle.fill" : "banknote.fill")
-                                        .font(.system(size: 28))
-                                        .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : Color(red: 0.2, green: 0.6, blue: 0.5))
-                                )
                         }
                         .padding(20)
                         .background(
@@ -326,7 +328,7 @@ struct HomeView: View {
                     subtitle: "Add your first expense to track spending",
                     buttonTitle: "Add Expense",
                     action: {
-                        // Navigate to add expense
+                        showingAddExpense = true
                     }
                 )
             } else {
@@ -338,6 +340,22 @@ struct HomeView: View {
                             Divider()
                                 .padding(.horizontal, 16)
                         }
+                    }
+                    
+                    // Add New Expense Button
+                    NavigationLink(destination: AddExpenseView()) {
+                        HStack {
+                            Spacer()
+                            Image(systemName: "plus")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                            Text("Add New")
+                                .font(.sora(14, weight: .medium))
+                                .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                            Spacer()
+                        }
+                        .padding(16)
+                        .background(Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.05))
                     }
                     
                     if viewModel.recentExpenses.count > 5 {
@@ -554,6 +572,7 @@ struct EmptyStateCard: View {
                     .cornerRadius(8)
             }
         }
+        .frame(maxWidth: .infinity)
         .padding(.vertical, 32)
         .padding(.horizontal, 16)
         .background(Color.white)

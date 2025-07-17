@@ -140,28 +140,32 @@ class HomeViewModel: ObservableObject {
             throw HomeError.userNotFound
         }
         
-        let response: [ExpenseResponse] = try await supabaseManager.client
-            .from("expenses")
-            .select("*")
-            .eq("user_id", value: userId)
-            .gte("date", value: getMonthStartDate(month: month, year: year))
-            .lt("date", value: getMonthEndDate(month: month, year: year))
-            .order("date", ascending: false)
-            .limit(10)
-            .execute()
-            .value
-        
-        return response.map { expenseResponse in
-            let categoryEnum = ExpenseCategory.from(categoryName: expenseResponse.category)
-            return Expense(
-                id: expenseResponse.id,
-                name: expenseResponse.name,
-                amount: expenseResponse.amount,
-                category: expenseResponse.category,
-                date: ISO8601DateFormatter().date(from: expenseResponse.date) ?? Date(),
-                categoryIcon: categoryEnum.iconName,
-                categoryColor: categoryEnum.color
-            )
+        do {
+            let response: [ExpenseResponse] = try await supabaseManager.client
+                .from("expenses")
+                .select("*")
+                .eq("user_id", value: userId)
+                .gte("date", value: getMonthStartDate(month: month, year: year))
+                .lt("date", value: getMonthEndDate(month: month, year: year))
+                .order("date", ascending: false)
+                .limit(10)
+                .execute()
+                .value
+            
+            return response.map { expenseResponse in
+                let categoryEnum = ExpenseCategory.from(categoryName: expenseResponse.category)
+                return Expense(
+                    id: expenseResponse.id,
+                    name: expenseResponse.name,
+                    amount: expenseResponse.amount,
+                    category: expenseResponse.category,
+                    date: ISO8601DateFormatter().date(from: expenseResponse.date) ?? Date(),
+                    categoryIcon: categoryEnum.iconName,
+                    categoryColor: categoryEnum.color
+                )
+            }
+        } catch {
+            throw HomeError.decodingError
         }
     }
     
@@ -170,26 +174,30 @@ class HomeViewModel: ObservableObject {
             throw HomeError.userNotFound
         }
         
-        let response: [IncomeResponse] = try await supabaseManager.client
-            .from("incomes")
-            .select("*")
-            .eq("user_id", value: userId)
-            .gte("date", value: getMonthStartDate(month: month, year: year))
-            .lt("date", value: getMonthEndDate(month: month, year: year))
-            .order("date", ascending: false)
-            .limit(10)
-            .execute()
-            .value
-        
-        return response.map { incomeResponse in
-            Income(
-                id: incomeResponse.id,
-                source: incomeResponse.source,
-                amount: incomeResponse.amount,
-                category: incomeResponse.category,
-                date: ISO8601DateFormatter().date(from: incomeResponse.date) ?? Date(),
-                categoryIcon: getIncomeCategoryIcon(for: incomeResponse.category)
-            )
+        do {
+            let response: [IncomeResponse] = try await supabaseManager.client
+                .from("incomes")
+                .select("*")
+                .eq("user_id", value: userId)
+                .gte("date", value: getMonthStartDate(month: month, year: year))
+                .lt("date", value: getMonthEndDate(month: month, year: year))
+                .order("date", ascending: false)
+                .limit(10)
+                .execute()
+                .value
+            
+            return response.map { incomeResponse in
+                Income(
+                    id: incomeResponse.id,
+                    source: incomeResponse.source,
+                    amount: incomeResponse.amount,
+                    category: incomeResponse.category,
+                    date: ISO8601DateFormatter().date(from: incomeResponse.date) ?? Date(),
+                    categoryIcon: getIncomeCategoryIcon(for: incomeResponse.category)
+                )
+            }
+        } catch {
+            throw HomeError.decodingError
         }
     }
     

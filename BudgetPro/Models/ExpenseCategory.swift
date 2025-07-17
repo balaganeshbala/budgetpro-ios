@@ -1,24 +1,40 @@
 import SwiftUI
 
 enum ExpenseCategory: String, CaseIterable {
-    case emi = "EMI"
-    case food = "Food"
-    case holidayTrip = "Holiday/Trip"
-    case housing = "Housing"
-    case shopping = "Shopping"
-    case travel = "Travel"
-    case family = "Family"
-    case chargesFees = "Charges/Fees"
-    case groceries = "Groceries"
-    case healthBeauty = "Health/Beauty"
-    case entertainment = "Entertainment"
-    case charityGift = "Charity/Gift"
-    case education = "Education"
-    case vehicle = "Vehicle"
-    case unknown = "Unknown"
+    case emi
+    case food
+    case holidayTrip
+    case housing
+    case shopping
+    case travel
+    case family
+    case chargesFees
+    case groceries
+    case healthBeauty
+    case entertainment
+    case charityGift
+    case education
+    case vehicle
+    case unknown
     
     var displayName: String {
-        return self.rawValue
+        switch self {
+        case .emi: return "EMI"
+        case .food: return "Food"
+        case .holidayTrip: return "Holiday/Trip"
+        case .housing: return "Housing"
+        case .shopping: return "Shopping"
+        case .travel: return "Travel"
+        case .family: return "Family"
+        case .chargesFees: return "Charges/Fees"
+        case .groceries: return "Groceries"
+        case .healthBeauty: return "Health/Beauty"
+        case .entertainment: return "Entertainment"
+        case .charityGift: return "Charity/Gift"
+        case .education: return "Education"
+        case .vehicle: return "Vehicle"
+        case .unknown: return "Unknown"
+        }
     }
     
     var iconName: String {
