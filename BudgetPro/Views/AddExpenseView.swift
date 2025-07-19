@@ -24,7 +24,7 @@ struct AddExpenseView: View {
     var body: some View {
         ZStack {
             LinearGradient(
-                gradient: Gradient(colors: [Color(red: 0.34, green: 0.71, blue: 0.64), Color(red: 0.30, green: 0.64, blue: 0.58)]),
+                gradient: Gradient(colors: [Color(red: 0.2, green: 0.6, blue: 0.5), Color(red: 0.18, green: 0.54, blue: 0.45)]),
                 startPoint: .top,
                 endPoint: .bottom
             )
@@ -134,7 +134,6 @@ struct AddExpenseView: View {
 }
 
 
-
 // MARK: - Input Fields
 
 struct ExpenseNameInputField: View {
@@ -142,47 +141,25 @@ struct ExpenseNameInputField: View {
     var focusedField: FocusState<AddExpenseView.Field?>.Binding
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 8) {
-                Image(systemName: "bag")
-                    .foregroundColor(.gray)
-                    .font(.system(size: 16))
-                
-                Text("Expense Name")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(Color(red: 0.34, green: 0.71, blue: 0.64))
-            }
-            
-            HStack(spacing: 12) {
-                Image(systemName: "bag")
-                    .foregroundColor(.gray)
-                    .font(.system(size: 20))
-                
-                TextField("What did you spend on?", text: $viewModel.expenseName)
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.black)
-                    .textInputAutocapitalization(.words)
-                    .focused(focusedField, equals: .expenseName)
-                    .submitLabel(.next)
-                    .onSubmit {
-                        focusedField.wrappedValue = .amount
-                    }
-                    .onChange(of: viewModel.expenseName) { _ in
-                        if viewModel.expenseName.count > 25 {
-                            viewModel.expenseName = String(viewModel.expenseName.prefix(25))
-                        }
-                        viewModel.validateForm()
-                    }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 16)
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(focusedField.wrappedValue == .expenseName ? Color(red: 0.34, green: 0.71, blue: 0.64) : Color.clear, lineWidth: 2)
-            )
-        }
+        FloatingLabelTextField(
+            label: "Expense Name",
+            iconName: "bag",
+            text: $viewModel.expenseName,
+            keyboardType: .default,
+            submitLabel: .next,
+            textCapitalization: .words,
+            onSubmit: {
+                focusedField.wrappedValue = .amount
+            },
+            onChange: { _ in
+                if viewModel.expenseName.count > 25 {
+                    viewModel.expenseName = String(viewModel.expenseName.prefix(25))
+                }
+                viewModel.validateForm()
+            },
+            isFocused: focusedField.wrappedValue == .expenseName
+        )
+        .focused(focusedField, equals: .expenseName)
     }
 }
 
@@ -191,43 +168,31 @@ struct ExpenseAmountInputField: View {
     var focusedField: FocusState<AddExpenseView.Field?>.Binding
     
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 12) {
-                Image(systemName: "indianrupeesign")
-                    .foregroundColor(.gray)
-                    .font(.system(size: 20))
-                
-                TextField("Amount", text: $viewModel.amountText)
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.black)
-                    .keyboardType(.decimalPad)
-                    .focused(focusedField, equals: .amount)
-                    .submitLabel(.done)
-                    .onSubmit {
-                        focusedField.wrappedValue = nil
-                    }
-                    .onChange(of: viewModel.amountText) { newValue in
-                        let filtered = newValue.filter { "0123456789.".contains($0) }
-                        let components = filtered.components(separatedBy: ".")
-                        if components.count > 2 {
-                            viewModel.amountText = components[0] + "." + components[1]
-                        } else if components.count == 2 && components[1].count > 2 {
-                            viewModel.amountText = components[0] + "." + String(components[1].prefix(2))
-                        } else {
-                            viewModel.amountText = filtered
-                        }
-                        viewModel.validateForm()
-                    }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 16)
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(focusedField.wrappedValue == .amount ? Color(red: 0.34, green: 0.71, blue: 0.64) : Color.clear, lineWidth: 2)
-            )
-        }
+        FloatingLabelTextField(
+            label: "Amount",
+            iconName: "indianrupeesign",
+            text: $viewModel.amountText,
+            keyboardType: .decimalPad,
+            submitLabel: .done,
+            textCapitalization: .never,
+            onSubmit: {
+                focusedField.wrappedValue = nil
+            },
+            onChange: { newValue in
+                let filtered = newValue.filter { "0123456789.".contains($0) }
+                let components = filtered.components(separatedBy: ".")
+                if components.count > 2 {
+                    viewModel.amountText = components[0] + "." + components[1]
+                } else if components.count == 2 && components[1].count > 2 {
+                    viewModel.amountText = components[0] + "." + String(components[1].prefix(2))
+                } else {
+                    viewModel.amountText = filtered
+                }
+                viewModel.validateForm()
+            },
+            isFocused: focusedField.wrappedValue == .amount
+        )
+        .focused(focusedField, equals: .amount)
     }
 }
 
@@ -276,11 +241,11 @@ struct CategorySelectorMenu: View {
                 
                 Text(viewModel.selectedCategory.displayName.uppercased())
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(Color(red: 0.34, green: 0.71, blue: 0.64))
+                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
                 
                 Image(systemName: "chevron.down")
                     .font(.system(size: 12))
-                    .foregroundColor(Color(red: 0.34, green: 0.71, blue: 0.64))
+                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 16)
@@ -312,7 +277,7 @@ struct ExpenseDateSelectorField: View {
                     
                     Text(viewModel.formattedDateForDisplay)
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(Color(red: 0.34, green: 0.71, blue: 0.64))
+                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 16)
@@ -348,8 +313,8 @@ struct AddExpenseButton: View {
             .frame(height: 55)
             .background(
                 viewModel.isFormValid && !viewModel.isLoading
-                    ? Color.gray.opacity(0.4)
-                    : Color.gray.opacity(0.3)
+                    ? Color(red: 1.0, green: 0.4, blue: 0.4)
+                    : Color.gray.opacity(0.6)
             )
             .cornerRadius(12)
         }

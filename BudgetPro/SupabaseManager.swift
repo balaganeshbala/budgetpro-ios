@@ -21,7 +21,18 @@ class SupabaseManager: ObservableObject {
         
         client = SupabaseClient(
             supabaseURL: url,
-            supabaseKey: anonKey
+            supabaseKey: anonKey,
+            options: SupabaseClientOptions(
+                db: SupabaseClientOptions.DatabaseOptions(
+                    schema: "public"
+                ),
+                auth: SupabaseClientOptions.AuthOptions(
+                    autoRefreshToken: true
+                ),
+                global: SupabaseClientOptions.GlobalOptions(
+                    headers: ["apikey": anonKey]
+                )
+            )
         )
         
         checkAuthStatus()

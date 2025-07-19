@@ -63,9 +63,9 @@ class AddExpenseViewModel: ObservableObject {
         errorMessage = ""
         
         do {
-            guard let userId = supabaseManager.currentUser?.id else {
-                throw AddExpenseError.userNotFound
-            }
+            // Ensure user is authenticated before proceeding
+            let session = try await supabaseManager.client.auth.session
+            let userId = session.user.id
             
             let amount = Double(amountText) ?? 0
             let dateFormatter = DateFormatter()
@@ -74,7 +74,7 @@ class AddExpenseViewModel: ObservableObject {
             let expenseData = ExpenseInsertData(
                 name: expenseName,
                 amount: amount,
-                category: selectedCategory.rawValue,
+                category: selectedCategory.displayName,
                 date: dateFormatter.string(from: selectedDate),
                 userId: userId.uuidString
             )
