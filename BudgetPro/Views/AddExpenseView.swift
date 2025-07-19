@@ -102,9 +102,16 @@ struct AddExpenseView: View {
             }
         }
         .navigationBarHidden(true)
-        .sheet(isPresented: $showingDatePicker) {
-            DatePickerSheet(selectedDate: $viewModel.selectedDate)
-        }
+        .overlay(
+            Group {
+                if showingDatePicker {
+                    DatePickerDialog(
+                        selectedDate: $viewModel.selectedDate,
+                        isPresented: $showingDatePicker
+                    )
+                }
+            }
+        )
         .alert("Success", isPresented: $showingSuccessAlert) {
             Button("OK") {
                 presentationMode.wrappedValue.dismiss()
