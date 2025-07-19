@@ -141,21 +141,49 @@ class HomeViewModel: ObservableObject {
                 .execute()
                 .value
             
-            // Group expenses by category
-            let expensesByCategory = Dictionary(grouping: expensesResponse) { $0.category }
+            // Group expenses by category, normalized by ExpenseCategory
+            let expensesByCategory = Dictionary(grouping: expensesResponse) { expense in
+                ExpenseCategory.from(categoryName: expense.category).displayName
+            }
             
-            for budget in budgetResponse {
-                let spent = expensesByCategory[budget.category]?.reduce(0) { $0 + $1.amount } ?? 0
+            // Create a dictionary of budget amounts by category
+            let budgetsByCategory = Dictionary(uniqueKeysWithValues: budgetResponse.map { budget in
+                (ExpenseCategory.from(categoryName: budget.category).displayName, budget.amount)
+            })
+            
+            // Get all categories that have either budget or expenses
+            let allCategoryNames = Set(expensesByCategory.keys).union(Set(budgetsByCategory.keys))
+            
+            for categoryName in allCategoryNames {
+                let budgetAmount = budgetsByCategory[categoryName] ?? 0
+                let spent = expensesByCategory[categoryName]?.reduce(0) { $0 + $1.amount } ?? 0
                 
                 let category = BudgetCategory(
-                    id: UUID().uuidString,  // Generate ID since it's not stored in budget table
-                    name: budget.category,
-                    budget: budget.amount,
+                    id: UUID().uuidString,
+                    name: categoryName,
+                    budget: budgetAmount,
                     spent: spent
                 )
                 
                 categories.append(category)
-                totalBudget += budget.amount
+                totalBudget += budgetAmount
+            }
+            
+            // Sort categories: Unplanned and Overspent first, then by name
+            categories.sort { category1, category2 in
+                let status1 = getCategoryStatus(category1)
+                let status2 = getCategoryStatus(category2)
+                
+                // Priority order: Overspent (3), Unplanned (2), others (1)
+                let priority1 = getCategoryPriority(status1)
+                let priority2 = getCategoryPriority(status2)
+                
+                if priority1 != priority2 {
+                    return priority1 > priority2
+                } else {
+                    // Within same priority, sort by name
+                    return category1.name < category2.name
+                }
             }
             
             let totalSpent = expensesResponse.reduce(0) { $0 + $1.amount }
@@ -287,6 +315,27 @@ class HomeViewModel: ObservableObject {
         
         // Final fallback
         return Date()
+    }
+    
+    // Helper methods for category sorting
+    private func getCategoryStatus(_ category: BudgetCategory) -> String {
+        if category.budget == 0 && category.spent > 0 {
+            return "Unplanned"
+        } else if category.budget == 0 {
+            return "No Budget"
+        } else if category.spent > category.budget {
+            return "Overspent"
+        } else {
+            return "On Track"
+        }
+    }
+    
+    private func getCategoryPriority(_ status: String) -> Int {
+        switch status {
+        case "Overspent": return 3
+        case "Unplanned": return 2
+        default: return 1
+        }
     }
 }
 

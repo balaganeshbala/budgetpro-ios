@@ -28,8 +28,8 @@ class EditBudgetViewModel: ObservableObject {
         // First, add existing budget categories
         
         for budgetCategory in budgetCategories {
-            // Match by case name (rawValue) since that's what's stored in the database
-            if let expenseCategory = ExpenseCategory.allCases.first(where: { "\($0)" == budgetCategory.name }) {
+            // Match by display name since that's what's stored in the normalized budget data
+            if let expenseCategory = ExpenseCategory.allCases.first(where: { $0.displayName == budgetCategory.name }) {
                 // Skip the Unknown category from budget planning
                 if expenseCategory == .unknown {
                     continue
@@ -47,8 +47,8 @@ class EditBudgetViewModel: ObservableObject {
         }
         
         // Then, add remaining categories that don't have budgets yet
-        // Create a set of existing case names from the database
-        let existingCaseNames = Set(budgetCategories.map { $0.name })
+        // Create a set of existing display names from the database
+        let existingDisplayNames = Set(budgetCategories.map { $0.name })
         
         for expenseCategory in ExpenseCategory.allCases {
             // Skip the Unknown category from budget planning
@@ -56,8 +56,8 @@ class EditBudgetViewModel: ObservableObject {
                 continue
             }
             
-            // Check if this category's case name is not in the existing budgets
-            if !existingCaseNames.contains("\(expenseCategory)") {
+            // Check if this category's display name is not in the existing budgets
+            if !existingDisplayNames.contains(expenseCategory.displayName) {
                 let editableBudget = EditableBudgetCategory(
                     category: expenseCategory,
                     amount: 0

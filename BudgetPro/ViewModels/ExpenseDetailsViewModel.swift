@@ -36,12 +36,8 @@ class ExpenseDetailsViewModel: ObservableObject {
         self.originalAmount = expense.amount
         self.originalDate = expense.date
         
-        // Find the matching category
-        if let category = ExpenseCategory.allCases.first(where: { $0.displayName == expense.category }) {
-            self.originalCategory = category
-        } else {
-            self.originalCategory = .unknown
-        }
+        // Find the matching category using the from method
+        self.originalCategory = ExpenseCategory.from(categoryName: expense.category)
     }
     
     var hasChanges: Bool {

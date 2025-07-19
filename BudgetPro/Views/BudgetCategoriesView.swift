@@ -82,11 +82,25 @@ struct BudgetCategoriesView: View {
             .padding(.horizontal, 16)
             
             LazyVStack(spacing: 12) {
-                ForEach(budgetCategories) { category in
+                ForEach(sortedCategories) { category in
                     BudgetCategoryCard(category: category, totalBudget: totalBudget)
                 }
             }
         }
+    }
+    
+    private var sortedCategories: [BudgetCategory] {
+        let unplannedCategories = budgetCategories.filter { $0.budget == 0 && $0.spent > 0 }
+        let noBudgetCategories = budgetCategories.filter { $0.budget == 0 && $0.spent == 0 }
+        let plannedCategories = budgetCategories.filter { $0.budget > 0 }
+        
+        let sortedPlanned = plannedCategories.sorted { first, second in
+            let firstPercentage = first.spent / first.budget
+            let secondPercentage = second.spent / second.budget
+            return firstPercentage > secondPercentage
+        }
+        
+        return unplannedCategories + sortedPlanned + noBudgetCategories
     }
     
     private var monthName: String {
