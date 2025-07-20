@@ -8,6 +8,10 @@
 import Foundation
 import SwiftUI
 
+extension Notification.Name {
+    static let expenseDataChanged = Notification.Name("expenseDataChanged")
+}
+
 // MARK: - Add Expense View Model
 @MainActor
 class AddExpenseViewModel: ObservableObject {
@@ -53,6 +57,16 @@ class AddExpenseViewModel: ObservableObject {
                       amount > 0
     }
     
+    func resetForm() {
+        expenseName = ""
+        amountText = ""
+        selectedCategory = categories.first ?? .food
+        selectedDate = Date()
+        isSuccess = false
+        errorMessage = ""
+        validateForm()
+    }
+    
     func addExpense() async {
         guard isFormValid else {
             errorMessage = "Please fill all required fields"
@@ -85,6 +99,9 @@ class AddExpenseViewModel: ObservableObject {
                 .execute()
             
             isSuccess = true
+            
+            // Notify that expense data has changed
+            NotificationCenter.default.post(name: .expenseDataChanged, object: nil)
             
         } catch {
             errorMessage = "Failed to add expense: \(error.localizedDescription)"

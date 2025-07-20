@@ -7,6 +7,7 @@ struct HomeView: View {
     @State private var showingProfile = false
     @State private var showingAllExpenses = false
     @State private var showingAddExpense = false
+    @State private var hasLoadedInitialData = false
     
     var body: some View {
         NavigationView {
@@ -49,8 +50,8 @@ struct HomeView: View {
             ProfileView()
         }
         .sheet(isPresented: $showingAllExpenses) {
-            AllExpensesViewWrapper(
-                viewModel: viewModel,
+            AllExpensesView(
+                expenses: viewModel.recentExpenses,
                 month: selectedMonth,
                 year: selectedYear
             )
@@ -58,16 +59,19 @@ struct HomeView: View {
         .sheet(isPresented: $showingAddExpense) {
             AddExpenseView()
         }
-        .onChange(of: showingAddExpense) { isPresented in
-            if !isPresented {
+        .onAppear {
+            // Only load data on first launch
+            if !hasLoadedInitialData {
+                hasLoadedInitialData = true
                 Task {
-                    await viewModel.refreshData(month: selectedMonth, year: selectedYear)
+                    await viewModel.loadData(month: selectedMonth, year: selectedYear)
                 }
             }
         }
-        .onAppear {
+        .onReceive(NotificationCenter.default.publisher(for: .expenseDataChanged)) { _ in
+            // Only refresh when data actually changes
             Task {
-                await viewModel.loadData(month: selectedMonth, year: selectedYear)
+                await viewModel.refreshData(month: selectedMonth, year: selectedYear)
             }
         }
         .alert("Error", isPresented: .constant(!viewModel.errorMessage.isEmpty)) {
@@ -782,65 +786,6 @@ struct MonthYearSelector: View {
     }
 }
 
-// MARK: - All Expenses View Wrapper
-struct AllExpensesViewWrapper: View {
-    let viewModel: HomeViewModel
-    let month: Int
-    let year: Int
-    
-    @State private var allExpenses: [Expense] = []
-    @State private var isLoading = true
-    @State private var errorMessage = ""
-    
-    var body: some View {
-        Group {
-            if isLoading {
-                ProgressView("Loading all expenses...")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.gray.opacity(0.1))
-            } else if !errorMessage.isEmpty {
-                VStack(spacing: 16) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .font(.system(size: 48))
-                        .foregroundColor(.red)
-                    
-                    Text("Error Loading Expenses")
-                        .font(.sora(18, weight: .semibold))
-                        .foregroundColor(.black)
-                    
-                    Text(errorMessage)
-                        .font(.sora(14))
-                        .foregroundColor(.gray)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 32)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.gray.opacity(0.1))
-            } else {
-                AllExpensesView(
-                    expenses: allExpenses,
-                    month: month,
-                    year: year
-                )
-            }
-        }
-        .onAppear {
-            Task {
-                await loadAllExpenses()
-            }
-        }
-    }
-    
-    private func loadAllExpenses() async {
-        do {
-            allExpenses = try await viewModel.loadAllExpenses(month: month, year: year)
-            isLoading = false
-        } catch {
-            errorMessage = "Failed to load expenses: \(error.localizedDescription)"
-            isLoading = false
-        }
-    }
-}
 
 // MARK: - Preview
 struct HomeView_Previews: PreviewProvider {

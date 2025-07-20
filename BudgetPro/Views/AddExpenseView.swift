@@ -114,7 +114,9 @@ struct AddExpenseView: View {
         )
         .alert("Success", isPresented: $showingSuccessAlert) {
             Button("OK") {
-                presentationMode.wrappedValue.dismiss()
+                showingSuccessAlert = false
+                // Reset form for next expense
+                viewModel.resetForm()
             }
         } message: {
             Text("Expense added successfully!")

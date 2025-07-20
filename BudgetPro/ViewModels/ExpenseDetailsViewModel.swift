@@ -102,6 +102,9 @@ class ExpenseDetailsViewModel: ObservableObject {
             successMessage = "Expense updated successfully!"
             isSuccess = true
             
+            // Notify that expense data has changed
+            NotificationCenter.default.post(name: .expenseDataChanged, object: nil)
+            
         } catch {
             print("Update expense error: \(error)")
             errorMessage = "Failed to update expense: \(error.localizedDescription)"
@@ -129,6 +132,9 @@ class ExpenseDetailsViewModel: ObservableObject {
             
             successMessage = "Expense deleted successfully!"
             isSuccess = true
+            
+            // Notify that expense data has changed
+            NotificationCenter.default.post(name: .expenseDataChanged, object: nil)
             
         } catch {
             print("Delete expense error: \(error)")

@@ -79,34 +79,6 @@ class HomeViewModel: ObservableObject {
         await loadData(month: month, year: year)
     }
     
-    func loadAllExpenses(month: Int, year: Int) async throws -> [Expense] {
-        guard let userId = supabaseManager.currentUser?.id else {
-            throw HomeError.userNotFound
-        }
-        
-        let response: [ExpenseResponse] = try await supabaseManager.client
-            .from("expenses")
-            .select("*")
-            .eq("user_id", value: userId)
-            .gte("date", value: getMonthStartDate(month: month, year: year))
-            .lt("date", value: getMonthEndDate(month: month, year: year))
-            .order("date", ascending: false)
-            .execute()
-            .value
-        
-        return response.map { expenseResponse in
-            let categoryEnum = ExpenseCategory.from(categoryName: expenseResponse.category)
-            return Expense(
-                id: expenseResponse.id,
-                name: expenseResponse.name,
-                amount: expenseResponse.amount,
-                category: expenseResponse.category,
-                date: parseDate(expenseResponse.date),
-                categoryIcon: categoryEnum.iconName,
-                categoryColor: categoryEnum.color
-            )
-        }
-    }
     
     // MARK: - Private Methods
     
@@ -207,7 +179,6 @@ class HomeViewModel: ObservableObject {
                 .gte("date", value: getMonthStartDate(month: month, year: year))
                 .lt("date", value: getMonthEndDate(month: month, year: year))
                 .order("date", ascending: false)
-                .limit(10)
                 .execute()
                 .value
             
