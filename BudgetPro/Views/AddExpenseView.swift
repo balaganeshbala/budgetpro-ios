@@ -30,70 +30,74 @@ struct AddExpenseView: View {
             )
             .ignoresSafeArea()
             
-            VStack(spacing: 0) {
-                // Custom Navigation Bar
-                HStack {
-                    Button(action: {
-                        presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Image(systemName: "chevron.left")
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Custom Navigation Bar
+                    HStack {
+                        Button(action: {
+                            presentationMode.wrappedValue.dismiss()
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundColor(.white)
+                        }
+                        
+                        Spacer()
+                        
+                        Text("Add Expense")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundColor(.white)
+                        
+                        Spacer()
+                        
+                        // Invisible button for balance
+                        Button("") { }
+                            .opacity(0)
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 10)
+                    .padding(.bottom, 30)
                     
-                    Spacer()
-                    
-                    Text("Add Expense")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(.white)
-                    
-                    Spacer()
-                    
-                    // Invisible button for balance
-                    Button("") { }
-                        .opacity(0)
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 10)
-                .padding(.bottom, 30)
-                
-                // Content Card
-                VStack(spacing: 0) {
-                    VStack(spacing: 24) {
-                        // Title
-                        HStack {
-                            Text("Expense Details")
-                                .font(.system(size: 20, weight: .semibold))
-                                .foregroundColor(.black)
+                    // Content Card
+                    VStack(spacing: 0) {
+                        VStack(spacing: 24) {
+                            // Title
+                            HStack {
+                                Text("Expense Details")
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(.black)
+                                Spacer()
+                            }
+                            .padding(.top, 24)
+                            
+                            // Expense Name Field
+                            ExpenseNameInputField(viewModel: viewModel, focusedField: $focusedField)
+                            
+                            // Amount Field
+                            ExpenseAmountInputField(viewModel: viewModel, focusedField: $focusedField)
+                            
+                            // Category Selector
+                            ExpenseCategorySelectorField(viewModel: viewModel)
+                            
+                            // Date Selector
+                            ExpenseDateSelectorField(
+                                viewModel: viewModel,
+                                showingDatePicker: $showingDatePicker
+                            )
+                            
                             Spacer()
+                            
+                            // Add Expense Button
+                            AddExpenseButton(viewModel: viewModel)
+                            
+                            Spacer(minLength: 30)
                         }
-                        .padding(.top, 24)
-                        
-                        // Expense Name Field
-                        ExpenseNameInputField(viewModel: viewModel, focusedField: $focusedField)
-                        
-                        // Amount Field
-                        ExpenseAmountInputField(viewModel: viewModel, focusedField: $focusedField)
-                        
-                        // Category Selector
-                        ExpenseCategorySelectorField(viewModel: viewModel)
-                        
-                        // Date Selector
-                        ExpenseDateSelectorField(
-                            viewModel: viewModel,
-                            showingDatePicker: $showingDatePicker
-                        )
-                        
-                        // Add Expense Button
-                        AddExpenseButton(viewModel: viewModel)
-                        
-                        Spacer(minLength: 30)
+                        .padding(.horizontal, 24)
                     }
-                    .padding(.horizontal, 24)
+                    .background(Color.white)
+                    .cornerRadius(20, corners: [.topLeft, .topRight])
+                    .ignoresSafeArea(.container, edges: .bottom)
                 }
-                .background(Color.white)
-                .cornerRadius(20, corners: [.topLeft, .topRight])
-                .ignoresSafeArea(.container, edges: .bottom)
             }
             
             // Loading Overlay
@@ -138,6 +142,9 @@ struct AddExpenseView: View {
         }
         .onAppear {
             viewModel.loadInitialData()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                focusedField = .expenseName
+            }
         }
     }
 }
@@ -353,6 +360,7 @@ struct LoadingOverlay: View {
             )
     }
 }
+
 
 struct AddExpenseView_Previews: PreviewProvider {
     static var previews: some View {
