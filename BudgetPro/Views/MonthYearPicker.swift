@@ -13,7 +13,9 @@ struct MonthYearPicker: View {
     @Binding var selectedYear: Int
     let onChanged: (Int, Int) -> Void
     
-    @State private var showingPicker = false
+    @Binding var showingPicker: Bool
+    @State private var tempMonth: Int
+    @State private var tempYear: Int
     
     private let months = [
         "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -25,8 +27,19 @@ struct MonthYearPicker: View {
         return Array((currentYear - 5)...(currentYear + 1))
     }()
     
+    init(selectedMonth: Binding<Int>, selectedYear: Binding<Int>, showingPicker: Binding<Bool>, onChanged: @escaping (Int, Int) -> Void) {
+        self._selectedMonth = selectedMonth
+        self._selectedYear = selectedYear
+        self._showingPicker = showingPicker
+        self.onChanged = onChanged
+        self._tempMonth = State(initialValue: selectedMonth.wrappedValue)
+        self._tempYear = State(initialValue: selectedYear.wrappedValue)
+    }
+    
     var body: some View {
         Button(action: {
+            tempMonth = selectedMonth
+            tempYear = selectedYear
             showingPicker = true
         }) {
             HStack(spacing: 10) {
@@ -48,77 +61,56 @@ struct MonthYearPicker: View {
                     .fill(Color.gray.opacity(0.1))
             )
         }
-        .sheet(isPresented: $showingPicker) {
-            MonthYearPickerSheet(
-                selectedMonth: $selectedMonth,
-                selectedYear: $selectedYear,
-                months: months,
-                years: years,
-                onChanged: onChanged
-            )
+        .onChange(of: showingPicker) { isShowing in
+            if isShowing {
+                tempMonth = selectedMonth
+                tempYear = selectedYear
+            }
         }
+    }
+    
+    func getDialog(tempMonth: Binding<Int>, tempYear: Binding<Int>) -> MonthYearPickerDialog {
+        return MonthYearPickerDialog(
+            selectedMonth: tempMonth,
+            selectedYear: tempYear,
+            isPresented: $showingPicker,
+            months: months,
+            years: years,
+            onDone: {
+                selectedMonth = tempMonth.wrappedValue
+                selectedYear = tempYear.wrappedValue
+                onChanged(tempMonth.wrappedValue, tempYear.wrappedValue)
+                showingPicker = false
+            }
+        )
     }
 }
 
-struct MonthYearPickerSheet: View {
+struct MonthYearPickerDialog: View {
     @Binding var selectedMonth: Int
     @Binding var selectedYear: Int
-    @Environment(\.presentationMode) var presentationMode
+    @Binding var isPresented: Bool
     
     let months: [String]
     let years: [Int]
-    let onChanged: (Int, Int) -> Void
-    
-    @State private var tempMonth: Int
-    @State private var tempYear: Int
-    
-    init(selectedMonth: Binding<Int>, selectedYear: Binding<Int>, months: [String], years: [Int], onChanged: @escaping (Int, Int) -> Void) {
-        self._selectedMonth = selectedMonth
-        self._selectedYear = selectedYear
-        self.months = months
-        self.years = years
-        self.onChanged = onChanged
-        self._tempMonth = State(initialValue: selectedMonth.wrappedValue)
-        self._tempYear = State(initialValue: selectedYear.wrappedValue)
-    }
+    let onDone: () -> Void
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                // Header
-                HStack {
-                    Button("Cancel") {
-                        presentationMode.wrappedValue.dismiss()
-                    }
-                    .font(.sora(16))
-                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
-                    
-                    Spacer()
-                    
-                    Text("Select Month & Year")
-                        .font(.sora(18, weight: .semibold))
-                        .foregroundColor(.black)
-                    
-                    Spacer()
-                    
-                    Button("Done") {
-                        selectedMonth = tempMonth
-                        selectedYear = tempYear
-                        onChanged(tempMonth, tempYear)
-                        presentationMode.wrappedValue.dismiss()
-                    }
-                    .font(.sora(16, weight: .medium))
-                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+        ZStack {
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    isPresented = false
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
+            
+            VStack(spacing: 20) {
+                Text("Select Month & Year")
+                    .font(.sora(18, weight: .semibold))
+                    .foregroundColor(.black)
                 
-                Divider()
-                
-                // Picker
                 HStack(spacing: 0) {
                     // Month Picker
-                    Picker("Month", selection: $tempMonth) {
+                    Picker("Month", selection: $selectedMonth) {
                         ForEach(1...12, id: \.self) { month in
                             Text(months[month - 1])
                                 .font(.sora(16))
@@ -127,9 +119,10 @@ struct MonthYearPickerSheet: View {
                     }
                     .pickerStyle(WheelPickerStyle())
                     .frame(maxWidth: .infinity)
+                    .frame(height: 120)
                     
                     // Year Picker
-                    Picker("Year", selection: $tempYear) {
+                    Picker("Year", selection: $selectedYear) {
                         ForEach(years, id: \.self) { year in
                             Text(String(year))
                                 .font(.sora(16))
@@ -138,13 +131,40 @@ struct MonthYearPickerSheet: View {
                     }
                     .pickerStyle(WheelPickerStyle())
                     .frame(maxWidth: .infinity)
+                    .frame(height: 120)
                 }
-                .padding(.horizontal, 16)
                 
-                Spacer()
+                HStack(spacing: 20) {
+                    Button(action: {
+                        isPresented = false
+                    }) {
+                        Text("Cancel")
+                            .font(.sora(16, weight: .medium))
+                            .foregroundColor(.gray)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 44)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(8)
+                    }
+                    
+                    Button(action: onDone) {
+                        Text("Done")
+                            .font(.sora(16, weight: .semibold))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 44)
+                            .background(Color(red: 0.2, green: 0.6, blue: 0.5))
+                            .cornerRadius(8)
+                    }
+                }
             }
-            .navigationBarHidden(true)
+            .padding(24)
+            .background(Color.white)
+            .cornerRadius(16)
+            .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+            .padding(.horizontal, 40)
         }
+        .animation(.easeInOut(duration: 0.2), value: isPresented)
     }
 }
 
@@ -153,6 +173,7 @@ struct MonthYearPicker_Previews: PreviewProvider {
         MonthYearPicker(
             selectedMonth: .constant(7),
             selectedYear: .constant(2025),
+            showingPicker: .constant(false),
             onChanged: { _, _ in }
         )
     }

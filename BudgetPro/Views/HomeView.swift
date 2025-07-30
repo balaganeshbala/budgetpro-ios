@@ -7,6 +7,9 @@ struct HomeView: View {
     @State private var showingProfile = false
     @State private var showingAllExpenses = false
     @State private var showingAddExpense = false
+    @State private var showingMonthPicker = false
+    @State private var tempMonth = Calendar.current.component(.month, from: Date())
+    @State private var tempYear = Calendar.current.component(.year, from: Date())
     @State private var hasLoadedInitialData = false
     
     var body: some View {
@@ -59,6 +62,27 @@ struct HomeView: View {
         .sheet(isPresented: $showingAddExpense) {
             AddExpenseView()
         }
+        .overlay(
+            Group {
+                if showingMonthPicker {
+                    MonthYearPickerDialog(
+                        selectedMonth: $tempMonth,
+                        selectedYear: $tempYear,
+                        isPresented: $showingMonthPicker,
+                        months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                        years: Array((Calendar.current.component(.year, from: Date()) - 5)...(Calendar.current.component(.year, from: Date()) + 1)),
+                        onDone: {
+                            selectedMonth = tempMonth
+                            selectedYear = tempYear
+                            Task {
+                                await viewModel.loadData(month: tempMonth, year: tempYear)
+                            }
+                            showingMonthPicker = false
+                        }
+                    )
+                }
+            }
+        )
         .onAppear {
             // Only load data on first launch
             if !hasLoadedInitialData {
@@ -107,12 +131,19 @@ struct HomeView: View {
                 MonthYearPicker(
                     selectedMonth: $selectedMonth,
                     selectedYear: $selectedYear,
+                    showingPicker: $showingMonthPicker,
                     onChanged: { month, year in
                         Task {
                             await viewModel.loadData(month: month, year: year)
                         }
                     }
                 )
+                .onChange(of: showingMonthPicker) { isShowing in
+                    if isShowing {
+                        tempMonth = selectedMonth
+                        tempYear = selectedYear
+                    }
+                }
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
