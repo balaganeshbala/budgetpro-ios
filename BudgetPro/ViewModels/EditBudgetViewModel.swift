@@ -123,9 +123,10 @@ class EditBudgetViewModel: ObservableObject {
             
             // Process each category individually
             for editableBudget in editableBudgets {
-                let categoryName = editableBudget.category.displayName
+                let categoryDisplayName = editableBudget.category.displayName
+                let categoryRawValue = editableBudget.category.rawValue
                 let newAmount = editableBudget.amount
-                let originalAmount = originalBudgets[categoryName] ?? 0
+                let originalAmount = originalBudgets[categoryDisplayName] ?? 0
                 
                 // Skip if no change
                 if newAmount == originalAmount {
@@ -138,7 +139,7 @@ class EditBudgetViewModel: ObservableObject {
                         try await updateExistingBudget(
                             userId: userId,
                             date: targetDate,
-                            category: categoryName,
+                            category: categoryRawValue,
                             amount: newAmount
                         )
                     } else {
@@ -146,7 +147,7 @@ class EditBudgetViewModel: ObservableObject {
                         try await insertNewBudget(
                             userId: userId,
                             date: targetDate,
-                            category: categoryName,
+                            category: categoryRawValue,
                             amount: newAmount
                         )
                     }
@@ -156,7 +157,7 @@ class EditBudgetViewModel: ObservableObject {
                         try await deleteBudgetCategory(
                             userId: userId,
                             date: targetDate,
-                            category: categoryName
+                            category: categoryRawValue
                         )
                     }
                 }

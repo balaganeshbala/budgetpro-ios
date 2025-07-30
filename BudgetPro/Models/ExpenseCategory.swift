@@ -78,6 +78,12 @@ enum ExpenseCategory: String, CaseIterable {
     }
     
     static func from(categoryName: String) -> ExpenseCategory {
+        // First try to match exact rawValue (new format)
+        if let category = ExpenseCategory(rawValue: categoryName) {
+            return category
+        }
+        
+        // Fall back to displayName matching (for backward compatibility)
         let lowercased = categoryName.lowercased()
         
         switch lowercased {

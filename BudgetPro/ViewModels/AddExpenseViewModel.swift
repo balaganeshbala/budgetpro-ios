@@ -88,7 +88,7 @@ class AddExpenseViewModel: ObservableObject {
             let expenseData = ExpenseInsertData(
                 name: expenseName,
                 amount: amount,
-                category: selectedCategory.displayName,
+                category: selectedCategory.rawValue,
                 date: dateFormatter.string(from: selectedDate),
                 userId: userId.uuidString
             )

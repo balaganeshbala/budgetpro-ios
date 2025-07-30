@@ -31,10 +31,10 @@ struct FloatingLabelTextField: View {
             HStack(spacing: 12) {
                 Image(systemName: iconName)
                     .foregroundColor(.gray)
-                    .font(.system(size: 20))
+                    .font(.sora(_: 20))
                 
                 TextField("", text: $text)
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.sora(_: 16, weight: .medium))
                     .foregroundColor(.black)
                     .keyboardType(keyboardType)
                     .textInputAutocapitalization(textCapitalization)
@@ -55,7 +55,7 @@ struct FloatingLabelTextField: View {
             
             // Floating Label
             Text(label)
-                .font(.system(size: isLabelFloating ? 12 : 16, weight: .medium))
+                .font(.sora(_: isLabelFloating ? 12 : 16, weight: .medium))
                 .foregroundColor(isLabelFloating ? Color(red: 0.2, green: 0.6, blue: 0.5) : .gray)
                 .padding(.horizontal, 4)
                 .background(isLabelFloating ? Color.white : Color.clear)
@@ -88,7 +88,7 @@ struct DatePickerDialog: View {
             
             VStack(spacing: 20) {
                 Text("Select Date")
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(.sora(_: 18, weight: .semibold))
                     .foregroundColor(.black)
                 
                 DatePicker("Date", selection: $selectedDate, displayedComponents: .date)
@@ -101,7 +101,7 @@ struct DatePickerDialog: View {
                         isPresented = false
                     }) {
                         Text("Cancel")
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.sora(_: 16, weight: .medium))
                             .foregroundColor(.gray)
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)
@@ -113,7 +113,7 @@ struct DatePickerDialog: View {
                         isPresented = false
                     }) {
                         Text("Done")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(.sora(_: 16, weight: .semibold))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)

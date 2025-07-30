@@ -92,7 +92,7 @@ class ExpenseDetailsViewModel: ObservableObject {
                 .update([
                     "name": expenseName.trimmingCharacters(in: .whitespacesAndNewlines),
                     "amount": amount.rawValue,
-                    "category": selectedCategory.displayName,
+                    "category": selectedCategory.rawValue,
                     "date": dateString
                 ])
                 .eq("id", value: originalExpense.id)

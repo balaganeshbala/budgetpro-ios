@@ -157,12 +157,15 @@ class CreateBudgetViewModel: ObservableObject {
     private func createBudgetEntries(userId: String) -> [BudgetEntry] {
         let targetDate = getMonthStartDate()
         
-        return categoryBudgets.compactMap { (category, amount) in
+        return categoryBudgets.compactMap { (categoryDisplayName, amount) in
             guard amount > 0 else { return nil }
+            
+            // Find the corresponding ExpenseCategory and use its rawValue
+            let expenseCategory = ExpenseCategory.allCases.first { $0.displayName == categoryDisplayName } ?? .unknown
             
             return BudgetEntry(
                 date: targetDate,  // Changed to use date instead of separate month/year
-                category: category,
+                category: expenseCategory.rawValue,
                 amount: amount,
                 userId: userId
             )

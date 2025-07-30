@@ -38,14 +38,14 @@ struct ExpenseDetailsView: View {
                         presentationMode.wrappedValue.dismiss()
                     }) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 20, weight: .semibold))
+                            .font(.sora(20, weight: .semibold))
                             .foregroundColor(.white)
                     }
                     
                     Spacer()
                     
                     Text("Update Expense")
-                        .font(.system(size: 20, weight: .semibold))
+                        .font(.sora(20, weight: .semibold))
                         .foregroundColor(.white)
                     
                     Spacer()
@@ -54,7 +54,7 @@ struct ExpenseDetailsView: View {
                         showingDeleteAlert = true
                     }) {
                         Image(systemName: "trash")
-                            .font(.system(size: 20, weight: .semibold))
+                            .font(.sora(20, weight: .semibold))
                             .foregroundColor(.white)
                     }
                 }
@@ -68,7 +68,7 @@ struct ExpenseDetailsView: View {
                         // Title
                         HStack {
                             Text("Expense Details")
-                                .font(.system(size: 20, weight: .semibold))
+                                .font(.sora(20, weight: .semibold))
                                 .foregroundColor(.black)
                             Spacer()
                         }
@@ -267,17 +267,17 @@ struct UpdateCategorySelectorMenu: View {
                     .font(.system(size: 20))
                 
                 Text("Category")
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.sora(16, weight: .medium))
                     .foregroundColor(.gray)
                 
                 Spacer()
                 
                 Text(viewModel.selectedCategory.displayName.uppercased())
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.sora(14, weight: .semibold))
                     .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
                 
                 Image(systemName: "chevron.down")
-                    .font(.system(size: 12))
+                    .font(.sora(12))
                     .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
             }
             .padding(.horizontal, 16)
@@ -303,13 +303,13 @@ struct UpdateExpenseDateSelectorField: View {
                         .font(.system(size: 20))
                     
                     Text("Date")
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.sora(16, weight: .medium))
                         .foregroundColor(.gray)
                     
                     Spacer()
                     
                     Text(viewModel.formattedDate)
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.sora(14, weight: .semibold))
                         .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
                 }
                 .padding(.horizontal, 16)
@@ -341,7 +341,7 @@ struct UpdateExpenseButton: View {
                         .scaleEffect(0.8)
                 } else {
                     Text("Update Expense")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.sora(16, weight: .semibold))
                         .foregroundColor(.white)
                 }
             }
@@ -370,7 +370,7 @@ struct UpdateLoadingOverlay: View {
                         .scaleEffect(1.5)
                     
                     Text("Updating expense...")
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.sora(16, weight: .medium))
                         .foregroundColor(.white)
                         .padding(.top, 16)
                 }
