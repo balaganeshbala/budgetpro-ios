@@ -13,5 +13,9 @@
         <string>Sora-Bold.ttf</string>
         <string>Sora-ExtraBold.ttf</string>
 	</array>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleDarkContent</string>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 </dict>
 </plist>

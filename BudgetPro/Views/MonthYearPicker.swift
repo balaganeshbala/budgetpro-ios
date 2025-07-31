@@ -24,7 +24,7 @@ struct MonthYearPicker: View {
     
     private let years: [Int] = {
         let currentYear = Calendar.current.component(.year, from: Date())
-        return Array((currentYear - 5)...(currentYear + 1))
+        return Array(2023...currentYear)
     }()
     
     init(selectedMonth: Binding<Int>, selectedYear: Binding<Int>, showingPicker: Binding<Bool>, onChanged: @escaping (Int, Int) -> Void) {
@@ -95,6 +95,23 @@ struct MonthYearPickerDialog: View {
     let years: [Int]
     let onDone: () -> Void
     
+    private var availableMonths: [Int] {
+        let currentDate = Date()
+        let currentYear = Calendar.current.component(.year, from: currentDate)
+        let currentMonth = Calendar.current.component(.month, from: currentDate)
+        
+        if selectedYear < currentYear {
+            // Past year - all months available
+            return Array(1...12)
+        } else if selectedYear == currentYear {
+            // Current year - only past and current months
+            return Array(1...currentMonth)
+        } else {
+            // Future year - no months available
+            return []
+        }
+    }
+    
     var body: some View {
         ZStack {
             Color.black.opacity(0.4)
@@ -111,7 +128,7 @@ struct MonthYearPickerDialog: View {
                 HStack(spacing: 0) {
                     // Month Picker
                     Picker("Month", selection: $selectedMonth) {
-                        ForEach(1...12, id: \.self) { month in
+                        ForEach(availableMonths, id: \.self) { month in
                             Text(months[month - 1])
                                 .font(.sora(16))
                                 .tag(month)
@@ -120,6 +137,12 @@ struct MonthYearPickerDialog: View {
                     .pickerStyle(WheelPickerStyle())
                     .frame(maxWidth: .infinity)
                     .frame(height: 120)
+                    .onChange(of: selectedYear) { _ in
+                        // Adjust selected month if it's no longer available
+                        if !availableMonths.contains(selectedMonth) && !availableMonths.isEmpty {
+                            selectedMonth = availableMonths.last ?? 1
+                        }
+                    }
                     
                     // Year Picker
                     Picker("Year", selection: $selectedYear) {

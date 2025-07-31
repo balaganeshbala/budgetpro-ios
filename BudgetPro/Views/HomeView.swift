@@ -14,7 +14,12 @@ struct HomeView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
+            ZStack {
+                // White background that extends to status bar
+                Color.white
+                    .ignoresSafeArea(.all, edges: .top)
+                
+                ScrollView {
                 VStack(spacing: 0) {
                     // Header with profile and month selector
                     headerView
@@ -42,8 +47,9 @@ struct HomeView: View {
                     .padding(.horizontal, 16)
                     .padding(.top, 20)
                 }
+                .background(Color.gray.opacity(0.1))
+                }
             }
-            .background(Color.gray.opacity(0.1))
             .navigationBarHidden(true)
             .refreshable {
                 await viewModel.refreshData(month: selectedMonth, year: selectedYear)
@@ -70,7 +76,7 @@ struct HomeView: View {
                         selectedYear: $tempYear,
                         isPresented: $showingMonthPicker,
                         months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                        years: Array((Calendar.current.component(.year, from: Date()) - 5)...(Calendar.current.component(.year, from: Date()) + 1)),
+                        years: Array(2023...Calendar.current.component(.year, from: Date())),
                         onDone: {
                             selectedMonth = tempMonth
                             selectedYear = tempYear
@@ -148,9 +154,10 @@ struct HomeView: View {
             .padding(.horizontal, 16)
             .padding(.top, 12)
             .padding(.bottom, 14)
+            
+            Divider()
         }
         .background(Color.white)
-        .shadow(color: .gray.opacity(0.2), radius: 2, x: 0, y: 1)
     }
     
     // MARK: - Budget Overview Card
@@ -227,7 +234,7 @@ struct HomeView: View {
                                     .foregroundColor(.gray)
                                 
                                 Text("₹\(formatAmount(max(0, viewModel.totalBudget - viewModel.totalSpent)))")
-                                    .font(.sora(36, weight: .bold))
+                                    .font(.sora(30, weight: .bold))
                                     .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : Color(red: 0.2, green: 0.6, blue: 0.5))
                             }
                             
