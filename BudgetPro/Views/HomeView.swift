@@ -124,11 +124,11 @@ struct HomeView: View {
                     showingProfile = true
                 }) {
                     Circle()
-                        .fill(Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.2))
+                        .fill(Color.primary.opacity(0.2))
                         .frame(width: 46, height: 46)
                         .overlay(
                             Image(systemName: "person.fill")
-                                .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                                .foregroundColor(Color.primary)
                                 .font(.system(size: 20))
                         )
                 }
@@ -184,15 +184,15 @@ struct HomeView: View {
                             HStack(spacing: 4) {
                                 Image(systemName: "pencil")
                                     .font(.system(size: 12))
-                                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
+                                    .foregroundColor(Color.secondary)
                                 
                                 Text("Edit")
                                     .font(.sora(14))
-                                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
+                                    .foregroundColor(Color.secondary)
                             }
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(Color(red: 1.0, green: 0.4, blue: 0.4).opacity(0.1))
+                            .background(Color.secondary.opacity(0.1))
                             .cornerRadius(16)
                         }
                     }
@@ -220,7 +220,7 @@ struct HomeView: View {
                                 
                                 Text("₹\(formatAmount(max(0, viewModel.totalBudget - viewModel.totalSpent)))")
                                     .font(.sora(30, weight: .bold))
-                                    .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : Color(red: 0.2, green: 0.6, blue: 0.5))
+                                    .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : Color.primary)
                             }
                             
                             Spacer()
@@ -229,8 +229,8 @@ struct HomeView: View {
                         .background(
                             LinearGradient(
                                 gradient: Gradient(colors: [
-                                    viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.05) : Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.05),
-                                    viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.1) : Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.1)
+                                    viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.05) : Color.primary.opacity(0.05),
+                                    viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.1) : Color.primary.opacity(0.1)
                                 ]),
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
@@ -239,7 +239,7 @@ struct HomeView: View {
                         .cornerRadius(16)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.2) : Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.2), lineWidth: 1)
+                                .stroke(viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.2) : Color.primary.opacity(0.2), lineWidth: 1)
                         )
                     }
                     
@@ -323,13 +323,13 @@ struct HomeView: View {
                         HStack {
                             Text("View Budget Details")
                                 .font(.sora(16, weight: .medium))
-                                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
+                                .foregroundColor(Color.secondary)
                             
                             Spacer()
                             
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
+                                .foregroundColor(Color.secondary)
                         }
                         .padding(.vertical, 16)
                         .padding(.horizontal, 4)
@@ -345,61 +345,110 @@ struct HomeView: View {
     
     // MARK: - Recent Expenses Section
     private var recentExpensesSection: some View {
-        VStack(spacing: 12) {
-            SectionHeader(title: "Expenses", showMoreButton: false)
-            
+        VStack(spacing: 16) {
             if viewModel.recentExpenses.isEmpty {
-                EmptyStateCard(
-                    icon: "creditcard",
-                    title: "No expenses yet",
-                    subtitle: "Add your first expense to track spending",
-                    buttonTitle: "Add Expense",
-                    action: {
-                        showingAddExpense = true
-                    }
-                )
-            } else {
-                VStack(spacing: 0) {
-                    ForEach(Array(viewModel.recentExpenses.prefix(5).enumerated()), id: \.offset) { index, expense in
-                        ExpenseRow(expense: expense)
+                // Header inside empty state card
+                VStack(spacing: 16) {
+                    // Header
+                    HStack {
+                        Text("Expenses")
+                            .font(.sora(18, weight: .semibold))
+                            .foregroundColor(.black)
                         
-                        if index < min(viewModel.recentExpenses.count - 1, 4) {
-                            Divider()
-                                .padding(.horizontal, 16)
-                        }
+                        Spacer()
                     }
                     
-                    // Add New Expense Button
-                    NavigationLink(destination: AddExpenseView()) {
-                        HStack {
-                            Spacer()
-                            Image(systemName: "plus")
-                                .font(.system(size: 12, weight: .semibold))
-                                .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
-                            Text("Add New")
-                                .font(.sora(14, weight: .medium))
-                                .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
-                            Spacer()
+                    // Empty state content
+                    VStack(spacing: 16) {
+                        Image(systemName: "creditcard")
+                            .font(.system(size: 40))
+                            .foregroundColor(.gray.opacity(0.6))
+                        
+                        VStack(spacing: 8) {
+                            Text("No expenses yet")
+                                .font(.sora(16, weight: .medium))
+                                .foregroundColor(.gray)
+                            
+                            Text("Add your first expense to track spending")
+                                .font(.sora(14))
+                                .foregroundColor(.gray.opacity(0.8))
+                                .multilineTextAlignment(.center)
                         }
-                        .padding(16)
-                        .background(Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.05))
-                    }
-                    
-                    if viewModel.recentExpenses.count > 5 {
+                        
                         Button(action: {
-                            showingAllExpenses = true
+                            showingAddExpense = true
                         }) {
+                            Text("Add Expense")
+                                .font(.sora(14, weight: .medium))
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 24)
+                                .padding(.vertical, 12)
+                                .background(Color.secondary)
+                                .cornerRadius(8)
+                        }
+                    }
+                    .padding(.vertical, 16)
+                }
+                .padding(16)
+                .background(Color.white)
+                .cornerRadius(16)
+                .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+            } else {
+                VStack(spacing: 16) {
+                    // Header
+                    HStack {
+                        Text("Expenses")
+                            .font(.sora(18, weight: .semibold))
+                            .foregroundColor(.black)
+                        
+                        Spacer()
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                    
+                    // Expenses list
+                    VStack(spacing: 0) {
+                        ForEach(Array(viewModel.recentExpenses.prefix(5).enumerated()), id: \.offset) { index, expense in
+                            ExpenseRow(expense: expense)
+                            
+                            if index < min(viewModel.recentExpenses.count - 1, 4) {
+                                Divider()
+                                    .padding(.horizontal, 16)
+                            }
+                        }
+                        
+                        // Add New Expense Button
+                        NavigationLink(destination: AddExpenseView()) {
                             HStack {
                                 Spacer()
-                                Text("More Details")
+                                Image(systemName: "plus")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(Color.primary)
+                                Text("Add New")
                                     .font(.sora(14, weight: .medium))
-                                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
+                                    .foregroundColor(Color.primary)
                                 Spacer()
                             }
                             .padding(16)
+                            .background(Color.primary.opacity(0.05))
+                        }
+                        
+                        if viewModel.recentExpenses.count > 5 {
+                            Button(action: {
+                                showingAllExpenses = true
+                            }) {
+                                HStack {
+                                    Spacer()
+                                    Text("More Details")
+                                        .font(.sora(14, weight: .medium))
+                                        .foregroundColor(Color.secondary)
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 12))
+                                        .foregroundColor(Color.secondary)
+                                    Spacer()
+                                }
+                                .padding(16)
+                            }
                         }
                     }
                 }
@@ -412,45 +461,94 @@ struct HomeView: View {
     
     // MARK: - Recent Incomes Section
     private var recentIncomesSection: some View {
-        VStack(spacing: 12) {
-            SectionHeader(title: "Incomes", showMoreButton: false)
-            
+        VStack(spacing: 16) {
             if viewModel.recentIncomes.isEmpty {
-                EmptyStateCard(
-                    icon: "dollarsign.circle",
-                    title: "No incomes yet",
-                    subtitle: "Add your income sources to track earnings",
-                    buttonTitle: "Add Income",
-                    action: {
-                        // Navigate to add income
-                    }
-                )
-            } else {
-                VStack(spacing: 0) {
-                    ForEach(Array(viewModel.recentIncomes.prefix(5).enumerated()), id: \.offset) { index, income in
-                        IncomeRow(income: income)
+                // Header inside empty state card
+                VStack(spacing: 16) {
+                    // Header
+                    HStack {
+                        Text("Incomes")
+                            .font(.sora(18, weight: .semibold))
+                            .foregroundColor(.black)
                         
-                        if index < min(viewModel.recentIncomes.count - 1, 4) {
-                            Divider()
-                                .padding(.horizontal, 16)
-                        }
+                        Spacer()
                     }
                     
-                    if viewModel.recentIncomes.count > 5 {
+                    // Empty state content
+                    VStack(spacing: 16) {
+                        Image(systemName: "dollarsign.circle")
+                            .font(.system(size: 40))
+                            .foregroundColor(.gray.opacity(0.6))
+                        
+                        VStack(spacing: 8) {
+                            Text("No incomes yet")
+                                .font(.sora(16, weight: .medium))
+                                .foregroundColor(.gray)
+                            
+                            Text("Add your income sources to track earnings")
+                                .font(.sora(14))
+                                .foregroundColor(.gray.opacity(0.8))
+                                .multilineTextAlignment(.center)
+                        }
+                        
                         Button(action: {
-                            // Navigate to all incomes
+                            // Navigate to add income
                         }) {
-                            HStack {
-                                Spacer()
-                                Text("More Details")
-                                    .font(.sora(14, weight: .medium))
-                                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
-                                Spacer()
+                            Text("Add Income")
+                                .font(.sora(14, weight: .medium))
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 24)
+                                .padding(.vertical, 12)
+                                .background(Color.secondary)
+                                .cornerRadius(8)
+                        }
+                    }
+                    .padding(.vertical, 16)
+                }
+                .padding(16)
+                .background(Color.white)
+                .cornerRadius(16)
+                .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+            } else {
+                VStack(spacing: 16) {
+                    // Header
+                    HStack {
+                        Text("Incomes")
+                            .font(.sora(18, weight: .semibold))
+                            .foregroundColor(.black)
+                        
+                        Spacer()
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                    
+                    // Incomes list
+                    VStack(spacing: 0) {
+                        ForEach(Array(viewModel.recentIncomes.prefix(5).enumerated()), id: \.offset) { index, income in
+                            IncomeRow(income: income)
+                            
+                            if index < min(viewModel.recentIncomes.count - 1, 4) {
+                                Divider()
+                                    .padding(.horizontal, 16)
                             }
-                            .padding(16)
+                        }
+                        
+                        if viewModel.recentIncomes.count > 5 {
+                            Button(action: {
+                                // Navigate to all incomes
+                            }) {
+                                HStack {
+                                    Spacer()
+                                    Text("More Details")
+                                        .font(.sora(14, weight: .medium))
+                                        .foregroundColor(Color.secondary)
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 12))
+                                        .foregroundColor(Color.secondary)
+                                    Spacer()
+                                }
+                                .padding(16)
+                            }
                         }
                     }
                 }
@@ -463,23 +561,33 @@ struct HomeView: View {
     
     // MARK: - Options Section
     private var optionsSection: some View {
-        VStack(spacing: 12) {
-            SectionHeader(title: "Quick Actions", showMoreButton: false)
+        VStack(spacing: 16) {
+            // Header
+            HStack {
+                Text("Quick Actions")
+                    .font(.sora(18, weight: .semibold))
+                    .foregroundColor(.black)
+                
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
             
+            // Options content
             VStack(spacing: 0) {
                 OptionRow(
                     icon: "chart.pie",
-                    iconColor: Color(red: 0.2, green: 0.6, blue: 0.5),
+                    iconColor: Color.primary,
                     title: "Savings Analysis",
                     action: {
                         // Navigate to savings analysis
                     }
                 )
             }
-            .background(Color.white)
-            .cornerRadius(16)
-            .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
         }
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     // MARK: - Skeleton Loading
@@ -585,7 +693,7 @@ struct HomeView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
-                    .background(Color(red: 1.0, green: 0.4, blue: 0.4))
+                    .background(Color.secondary)
                     .cornerRadius(8)
             }
         }
@@ -619,11 +727,11 @@ struct SectionHeader: View {
                     HStack(spacing: 4) {
                         Text("More")
                             .font(.sora(14))
-                            .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                            .foregroundColor(Color.primary)
                         
                         Image(systemName: "chevron.right")
                             .font(.system(size: 12))
-                            .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                            .foregroundColor(Color.primary)
                     }
                 }
             }
@@ -662,7 +770,7 @@ struct EmptyStateCard: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
-                    .background(Color(red: 1.0, green: 0.4, blue: 0.4))
+                    .background(Color.secondary)
                     .cornerRadius(8)
             }
         }
@@ -680,9 +788,9 @@ struct ExpenseRow: View {
     
     var body: some View {
         NavigationLink(destination: ExpenseDetailsView(expense: expense)) {
-            HStack {
+            HStack(spacing: 10) {
                 // Category icon
-                Circle()
+                RoundedRectangle(cornerRadius: 10, style: .circular)
                     .fill(expense.categoryColor.opacity(0.2))
                     .frame(width: 40, height: 40)
                     .overlay(
@@ -705,7 +813,10 @@ struct ExpenseRow: View {
                 
                 Text("₹\(formatExpenseAmount(expense.amount))")
                     .font(.sora(14, weight: .semibold))
-                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
+                
+                Image(systemName: "chevron.right")
+                    .font(.sora(14, weight: .semibold))
+                    .foregroundStyle(Color.gray)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -730,11 +841,11 @@ struct IncomeRow: View {
             HStack {
                 // Category icon
                 Circle()
-                    .fill(Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.2))
+                    .fill(Color.primary.opacity(0.2))
                     .frame(width: 40, height: 40)
                     .overlay(
                         Image(systemName: income.categoryIcon)
-                            .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                            .foregroundColor(Color.primary)
                             .font(.system(size: 16))
                     )
                 
@@ -752,7 +863,7 @@ struct IncomeRow: View {
                 
                 Text("₹\(formatIncomeAmount(income.amount))")
                     .font(.sora(14, weight: .semibold))
-                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                    .foregroundColor(Color.primary)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)

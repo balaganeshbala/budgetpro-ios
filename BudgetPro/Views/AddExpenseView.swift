@@ -12,6 +12,7 @@ struct AddExpenseView: View {
     @StateObject private var viewModel = AddExpenseViewModel()
     @Environment(\.presentationMode) var presentationMode
     @State private var showingDatePicker = false
+    @State private var showingCategoryPicker = false
     @State private var showingSuccessAlert = false
     @State private var showingErrorAlert = false
     @FocusState private var focusedField: Field?
@@ -23,40 +24,43 @@ struct AddExpenseView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [Color(red: 0.2, green: 0.6, blue: 0.5), Color(red: 0.18, green: 0.54, blue: 0.45)]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-            
-            ScrollView {
-                VStack(spacing: 0) {
-                    // Custom Navigation Bar
-                    HStack {
-                        Button(action: {
-                            presentationMode.wrappedValue.dismiss()
-                        }) {
-                            Image(systemName: "chevron.left")
-                                .font(.sora(20, weight: .semibold))
-                                .foregroundColor(.white)
-                        }
-                        
-                        Spacer()
-                        
-                        Text("Add Expense")
+            VStack(spacing: 0) {
+                // Fixed Navigation Bar
+                HStack {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Image(systemName: "chevron.left")
                             .font(.sora(20, weight: .semibold))
                             .foregroundColor(.white)
-                        
-                        Spacer()
-                        
-                        // Invisible button for balance
-                        Button("") { }
-                            .opacity(0)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 10)
-                    .padding(.bottom, 30)
+                    
+                    Spacer()
+                    
+                    Text("Add Expense")
+                        .font(.sora(20, weight: .semibold))
+                        .foregroundColor(.white)
+                    
+                    Spacer()
+                    
+                    // Invisible button for balance
+                    Button("") { }
+                        .opacity(0)
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 10)
+                .padding(.bottom, 30)
+                .background(Color.primary)
+                
+                // Scrollable Content
+                ScrollView {
+                    Color.clear
+                        .frame(height: 0)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            // Dismiss keyboard when tapping on scroll area
+                            focusedField = nil
+                        }
                     
                     // Content Card
                     VStack(spacing: 0) {
@@ -77,7 +81,11 @@ struct AddExpenseView: View {
                             ExpenseAmountInputField(viewModel: viewModel, focusedField: $focusedField)
                             
                             // Category Selector
-                            ExpenseCategorySelectorField(viewModel: viewModel)
+                            ExpenseCategorySelectorField(
+                                viewModel: viewModel,
+                                focusedField: $focusedField,
+                                showingCategoryPicker: $showingCategoryPicker
+                            )
                             
                             // Date Selector
                             ExpenseDateSelectorField(
@@ -85,18 +93,21 @@ struct AddExpenseView: View {
                                 showingDatePicker: $showingDatePicker
                             )
                             
-                            Spacer()
-                            
                             // Add Expense Button
                             AddExpenseButton(viewModel: viewModel)
                             
                             Spacer(minLength: 30)
                         }
                         .padding(.horizontal, 24)
+                        .frame(minHeight: UIScreen.main.bounds.height - 150)
                     }
                     .background(Color.white)
                     .cornerRadius(20, corners: [.topLeft, .topRight])
                     .ignoresSafeArea(.container, edges: .bottom)
+                    .onTapGesture {
+                        // Dismiss keyboard when tapping on the content area
+                        focusedField = nil
+                    }
                 }
             }
             
@@ -112,6 +123,13 @@ struct AddExpenseView: View {
                     DatePickerDialog(
                         selectedDate: $viewModel.selectedDate,
                         isPresented: $showingDatePicker
+                    )
+                }
+                
+                if showingCategoryPicker {
+                    CategoryPickerDialog(
+                        viewModel: viewModel,
+                        isPresented: $showingCategoryPicker
                     )
                 }
             }
@@ -214,10 +232,42 @@ struct ExpenseAmountInputField: View {
 
 struct ExpenseCategorySelectorField: View {
     @ObservedObject var viewModel: AddExpenseViewModel
+    var focusedField: FocusState<AddExpenseView.Field?>.Binding
+    @Binding var showingCategoryPicker: Bool
     
     var body: some View {
         VStack(spacing: 0) {
-            CategorySelectorMenu(viewModel: viewModel)
+            Button(action: {
+                // Dismiss keyboard immediately when tapping
+                focusedField.wrappedValue = nil
+                // Show category picker
+                showingCategoryPicker = true
+            }) {
+                HStack(spacing: 12) {
+                    Image(systemName: "triangle")
+                        .foregroundColor(.gray)
+                        .font(.system(size: 20))
+                    
+                    Text("Category")
+                        .font(.sora(16, weight: .medium))
+                        .foregroundColor(.gray)
+                    
+                    Spacer()
+                    
+                    Text(viewModel.selectedCategory.displayName.uppercased())
+                        .font(.sora(14, weight: .semibold))
+                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                    
+                    Image(systemName: "chevron.down")
+                        .font(.sora(12))
+                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 16)
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(12)
+            }
+            .buttonStyle(PlainButtonStyle())
         }
     }
 }
@@ -278,6 +328,8 @@ struct ExpenseDateSelectorField: View {
     var body: some View {
         VStack(spacing: 0) {
             Button(action: {
+                // Dismiss keyboard
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                 showingDatePicker = true
             }) {
                 HStack(spacing: 12) {
@@ -358,6 +410,91 @@ struct LoadingOverlay: View {
                 .background(Color.black.opacity(0.8))
                 .cornerRadius(16)
             )
+    }
+}
+
+// MARK: - Category Picker Dialog
+struct CategoryPickerDialog: View {
+    @ObservedObject var viewModel: AddExpenseViewModel
+    @Binding var isPresented: Bool
+    
+    var body: some View {
+        ZStack {
+            // Background overlay
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    isPresented = false
+                }
+            
+            // Category picker content
+            VStack(spacing: 0) {
+                // Header
+                HStack {
+                    Text("Select Category")
+                        .font(.sora(20, weight: .semibold))
+                        .foregroundColor(.black)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        isPresented = false
+                    }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.gray)
+                    }
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 24)
+                .padding(.bottom, 20)
+                
+                // Categories list
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        ForEach(viewModel.categories, id: \.self) { category in
+                            HStack(spacing: 16) {
+                                Image(systemName: category.iconName)
+                                    .foregroundColor(category.color)
+                                    .font(.system(size: 20))
+                                    .frame(width: 24, height: 24)
+                                
+                                Text(category.displayName)
+                                    .font(.sora(16, weight: .medium))
+                                    .foregroundColor(.black)
+                                
+                                Spacer()
+                                
+                                if viewModel.selectedCategory == category {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(Color.primary)
+                                        .font(.system(size: 16, weight: .semibold))
+                                }
+                            }
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 16)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                viewModel.selectedCategory = category
+                                viewModel.validateForm()
+                                isPresented = false
+                            }
+                            
+                            if category != viewModel.categories.last {
+                                Divider()
+                                    .padding(.horizontal, 24)
+                            }
+                        }
+                    }
+                }
+                .padding(.bottom, 24)
+            }
+            .background(Color.white)
+            .cornerRadius(20)
+            .padding(.horizontal, 20)
+            .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 5)
+        }
     }
 }
 

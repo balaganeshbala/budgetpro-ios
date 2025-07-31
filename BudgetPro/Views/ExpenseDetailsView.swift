@@ -7,6 +7,7 @@ struct ExpenseDetailsView: View {
     @State private var showingUpdateAlert = false
     @State private var showingSuccessAlert = false
     @State private var showingDatePicker = false
+    @State private var showingCategoryPicker = false
     @FocusState private var focusedField: Field?
     
     enum Field {
@@ -23,17 +24,9 @@ struct ExpenseDetailsView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [Color(red: 0.2, green: 0.6, blue: 0.5), Color(red: 0.18, green: 0.54, blue: 0.45)]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-            
-            ScrollView {
-                VStack(spacing: 0) {
-                    // Custom Navigation Bar
-                    HStack {
+            VStack(spacing: 0) {
+                // Fixed Navigation Bar
+                HStack {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
@@ -61,44 +54,63 @@ struct ExpenseDetailsView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 10)
                 .padding(.bottom, 30)
-                
-                // Content Card
-                VStack(spacing: 0) {
-                    VStack(spacing: 24) {
-                        // Title
-                        HStack {
-                            Text("Expense Details")
-                                .font(.sora(20, weight: .semibold))
-                                .foregroundColor(.black)
-                            Spacer()
+                .background(Color.primary)
+                        
+                ScrollView {
+                    Color.clear
+                        .frame(height: 0)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            // Dismiss keyboard when tapping on scroll area
+                            focusedField = nil
                         }
-                        .padding(.top, 24)
-                        
-                        // Expense Name Field
-                        UpdateExpenseNameInputField(viewModel: viewModel, focusedField: $focusedField)
-                        
-                        // Amount Field
-                        UpdateExpenseAmountInputField(viewModel: viewModel, focusedField: $focusedField)
-                        
-                        // Category Selector
-                        UpdateExpenseCategorySelectorField(viewModel: viewModel)
-                        
-                        // Date Selector
-                        UpdateExpenseDateSelectorField(
-                            viewModel: viewModel,
-                            showingDatePicker: $showingDatePicker
-                        )
-                        
-                        // Update Expense Button
-                        UpdateExpenseButton(viewModel: viewModel, showingUpdateAlert: $showingUpdateAlert)
-                        
-                        Spacer(minLength: 30)
+                    
+                    // Content Card
+                    VStack(spacing: 0) {
+                        VStack(spacing: 24) {
+                            // Title
+                            HStack {
+                                Text("Expense Details")
+                                    .font(.sora(20, weight: .semibold))
+                                    .foregroundColor(.black)
+                                Spacer()
+                            }
+                            .padding(.top, 24)
+                            
+                            // Expense Name Field
+                            UpdateExpenseNameInputField(viewModel: viewModel, focusedField: $focusedField)
+                            
+                            // Amount Field
+                            UpdateExpenseAmountInputField(viewModel: viewModel, focusedField: $focusedField)
+                            
+                            // Category Selector
+                            UpdateExpenseCategorySelectorField(
+                                viewModel: viewModel,
+                                focusedField: $focusedField,
+                                showingCategoryPicker: $showingCategoryPicker
+                            )
+                            
+                            // Date Selector
+                            UpdateExpenseDateSelectorField(
+                                viewModel: viewModel,
+                                showingDatePicker: $showingDatePicker
+                            )
+                            
+                            // Update Expense Button
+                            UpdateExpenseButton(viewModel: viewModel, showingUpdateAlert: $showingUpdateAlert)
+                            
+                            Spacer(minLength: 30)
+                        }
+                        .padding(.horizontal, 24)
+                        .frame(minHeight: UIScreen.main.bounds.height - 150)
                     }
-                    .padding(.horizontal, 24)
-                }
-                .background(Color.white)
-                .cornerRadius(20, corners: [.topLeft, .topRight])
-                .ignoresSafeArea(.container, edges: .bottom)
+                    .background(Color.white)
+                    .cornerRadius(20, corners: [.topLeft, .topRight])
+                    .ignoresSafeArea(.container, edges: .bottom)
+                    .onTapGesture {
+                        // Dismiss keyboard when tapping on the content area
+                        focusedField = nil
+                    }
                 }
             }
             
@@ -114,6 +126,13 @@ struct ExpenseDetailsView: View {
                     DatePickerDialog(
                         selectedDate: $viewModel.selectedDate,
                         isPresented: $showingDatePicker
+                    )
+                }
+                
+                if showingCategoryPicker {
+                    UpdateCategoryPickerDialog(
+                        viewModel: viewModel,
+                        isPresented: $showingCategoryPicker
                     )
                 }
             }
@@ -231,10 +250,42 @@ struct UpdateExpenseAmountInputField: View {
 
 struct UpdateExpenseCategorySelectorField: View {
     @ObservedObject var viewModel: ExpenseDetailsViewModel
+    var focusedField: FocusState<ExpenseDetailsView.Field?>.Binding
+    @Binding var showingCategoryPicker: Bool
     
     var body: some View {
         VStack(spacing: 0) {
-            UpdateCategorySelectorMenu(viewModel: viewModel)
+            Button(action: {
+                // Dismiss keyboard immediately when tapping
+                focusedField.wrappedValue = nil
+                // Show category picker
+                showingCategoryPicker = true
+            }) {
+                HStack(spacing: 12) {
+                    Image(systemName: "triangle")
+                        .foregroundColor(.gray)
+                        .font(.system(size: 20))
+                    
+                    Text("Category")
+                        .font(.sora(16, weight: .medium))
+                        .foregroundColor(.gray)
+                    
+                    Spacer()
+                    
+                    Text(viewModel.selectedCategory.displayName.uppercased())
+                        .font(.sora(14, weight: .semibold))
+                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                    
+                    Image(systemName: "chevron.down")
+                        .font(.sora(12))
+                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 16)
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(12)
+            }
+            .buttonStyle(PlainButtonStyle())
         }
     }
 }
@@ -295,6 +346,8 @@ struct UpdateExpenseDateSelectorField: View {
     var body: some View {
         VStack(spacing: 0) {
             Button(action: {
+                // Dismiss keyboard
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                 showingDatePicker = true
             }) {
                 HStack(spacing: 12) {
@@ -381,6 +434,91 @@ struct UpdateLoadingOverlay: View {
     }
 }
 
+
+// MARK: - Update Category Picker Dialog
+struct UpdateCategoryPickerDialog: View {
+    @ObservedObject var viewModel: ExpenseDetailsViewModel
+    @Binding var isPresented: Bool
+    
+    var body: some View {
+        ZStack {
+            // Background overlay
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    isPresented = false
+                }
+            
+            // Category picker content
+            VStack(spacing: 0) {
+                // Header
+                HStack {
+                    Text("Select Category")
+                        .font(.sora(20, weight: .semibold))
+                        .foregroundColor(.black)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        isPresented = false
+                    }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.gray)
+                    }
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 24)
+                .padding(.bottom, 20)
+                
+                // Categories list
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        ForEach(ExpenseCategory.allCases, id: \.self) { category in
+                            HStack(spacing: 16) {
+                                Image(systemName: category.iconName)
+                                    .foregroundColor(category.color)
+                                    .font(.system(size: 20))
+                                    .frame(width: 24, height: 24)
+                                
+                                Text(category.displayName)
+                                    .font(.sora(16, weight: .medium))
+                                    .foregroundColor(.black)
+                                
+                                Spacer()
+                                
+                                if viewModel.selectedCategory == category {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(Color.primary)
+                                        .font(.system(size: 16, weight: .semibold))
+                                }
+                            }
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 16)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                viewModel.selectedCategory = category
+                                viewModel.validateForm()
+                                isPresented = false
+                            }
+                            
+                            if category != ExpenseCategory.allCases.last {
+                                Divider()
+                                    .padding(.horizontal, 24)
+                            }
+                        }
+                    }
+                }
+                .padding(.bottom, 24)
+            }
+            .background(Color.white)
+            .cornerRadius(20)
+            .padding(.horizontal, 20)
+            .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 5)
+        }
+    }
+}
 
 struct ExpenseDetailsView_Previews: PreviewProvider {
     static var previews: some View {
