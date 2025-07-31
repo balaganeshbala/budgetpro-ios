@@ -15,39 +15,41 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                // White background that extends to status bar
-                Color.white
-                    .ignoresSafeArea(.all, edges: .top)
+                // Gray background that extends to full screen
+                Color.gray.opacity(0.1)
+                    .ignoresSafeArea(.all)
                 
-                ScrollView {
                 VStack(spacing: 0) {
                     // Header with profile and month selector
                     headerView
                     
-                    // Main content
-                    LazyVStack(spacing: 20) {
-                        // Budget Overview Card
-                        if viewModel.isLoading {
-                            budgetSkeletonCard
-                        } else {
-                            budgetOverviewCard
+                    // Main content in ScrollView
+                    ScrollView {
+                        LazyVStack(spacing: 20) {
+                            // Budget Overview Card
+                            if viewModel.isLoading {
+                                budgetSkeletonCard
+                            } else {
+                                budgetOverviewCard
+                            }
+                            
+                            // Only show other sections if budget exists
+                            if !viewModel.isLoading && !viewModel.budgetCategories.isEmpty {
+                                // Recent Expenses Section
+                                recentExpensesSection
+                                
+                                // Recent Incomes Section
+                                recentIncomesSection
+                                
+                                // Options/Features Section
+                                optionsSection
+                            }
+                            
+                            Spacer(minLength: 100)
                         }
-                        
-                        // Recent Expenses Section
-                        recentExpensesSection
-                        
-                        // Recent Incomes Section
-                        recentIncomesSection
-                        
-                        // Options/Features Section
-                        optionsSection
-                        
-                        Spacer(minLength: 100)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 20)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 20)
-                }
-                .background(Color.gray.opacity(0.1))
                 }
             }
             .navigationBarHidden(true)
@@ -172,56 +174,39 @@ struct HomeView: View {
                 Spacer()
                 
                 if !viewModel.budgetCategories.isEmpty {
-                    // Edit Budget Button
-                    NavigationLink(destination: EditBudgetView(
-                        budgetCategories: viewModel.budgetCategories,
-                        month: selectedMonth,
-                        year: selectedYear
-                    )) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "pencil")
-                                .font(.system(size: 12))
-                                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
-                            
-                            Text("Edit")
-                                .font(.sora(14))
-                                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
+                    // Edit Budget Button - Only show for current and future months
+                    if !isPastMonth(month: selectedMonth, year: selectedYear) {
+                        NavigationLink(destination: EditBudgetView(
+                            budgetCategories: viewModel.budgetCategories,
+                            month: selectedMonth,
+                            year: selectedYear
+                        )) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "pencil")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
+                                
+                                Text("Edit")
+                                    .font(.sora(14))
+                                    .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color(red: 1.0, green: 0.4, blue: 0.4).opacity(0.1))
+                            .cornerRadius(16)
                         }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(Color(red: 1.0, green: 0.4, blue: 0.4).opacity(0.1))
-                        .cornerRadius(16)
                     }
                 }
             }
             
             if viewModel.budgetCategories.isEmpty {
-                // No Budget State
-                VStack(spacing: 16) {
-                    Image(systemName: "chart.pie")
-                        .font(.system(size: 40))
-                        .foregroundColor(.gray.opacity(0.6))
-                    
-                    Text("No budget created yet")
-                        .font(.sora(16, weight: .medium))
-                        .foregroundColor(.gray)
-                    
-                    Text("Create your first budget to track your expenses")
-                        .font(.sora(14))
-                        .foregroundColor(.gray.opacity(0.8))
-                        .multilineTextAlignment(.center)
-                    
-                    NavigationLink(destination: CreateBudgetView(month: selectedMonth, year: selectedYear)) {
-                        Text("Create Budget")
-                            .font(.sora(14, weight: .medium))
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 24)
-                            .padding(.vertical, 12)
-                            .background(Color(red: 1.0, green: 0.4, blue: 0.4))
-                            .cornerRadius(8)
-                    }
+                if isPastMonth(month: selectedMonth, year: selectedYear) {
+                    // Past month no budget state
+                    pastMonthNoBudgetState
+                } else {
+                    // Current/future month no budget state
+                    currentMonthNoBudgetState
                 }
-                .padding(.vertical, 20)
             } else {
                 // Budget exists - show summary with remaining amount highlighted on top
                 VStack(spacing: 20) {
@@ -538,6 +523,73 @@ struct HomeView: View {
         formatter.minimumFractionDigits = 0
         formatter.maximumFractionDigits = 0
         return formatter.string(from: NSNumber(value: amount)) ?? "0"
+    }
+    
+    private func isPastMonth(month: Int, year: Int) -> Bool {
+        let currentDate = Date()
+        let calendar = Calendar.current
+        let currentMonth = calendar.component(.month, from: currentDate)
+        let currentYear = calendar.component(.year, from: currentDate)
+        
+        if year < currentYear {
+            return true
+        } else if year == currentYear && month < currentMonth {
+            return true
+        }
+        return false
+    }
+    
+    // MARK: - Past Month No Budget State
+    private var pastMonthNoBudgetState: some View {
+        VStack(spacing: 16) {
+            Spacer(minLength: 20)
+            
+            Image(systemName: "clock.arrow.circlepath")
+                .font(.system(size: 64))
+                .foregroundColor(.gray)
+            
+            Text("No Budget Data Available")
+                .font(.sora(18, weight: .semibold))
+                .foregroundColor(.black)
+            
+            Text("Budget data for past months cannot be created. Please select the current month to set a budget.")
+                .font(.sora(14))
+                .foregroundColor(.gray)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 8)
+            
+            Spacer(minLength: 16)
+        }
+        .padding(.all, 16)
+    }
+    
+    // MARK: - Current Month No Budget State
+    private var currentMonthNoBudgetState: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "chart.pie")
+                .font(.system(size: 40))
+                .foregroundColor(.gray.opacity(0.6))
+            
+            Text("No budget created yet")
+                .font(.sora(16, weight: .medium))
+                .foregroundColor(.gray)
+            
+            Text("Create your first budget to track your expenses")
+                .font(.sora(14))
+                .foregroundColor(.gray.opacity(0.8))
+                .multilineTextAlignment(.center)
+            
+            NavigationLink(destination: CreateBudgetView(month: selectedMonth, year: selectedYear)) {
+                Text("Create Budget")
+                    .font(.sora(14, weight: .medium))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .background(Color(red: 1.0, green: 0.4, blue: 0.4))
+                    .cornerRadius(8)
+            }
+        }
+        .padding(.vertical, 20)
     }
 }
 
