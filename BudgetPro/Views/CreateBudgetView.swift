@@ -174,7 +174,7 @@ struct CreateBudgetView: View {
             .padding(.horizontal, 16)
             
             LazyVStack(spacing: 12) {
-                ForEach(ExpenseCategory.allCases, id: \.self) { category in
+                ForEach(ExpenseCategory.userSelectableCategories, id: \.self) { category in
                     BudgetCategoryInput(
                         category: category,
                         amount: viewModel.categoryBudgets[category.displayName] ?? 0,

@@ -29,11 +29,7 @@ class EditBudgetViewModel: ObservableObject {
         
         for budgetCategory in budgetCategories {
             // Match by display name since that's what's stored in the normalized budget data
-            if let expenseCategory = ExpenseCategory.allCases.first(where: { $0.displayName == budgetCategory.name }) {
-                // Skip the Unknown category from budget planning
-                if expenseCategory == .unknown {
-                    continue
-                }
+            if let expenseCategory = ExpenseCategory.userSelectableCategories.first(where: { $0.displayName == budgetCategory.name }) {
                 
                 let editableBudget = EditableBudgetCategory(
                     category: expenseCategory,
@@ -50,12 +46,7 @@ class EditBudgetViewModel: ObservableObject {
         // Create a set of existing display names from the database
         let existingDisplayNames = Set(budgetCategories.map { $0.name })
         
-        for expenseCategory in ExpenseCategory.allCases {
-            // Skip the Unknown category from budget planning
-            if expenseCategory == .unknown {
-                continue
-            }
-            
+        for expenseCategory in ExpenseCategory.userSelectableCategories {
             // Check if this category's display name is not in the existing budgets
             if !existingDisplayNames.contains(expenseCategory.displayName) {
                 let editableBudget = EditableBudgetCategory(
@@ -95,7 +86,7 @@ class EditBudgetViewModel: ObservableObject {
     }
     
     var totalCategories: Int {
-        return ExpenseCategory.allCases.count
+        return ExpenseCategory.userSelectableCategories.count
     }
     
     func updateCategoryBudget(_ category: String, amount: Double) {

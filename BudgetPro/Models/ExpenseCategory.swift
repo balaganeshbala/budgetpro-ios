@@ -17,6 +17,11 @@ enum ExpenseCategory: String, CaseIterable {
     case vehicle
     case unknown
     
+    /// Returns all categories except 'unknown' for user-facing selections
+    static var userSelectableCategories: [ExpenseCategory] {
+        return allCases.filter { $0 != .unknown }
+    }
+    
     var displayName: String {
         switch self {
         case .emi: return "EMI"

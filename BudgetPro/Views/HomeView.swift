@@ -6,7 +6,7 @@ struct HomeView: View {
     @State private var selectedYear = Calendar.current.component(.year, from: Date())
     @State private var showingProfile = false
     @State private var showingAllExpenses = false
-    @State private var showingAddExpense = false
+
     @State private var showingMonthPicker = false
     @State private var tempMonth = Calendar.current.component(.month, from: Date())
     @State private var tempYear = Calendar.current.component(.year, from: Date())
@@ -67,9 +67,7 @@ struct HomeView: View {
                 year: selectedYear
             )
         }
-        .sheet(isPresented: $showingAddExpense) {
-            AddExpenseView()
-        }
+
         .overlay(
             Group {
                 if showingMonthPicker {
@@ -218,7 +216,7 @@ struct HomeView: View {
                                     .font(.sora(18, weight: .medium))
                                     .foregroundColor(.gray)
                                 
-                                Text("₹\(formatAmount(max(0, viewModel.totalBudget - viewModel.totalSpent)))")
+                                Text("₹\(formatAmount(viewModel.totalBudget - viewModel.totalSpent))")
                                     .font(.sora(30, weight: .bold))
                                     .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : Color.primary)
                             }
@@ -322,7 +320,7 @@ struct HomeView: View {
                     )) {
                         HStack {
                             Text("View Budget Details")
-                                .font(.sora(16, weight: .medium))
+                                .font(.sora(14, weight: .medium))
                                 .foregroundColor(Color.secondary)
                             
                             Spacer()
@@ -375,9 +373,7 @@ struct HomeView: View {
                                 .multilineTextAlignment(.center)
                         }
                         
-                        Button(action: {
-                            showingAddExpense = true
-                        }) {
+                        NavigationLink(destination: AddExpenseView()) {
                             Text("Add Expense")
                                 .font(.sora(14, weight: .medium))
                                 .foregroundColor(.white)
@@ -433,7 +429,7 @@ struct HomeView: View {
                             .background(Color.primary.opacity(0.05))
                         }
                         
-                        if viewModel.recentExpenses.count > 5 {
+                        if viewModel.recentExpenses.count > 0 {
                             Button(action: {
                                 showingAllExpenses = true
                             }) {

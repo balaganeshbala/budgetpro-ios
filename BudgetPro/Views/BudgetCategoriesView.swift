@@ -31,7 +31,7 @@ struct BudgetCategoriesView: View {
             .padding(.top, 20)
         }
         .background(Color.gray.opacity(0.1))
-        .navigationTitle("\(monthName) \(year)")
+        .navigationTitle("\(monthName)")
         .navigationBarTitleDisplayMode(.large)
         .navigationBarBackButtonHidden(false)
     }
@@ -51,16 +51,6 @@ struct BudgetCategoriesView: View {
                 }
                 
                 Spacer()
-                
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text("Categories")
-                        .font(.sora(14))
-                        .foregroundColor(.gray)
-                    
-                    Text("\(budgetCategories.count)")
-                        .font(.sora(24, weight: .bold))
-                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
-                }
             }
         }
         .padding(16)
@@ -105,7 +95,7 @@ struct BudgetCategoriesView: View {
     
     private var monthName: String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM"
+        formatter.dateFormat = "MMMM YYYY"
         let date = Calendar.current.date(from: DateComponents(year: year, month: month, day: 1)) ?? Date()
         return formatter.string(from: date)
     }

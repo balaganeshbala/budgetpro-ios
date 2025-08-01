@@ -46,7 +46,7 @@ class AddExpenseViewModel: ObservableObject {
     }
     
     func loadInitialData() {
-        categories = ExpenseCategory.allCases.filter { $0 != .unknown }
+        categories = ExpenseCategory.userSelectableCategories
         selectedCategory = categories.first ?? .food
         validateForm()
     }

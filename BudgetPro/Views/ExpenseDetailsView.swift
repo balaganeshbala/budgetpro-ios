@@ -119,7 +119,6 @@ struct ExpenseDetailsView: View {
                 UpdateLoadingOverlay()
             }
         }
-        .navigationBarHidden(true)
         .overlay(
             Group {
                 if showingDatePicker {
@@ -295,7 +294,7 @@ struct UpdateCategorySelectorMenu: View {
     
     var body: some View {
         Menu {
-            ForEach(ExpenseCategory.allCases, id: \.self) { category in
+            ForEach(ExpenseCategory.userSelectableCategories, id: \.self) { category in
                 Button(action: {
                     viewModel.selectedCategory = category
                     viewModel.validateForm()
@@ -474,7 +473,7 @@ struct UpdateCategoryPickerDialog: View {
                 // Categories list
                 ScrollView {
                     LazyVStack(spacing: 0) {
-                        ForEach(ExpenseCategory.allCases, id: \.self) { category in
+                        ForEach(ExpenseCategory.userSelectableCategories, id: \.self) { category in
                             HStack(spacing: 16) {
                                 Image(systemName: category.iconName)
                                     .foregroundColor(category.color)
@@ -503,7 +502,7 @@ struct UpdateCategoryPickerDialog: View {
                                 isPresented = false
                             }
                             
-                            if category != ExpenseCategory.allCases.last {
+                            if category != ExpenseCategory.userSelectableCategories.last {
                                 Divider()
                                     .padding(.horizontal, 24)
                             }

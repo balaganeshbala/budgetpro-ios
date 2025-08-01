@@ -18,7 +18,7 @@ class CreateBudgetViewModel: ObservableObject {
         self.year = year
         
         // Initialize all categories with 0
-        for category in ExpenseCategory.allCases {
+        for category in ExpenseCategory.userSelectableCategories {
             categoryBudgets[category.displayName] = 0
         }
     }
@@ -32,7 +32,7 @@ class CreateBudgetViewModel: ObservableObject {
     }
     
     var totalCategories: Int {
-        return ExpenseCategory.allCases.count
+        return ExpenseCategory.userSelectableCategories.count
     }
     
     func updateCategoryBudget(_ category: String, amount: Double) {
@@ -161,7 +161,7 @@ class CreateBudgetViewModel: ObservableObject {
             guard amount > 0 else { return nil }
             
             // Find the corresponding ExpenseCategory and use its rawValue
-            let expenseCategory = ExpenseCategory.allCases.first { $0.displayName == categoryDisplayName } ?? .unknown
+            let expenseCategory = ExpenseCategory.userSelectableCategories.first { $0.displayName == categoryDisplayName } ?? .food
             
             return BudgetEntry(
                 date: targetDate,  // Changed to use date instead of separate month/year
