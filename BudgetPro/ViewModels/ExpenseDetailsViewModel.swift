@@ -9,8 +9,12 @@
 import Foundation
 
 @MainActor
-class ExpenseDetailsViewModel: ObservableObject {
+class ExpenseDetailsViewModel: ObservableObject, TransactionFormViewModelProtocol {
     @Published var expenseName: String = ""
+    var transactionName: String {
+        get { expenseName }
+        set { expenseName = newValue }
+    }
     @Published var amountText: String = ""
     @Published var selectedCategory: ExpenseCategory = .food
     @Published var selectedDate: Date = Date()
@@ -52,6 +56,32 @@ class ExpenseDetailsViewModel: ObservableObject {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM dd, yyyy"
         return formatter.string(from: selectedDate)
+    }
+    
+    var formattedDateForDisplay: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: selectedDate)
+    }
+    
+    func saveTransaction() async {
+        // Not applicable for update mode
+    }
+    
+    func updateTransaction() async {
+        await updateExpense()
+    }
+    
+    func deleteTransaction() async {
+        await deleteExpense()
+    }
+    
+    func loadInitialData() {
+        loadExpenseData()
+    }
+    
+    func resetForm() {
+        // Not applicable for update mode
     }
     
     func loadExpenseData() {

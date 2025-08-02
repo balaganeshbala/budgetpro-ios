@@ -122,11 +122,11 @@ struct HomeView: View {
                     showingProfile = true
                 }) {
                     Circle()
-                        .fill(Color.primary.opacity(0.2))
+                        .fill(Color.secondary.opacity(0.2))
                         .frame(width: 46, height: 46)
                         .overlay(
                             Image(systemName: "person.fill")
-                                .foregroundColor(Color.primary)
+                                .foregroundColor(Color.secondary)
                                 .font(.system(size: 20))
                         )
                 }

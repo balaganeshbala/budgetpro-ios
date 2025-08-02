@@ -251,13 +251,18 @@ struct DropdownPickerDialog<T: Hashable>: View {
 
 // MARK: - Generic Dropdown Selector Field
 
+enum GenericFormField {
+    case name
+    case amount
+}
+
 struct DropdownSelectorField<T: Hashable>: View {
     let label: String
     let iconName: String
     let selectedItem: T?
     let itemDisplayName: (T) -> String
     let onTap: () -> Void
-    let focusedField: FocusState<AddExpenseView.Field?>.Binding?
+    let focusedField: FocusState<GenericFormField?>.Binding?
     
     init(
         label: String,
@@ -265,7 +270,7 @@ struct DropdownSelectorField<T: Hashable>: View {
         selectedItem: T?,
         itemDisplayName: @escaping (T) -> String,
         onTap: @escaping () -> Void,
-        focusedField: FocusState<AddExpenseView.Field?>.Binding? = nil
+        focusedField: FocusState<GenericFormField?>.Binding? = nil
     ) {
         self.label = label
         self.iconName = iconName

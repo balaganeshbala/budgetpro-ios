@@ -1,22 +1,21 @@
 //
-//  AddExpenseView.swift
+//  AddIncomeView.swift
 //  BudgetPro
 //
-//  Created by Balaganesh S on 17/07/25.
+//  Created by Claude on 02/08/25.
 //
 
 import SwiftUI
 
-// MARK: - Add Expense View
-struct AddExpenseView: View {
-    @StateObject private var viewModel = AddExpenseViewModel()
+struct AddIncomeView: View {
+    @StateObject private var viewModel = AddIncomeViewModel()
     
     var body: some View {
         TransactionFormView(
             viewModel: viewModel,
-            transactionType: .expense,
+            transactionType: .income,
             mode: .add,
-            categories: ExpenseCategory.userSelectableCategories,
+            categories: IncomeCategory.userSelectableCategories,
             selectedCategory: viewModel.selectedCategory,
             onCategorySelected: { category in
                 viewModel.selectedCategory = category
@@ -28,8 +27,10 @@ struct AddExpenseView: View {
     }
 }
 
-struct AddExpenseView_Previews: PreviewProvider {
+struct AddIncomeView_Previews: PreviewProvider {
     static var previews: some View {
-        AddExpenseView()
+        NavigationView {
+            AddIncomeView()
+        }
     }
 }
