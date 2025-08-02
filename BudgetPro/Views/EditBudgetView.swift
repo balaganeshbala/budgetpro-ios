@@ -27,8 +27,6 @@ struct EditBudgetView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
-                    // Header info
-                    headerSection
                     
                     // Total Budget Summary
                     totalBudgetCard
@@ -94,25 +92,6 @@ struct EditBudgetView: View {
         }
     }
     
-    // MARK: - Header Section
-    private var headerSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Update your budget for \(monthName) \(year)")
-                .font(.sora(16))
-                .foregroundColor(.gray)
-            
-            Text("Modify budget amounts for each category. Changes will be saved when you tap Update.")
-                .font(.sora(14))
-                .foregroundColor(.gray.opacity(0.8))
-                .lineSpacing(2)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .background(Color.white)
-        .cornerRadius(12)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
-    }
-    
     // MARK: - Total Budget Card
     private var totalBudgetCard: some View {
         VStack(spacing: 16) {
@@ -145,38 +124,6 @@ struct EditBudgetView: View {
                                 .foregroundColor(.orange)
                         }
                     }
-                }
-            }
-            
-            if viewModel.totalBudget > 0 {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("Categories with Budget")
-                            .font(.sora(14, weight: .medium))
-                            .foregroundColor(.black)
-                        
-                        Spacer()
-                        
-                        Text("\(viewModel.categoriesWithBudget) of \(viewModel.totalCategories) categories")
-                            .font(.sora(12))
-                            .foregroundColor(.gray)
-                    }
-                    
-                    // Progress bar showing how many categories have budgets
-                    GeometryReader { geometry in
-                        ZStack(alignment: .leading) {
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.2))
-                                .frame(height: 6)
-                                .cornerRadius(3)
-                            
-                            Rectangle()
-                                .fill(Color(red: 0.2, green: 0.6, blue: 0.5))
-                                .frame(width: geometry.size.width * (Double(viewModel.categoriesWithBudget) / Double(viewModel.totalCategories)), height: 6)
-                                .cornerRadius(3)
-                        }
-                    }
-                    .frame(height: 6)
                 }
             }
         }

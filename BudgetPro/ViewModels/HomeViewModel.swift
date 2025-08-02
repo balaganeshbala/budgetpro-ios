@@ -43,12 +43,18 @@ class HomeViewModel: ObservableObject {
         isLoading = true
         errorMessage = ""
         
-        async let budgetData = loadBudgetData(month: month, year: year)
+        // First fetch expenses data once
         async let expensesData = loadExpensesData(month: month, year: year)
         async let incomesData = loadIncomesData(month: month, year: year)
         
         do {
-            let (budget, expenses, incomes) = try await (budgetData, expensesData, incomesData)
+            let (expenses, incomes) = try await (expensesData, incomesData)
+            
+            // Check if cancelled before continuing
+            guard !Task.isCancelled else { return }
+            
+            // Now load budget data using the already fetched expenses
+            let budget = try await loadBudgetData(month: month, year: year, expenses: expenses)
             
             // Check if cancelled before updating UI
             guard !Task.isCancelled else { return }
@@ -82,7 +88,7 @@ class HomeViewModel: ObservableObject {
     
     // MARK: - Private Methods
     
-    private func loadBudgetData(month: Int, year: Int) async throws -> (categories: [BudgetCategory], total: Double, spent: Double) {
+    private func loadBudgetData(month: Int, year: Int, expenses: [Expense]) async throws -> (categories: [BudgetCategory], total: Double, spent: Double) {
         guard let userId = supabaseManager.currentUser?.id else {
             throw HomeError.userNotFound
         }
@@ -103,18 +109,8 @@ class HomeViewModel: ObservableObject {
             var categories: [BudgetCategory] = []
             var totalBudget: Double = 0
             
-            // Load expenses for calculating spent amounts
-            let expensesResponse: [ExpenseResponse] = try await supabaseManager.client
-                .from("expenses")
-                .select("*")
-                .eq("user_id", value: userId)
-                .gte("date", value: getMonthStartDate(month: month, year: year))
-                .lt("date", value: getMonthEndDate(month: month, year: year))
-                .execute()
-                .value
-            
             // Group expenses by category, normalized by ExpenseCategory
-            let expensesByCategory = Dictionary(grouping: expensesResponse) { expense in
+            let expensesByCategory = Dictionary(grouping: expenses) { expense in
                 ExpenseCategory.from(categoryName: expense.category).displayName
             }
             
@@ -158,7 +154,7 @@ class HomeViewModel: ObservableObject {
                 }
             }
             
-            let totalSpent = expensesResponse.reduce(0) { $0 + $1.amount }
+            let totalSpent = expenses.reduce(0) { $0 + $1.amount }
             
             return (categories: categories, total: totalBudget, spent: totalSpent)
         } catch {

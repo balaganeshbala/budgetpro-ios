@@ -58,8 +58,14 @@ class EditBudgetViewModel: ObservableObject {
             }
         }
         
-        // Sort alphabetically for consistent display
-        editableList.sort { $0.category.displayName < $1.category.displayName }
+        // Sort by budget amount (highest first), then alphabetically for categories with same amount
+        editableList.sort { budget1, budget2 in
+            if budget1.amount != budget2.amount {
+                return budget1.amount > budget2.amount  // Higher amounts first
+            } else {
+                return budget1.category.displayName < budget2.category.displayName  // Alphabetical for same amounts
+            }
+        }
         
         self.editableBudgets = editableList
         self.originalBudgets = originalBudgetMap

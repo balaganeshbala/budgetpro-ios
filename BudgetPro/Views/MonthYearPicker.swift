@@ -44,23 +44,19 @@ struct MonthYearPicker: View {
         }) {
             HStack(spacing: 10) {
                 Image(systemName: "calendar")
-                    .foregroundColor(.gray)
+                    .foregroundColor(Color.secondary)
                 
                 Text("\(months[selectedMonth - 1]) \(String(selectedYear))")
                     .font(.sora(16, weight: .semibold))
-                    .foregroundColor(.black)
-                
-                Image(systemName: "chevron.down")
-                    .font(.system(size: 12))
-                    .foregroundColor(.gray)
+                    .foregroundColor(Color.secondary)
             }
             .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.gray.opacity(0.1))
-            )
+            .padding(.vertical, 10)
         }
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.secondary.opacity(0.8), lineWidth: 1)
+        )
         .onChange(of: showingPicker) { isShowing in
             if isShowing {
                 tempMonth = selectedMonth

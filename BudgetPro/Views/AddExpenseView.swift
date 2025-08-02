@@ -91,7 +91,6 @@ struct AddExpenseView: View {
         }
         .navigationTitle("Add Expense")
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(false) // Ensure back button is visible
         .onAppear {
             // Configure navigation bar appearance
             let appearance = UINavigationBarAppearance()
@@ -99,6 +98,7 @@ struct AddExpenseView: View {
             appearance.backgroundColor = UIColor(Color.primary)
             appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
             appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+            appearance.backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.white]
             
             UINavigationBar.appearance().standardAppearance = appearance
             UINavigationBar.appearance().scrollEdgeAppearance = appearance

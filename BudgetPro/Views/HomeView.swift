@@ -180,13 +180,18 @@ struct HomeView: View {
                             year: selectedYear
                         )) {
                             HStack(spacing: 4) {
-                                Image(systemName: "pencil")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(Color.secondary)
-                                
-                                Text("Edit")
-                                    .font(.sora(14))
-                                    .foregroundColor(Color.secondary)
+                                Label {
+                                    Text("Edit")
+                                        .font(.sora(15, weight: .semibold))
+                                } icon: {
+                                    if #available(iOS 16.0, *) {
+                                        Image(systemName: "pencil")
+                                            .fontWeight(.bold)
+                                    } else {
+                                        // Fallback on earlier versions
+                                    }
+                                }
+                                .foregroundColor(Color.secondary)
                             }
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
@@ -415,35 +420,40 @@ struct HomeView: View {
                         
                         // Add New Expense Button
                         NavigationLink(destination: AddExpenseView()) {
-                            HStack {
-                                Spacer()
-                                Image(systemName: "plus")
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundColor(Color.primary)
-                                Text("Add New")
-                                    .font(.sora(14, weight: .medium))
-                                    .foregroundColor(Color.primary)
-                                Spacer()
-                            }
-                            .padding(16)
-                            .background(Color.primary.opacity(0.05))
-                        }
-                        
-                        if viewModel.recentExpenses.count > 0 {
-                            Button(action: {
-                                showingAllExpenses = true
-                            }) {
+                            VStack {
+                                Divider()
                                 HStack {
                                     Spacer()
-                                    Text("More Details")
-                                        .font(.sora(14, weight: .medium))
+                                    Image(systemName: "plus")
+                                        .font(.system(size: 12, weight: .semibold))
                                         .foregroundColor(Color.secondary)
-                                    Image(systemName: "chevron.right")
-                                        .font(.system(size: 12))
+                                    Text("Add New")
+                                        .font(.sora(14, weight: .medium))
                                         .foregroundColor(Color.secondary)
                                     Spacer()
                                 }
                                 .padding(16)
+                            }
+                        }
+                        
+                        if viewModel.recentExpenses.count > 0 {
+                            VStack {
+                                Divider()
+                                Button(action: {
+                                    showingAllExpenses = true
+                                }) {
+                                    HStack {
+                                        Spacer()
+                                        Text("More Details")
+                                            .font(.sora(14, weight: .medium))
+                                            .foregroundColor(Color.secondary)
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 12))
+                                            .foregroundColor(Color.secondary)
+                                        Spacer()
+                                    }
+                                    .padding(16)
+                                }
                             }
                         }
                     }

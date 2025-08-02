@@ -24,7 +24,8 @@ class CreateBudgetViewModel: ObservableObject {
     }
     
     var canSave: Bool {
-        return totalBudget > 0 && !isLoading
+        // Allow saving even if total budget is 0, as user might want to set all categories to 0
+        return !isLoading
     }
     
     var categoriesWithBudget: Int {
@@ -48,7 +49,7 @@ class CreateBudgetViewModel: ObservableObject {
     
     func saveBudget() async {
         guard canSave else {
-            errorMessage = "Please set at least one budget category"
+            errorMessage = "Unable to save budget at this time"
             return
         }
         
@@ -158,8 +159,7 @@ class CreateBudgetViewModel: ObservableObject {
         let targetDate = getMonthStartDate()
         
         return categoryBudgets.compactMap { (categoryDisplayName, amount) in
-            guard amount > 0 else { return nil }
-            
+            // Include all categories, even those with 0 amounts
             // Find the corresponding ExpenseCategory and use its rawValue
             let expenseCategory = ExpenseCategory.userSelectableCategories.first { $0.displayName == categoryDisplayName } ?? .food
             

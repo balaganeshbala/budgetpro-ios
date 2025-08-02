@@ -243,6 +243,7 @@ struct DropdownPickerDialog<T: Hashable>: View {
             .background(Color.white)
             .cornerRadius(20)
             .padding(.horizontal, 20)
+            .padding(.vertical, 60)
             .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 5)
         }
     }
@@ -332,5 +333,19 @@ struct RoundedCorner: Shape {
             cornerRadii: CGSize(width: radius, height: radius)
         )
         return Path(path.cgPath)
+    }
+}
+
+struct NavigationConfigurator: UIViewControllerRepresentable {
+    var configure: (UINavigationController) -> Void = { _ in }
+    
+    func makeUIViewController(context: Context) -> UIViewController {
+        UIViewController()
+    }
+    
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+        if let nc = uiViewController.navigationController {
+            self.configure(nc)
+        }
     }
 }
