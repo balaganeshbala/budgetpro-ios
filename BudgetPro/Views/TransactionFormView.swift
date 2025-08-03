@@ -191,19 +191,14 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
     }
     
     private var formContentCard: some View {
-        VStack(spacing: 0) {
-            VStack(spacing: 24) {
-                titleSection
-                formFields
-                actionButton
-                Spacer(minLength: 30)
-            }
-            .padding(.horizontal, 24)
-            .frame(minHeight: UIScreen.main.bounds.height - 150)
+        VStack(spacing: 24) {
+            titleSection
+            formFields
+            actionButton
+            Spacer(minLength: 30)
         }
-        .background(Color.white)
-        .cornerRadius(20, corners: [.topLeft, .topRight])
-        .ignoresSafeArea(.container, edges: .bottom)
+        .padding(.horizontal, 16)
+        .frame(minHeight: UIScreen.main.bounds.height - 150)
         .onTapGesture {
             focusedField = nil
         }
@@ -266,7 +261,18 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
         mainContent
             .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden(false)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarLeading) {
+                    Button(action: {
+                        dismiss()
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.white)
+                            .font(.title3)
+                    }
+                }
+            }
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     if mode.isUpdate {
@@ -399,11 +405,6 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
     private func handleViewAppear() {
         configureNavigationBar()
         viewModel.loadInitialData()
-        if !mode.isUpdate {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                focusedField = .name
-            }
-        }
     }
     
     private func handleCategorySelection(category: CategoryType) {
@@ -454,7 +455,9 @@ struct TransactionNameInputField<ViewModel: TransactionFormViewModelProtocol>: V
             submitLabel: .next,
             textCapitalization: .words,
             onSubmit: {
-                focusedField.wrappedValue = .amount
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    focusedField.wrappedValue = .amount
+                }
             },
             onChange: { _ in
                 if viewModel.transactionName.count > 25 {
@@ -465,6 +468,14 @@ struct TransactionNameInputField<ViewModel: TransactionFormViewModelProtocol>: V
             isFocused: focusedField.wrappedValue == .name
         )
         .focused(focusedField, equals: .name)
+        .onTapGesture {
+            if focusedField.wrappedValue != .name {
+                focusedField.wrappedValue = nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    focusedField.wrappedValue = .name
+                }
+            }
+        }
     }
 }
 
