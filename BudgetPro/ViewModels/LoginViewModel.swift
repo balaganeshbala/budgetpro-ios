@@ -68,8 +68,12 @@ class LoginViewModel: ObservableObject {
         isPasswordVisible.toggle()
     }
     
-    func showSignUp() {
-        showingSignUp = true
+    func showSignUp(coordinator: AuthenticationCoordinator? = nil) {
+        if let coordinator = coordinator {
+            coordinator.navigate(to: .signUp)
+        } else {
+            showingSignUp = true
+        }
     }
     
     func signIn() {

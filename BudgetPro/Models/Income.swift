@@ -1,6 +1,6 @@
 import Foundation
 
-struct Income: Identifiable {
+struct Income: Identifiable, Hashable {
     let id: Int
     let source: String
     let amount: Double

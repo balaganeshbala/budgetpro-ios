@@ -1,6 +1,6 @@
 import Foundation
 
-struct BudgetCategory: Identifiable {
+struct BudgetCategory: Identifiable, Hashable {
     let id: String
     let name: String
     let budget: Double

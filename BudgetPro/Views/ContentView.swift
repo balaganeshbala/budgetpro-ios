@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var supabaseManager = SupabaseManager.shared
+    @StateObject private var appCoordinator = AppCoordinator()
     @State private var isLoading = true
     
     var body: some View {
@@ -9,12 +9,15 @@ struct ContentView: View {
             if isLoading {
                 // Splash Screen
                 SplashView()
-            } else if supabaseManager.isAuthenticated {
-                // Main App - Home Screen
-                HomeView()
             } else {
-                // Authentication - Login Screen
-                LoginView()
+                switch appCoordinator.currentFlow {
+                case .authentication:
+                    CoordinatedNavigationView {
+                        LoginView()
+                    }
+                case .main:
+                    CoordinatedTabView()
+                }
             }
         }
         .onAppear {
@@ -23,9 +26,10 @@ struct ContentView: View {
                 isLoading = false
             }
         }
-        .onChange(of: supabaseManager.isAuthenticated) { _ in
+        .onChange(of: appCoordinator.isAuthenticated) { _ in
             isLoading = false
         }
+        .environmentObject(appCoordinator)
     }
 }
 
