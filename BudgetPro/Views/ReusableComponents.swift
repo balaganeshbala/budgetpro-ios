@@ -341,16 +341,10 @@ struct RoundedCorner: Shape {
     }
 }
 
-struct NavigationConfigurator: UIViewControllerRepresentable {
-    var configure: (UINavigationController) -> Void = { _ in }
-    
-    func makeUIViewController(context: Context) -> UIViewController {
-        UIViewController()
-    }
-    
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        if let nc = uiViewController.navigationController {
-            self.configure(nc)
-        }
+// MARK: - UINavigationController Extension for enabling Interactive Pop Gesture
+extension UINavigationController {
+    open override func viewDidLoad() {
+        super.viewDidLoad()
+        interactivePopGestureRecognizer?.delegate = nil
     }
 }
