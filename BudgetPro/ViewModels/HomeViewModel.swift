@@ -114,9 +114,13 @@ class HomeViewModel: ObservableObject {
                 ExpenseCategory.from(categoryName: expense.category).displayName
             }
             
-            // Create a dictionary of budget amounts by category
+            // Create dictionaries of budget amounts and IDs by category
             let budgetsByCategory = Dictionary(uniqueKeysWithValues: budgetResponse.map { budget in
                 (ExpenseCategory.from(categoryName: budget.category).displayName, budget.amount)
+            })
+            
+            let budgetIdsByCategory = Dictionary(uniqueKeysWithValues: budgetResponse.map { budget in
+                (ExpenseCategory.from(categoryName: budget.category).displayName, String(budget.id))
             })
             
             // Get all categories that have either budget or expenses
@@ -125,9 +129,10 @@ class HomeViewModel: ObservableObject {
             for categoryName in allCategoryNames {
                 let budgetAmount = budgetsByCategory[categoryName] ?? 0
                 let spent = expensesByCategory[categoryName]?.reduce(0) { $0 + $1.amount } ?? 0
+                let budgetId = budgetIdsByCategory[categoryName] ?? UUID().uuidString // fallback for categories without budgets
                 
                 let category = BudgetCategory(
-                    id: UUID().uuidString,
+                    id: budgetId,
                     name: categoryName,
                     budget: budgetAmount,
                     spent: spent
@@ -213,13 +218,14 @@ class HomeViewModel: ObservableObject {
                 .value
             
             return response.map { incomeResponse in
-                Income(
+                let categoryEnum = IncomeCategory.from(categoryName: incomeResponse.category)
+                return Income(
                     id: incomeResponse.id,
                     source: incomeResponse.source,
                     amount: incomeResponse.amount,
                     category: incomeResponse.category,
                     date: parseDate(incomeResponse.date),
-                    categoryIcon: getIncomeCategoryIcon(for: incomeResponse.category)
+                    categoryIcon: categoryEnum.iconName
                 )
             }
         } catch {
@@ -252,18 +258,6 @@ class HomeViewModel: ObservableObject {
     }
     
     
-    private func getIncomeCategoryIcon(for category: String) -> String {
-        switch category.lowercased() {
-        case "salary": return "briefcase.fill"
-        case "freelance": return "laptopcomputer"
-        case "business": return "building.2.fill"
-        case "investment": return "chart.line.uptrend.xyaxis"
-        case "rental": return "house.fill"
-        case "bonus": return "gift.fill"
-        case "other": return "plus.circle"
-        default: return "dollarsign.circle"
-        }
-    }
     
     // Add this method to your HomeViewModel class
     private func parseDate(_ dateString: String) -> Date {

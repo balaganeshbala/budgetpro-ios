@@ -1,5 +1,9 @@
 import Foundation
 
+extension Notification.Name {
+    static let budgetDataChanged = Notification.Name("budgetDataChanged")
+}
+
 @MainActor
 class EditBudgetViewModel: ObservableObject {
     @Published var editableBudgets: [EditableBudgetCategory] = []
@@ -10,6 +14,7 @@ class EditBudgetViewModel: ObservableObject {
     
     // Store original budgets for comparison
     let originalBudgets: [String: Double]
+    let originalBudgetIds: [String: String] // categoryDisplayName -> budgetId
     
     private let supabaseManager = SupabaseManager.shared
     private let month: Int
@@ -19,8 +24,9 @@ class EditBudgetViewModel: ObservableObject {
         self.month = month
         self.year = year
         
-        // Store original budgets
+        // Store original budgets and IDs
         var originalBudgetMap: [String: Double] = [:]
+        var originalIdMap: [String: String] = [:]
         
         // Convert BudgetCategory to EditableBudgetCategory
         var editableList: [EditableBudgetCategory] = []
@@ -39,6 +45,8 @@ class EditBudgetViewModel: ObservableObject {
                 
                 // Use the ExpenseCategory's displayName as the key for consistency
                 originalBudgetMap[expenseCategory.displayName] = budgetCategory.budget
+                // budgetCategory.id now contains the actual database ID from BudgetResponse
+                originalIdMap[expenseCategory.displayName] = budgetCategory.id
             }
         }
         
@@ -69,6 +77,7 @@ class EditBudgetViewModel: ObservableObject {
         
         self.editableBudgets = editableList
         self.originalBudgets = originalBudgetMap
+        self.originalBudgetIds = originalIdMap
         
         calculateTotalBudget()
     }
@@ -125,22 +134,24 @@ class EditBudgetViewModel: ObservableObject {
                 let newAmount = editableBudget.amount
                 let originalAmount = originalBudgets[categoryDisplayName] ?? 0
                 
+                print("Processing category: \(categoryDisplayName), original: \(originalAmount), new: \(newAmount)")
+                
                 // Skip if no change
                 if newAmount == originalAmount {
+                    print("Skipping \(categoryDisplayName) - no change")
                     continue
                 }
                 
                 if newAmount > 0 {
-                    if originalAmount > 0 {
-                        // Update existing entry
-                        try await updateExistingBudget(
-                            userId: userId,
-                            date: targetDate,
-                            category: categoryRawValue,
+                    if let budgetId = originalBudgetIds[categoryDisplayName], 
+                       Int(budgetId) != nil { // Only update if we have a valid database ID
+                        // Update existing budget using ID
+                        try await updateBudgetById(
+                            budgetId: budgetId,
                             amount: newAmount
                         )
                     } else {
-                        // Insert new entry
+                        // Insert new budget entry
                         try await insertNewBudget(
                             userId: userId,
                             date: targetDate,
@@ -150,17 +161,18 @@ class EditBudgetViewModel: ObservableObject {
                     }
                 } else {
                     // Delete entry if amount is 0 and it existed before
-                    if originalAmount > 0 {
-                        try await deleteBudgetCategory(
-                            userId: userId,
-                            date: targetDate,
-                            category: categoryRawValue
-                        )
+                    if originalAmount > 0, 
+                       let budgetId = originalBudgetIds[categoryDisplayName],
+                       Int(budgetId) != nil { // Only delete if we have a valid database ID
+                        try await deleteBudgetById(budgetId: budgetId)
                     }
                 }
             }
             
             isSuccess = true
+            
+            // Post notification to refresh data
+            NotificationCenter.default.post(name: .budgetDataChanged, object: nil)
             
         } catch {
             print("Update budget error: \(error)")
@@ -172,16 +184,21 @@ class EditBudgetViewModel: ObservableObject {
     
     // MARK: - Database Operations
     
-    private func updateExistingBudget(userId: String, date: String, category: String, amount: Double) async throws {
+    private func updateBudgetById(budgetId: String, amount: Double) async throws {
+        // Convert string ID back to integer for database query
+        guard let intId = Int(budgetId) else {
+            throw EditBudgetError.updateFailed
+        }
+        
         try await supabaseManager.client
             .from("budget")
             .update([
                 "amount": amount
             ])
-            .eq("user_id", value: userId)
-            .eq("date", value: date)
-            .eq("category", value: category)
+            .eq("id", value: intId)
             .execute()
+        
+        print("Budget updated: id=\(intId), amount=\(amount)")
     }
     
     private func insertNewBudget(userId: String, date: String, category: String, amount: Double) async throws {
@@ -194,18 +211,25 @@ class EditBudgetViewModel: ObservableObject {
         
         try await supabaseManager.client
             .from("budget")
-            .insert([budgetEntry])
+            .insert(budgetEntry)
             .execute()
+        
+        print("Budget inserted: userId=\(userId), date=\(date), category=\(category), amount=\(amount)")
     }
     
-    private func deleteBudgetCategory(userId: String, date: String, category: String) async throws {
+    private func deleteBudgetById(budgetId: String) async throws {
+        // Convert string ID back to integer for database query
+        guard let intId = Int(budgetId) else {
+            throw EditBudgetError.updateFailed
+        }
+        
         try await supabaseManager.client
             .from("budget")
             .delete()
-            .eq("user_id", value: userId)
-            .eq("date", value: date)
-            .eq("category", value: category)
+            .eq("id", value: intId)
             .execute()
+        
+        print("Budget deleted: id=\(intId)")
     }
     
     func clearError() {

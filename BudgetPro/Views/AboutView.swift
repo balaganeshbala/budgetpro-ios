@@ -54,7 +54,7 @@ struct AboutView: View {
         VStack(spacing: 16) {
             // App Icon
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(red: 1.0, green: 0.4, blue: 0.4))
+                .fill(Color.secondary)
                 .frame(width: 80, height: 80)
                 .overlay(
                     Image(systemName: "chart.pie.fill")
@@ -114,7 +114,7 @@ struct AboutView: View {
             VStack(spacing: 12) {
                 FeatureRow(
                     icon: "chart.pie",
-                    iconColor: Color(red: 1.0, green: 0.4, blue: 0.4),
+                    iconColor: Color.secondary,
                     title: "Budget Management",
                     description: "Create and track monthly budgets by category"
                 )

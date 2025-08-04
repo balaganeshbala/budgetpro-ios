@@ -10,7 +10,7 @@ import SwiftUI
 
 struct EditBudgetView: View {
     @StateObject private var viewModel: EditBudgetViewModel
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
     @State private var showingSuccessAlert = false
     @State private var showingConfirmDialog = false
     
@@ -24,43 +24,30 @@ struct EditBudgetView: View {
     }
     
     var body: some View {
-        NavigationView {
+        VStack(spacing: 0) {
             ScrollView {
                 VStack(spacing: 20) {
-                    
                     // Total Budget Summary
                     totalBudgetCard
                     
                     // Budget Categories
                     budgetCategoriesSection
                     
-                    Spacer(minLength: 100)
+                    Spacer(minLength: 20)
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 20)
             }
             .background(Color.gray.opacity(0.1))
-            .navigationTitle("Edit Budget")
-            .navigationBarTitleDisplayMode(.large)
-            .navigationBarItems(
-                leading: Button("Cancel") {
-                    presentationMode.wrappedValue.dismiss()
-                }
-                .font(.sora(16))
-                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4)),
-                
-                trailing: Button("Update") {
-                    if viewModel.hasChanges {
-                        showingConfirmDialog = true
-                    } else {
-                        viewModel.errorMessage = "No changes made to the budget"
-                    }
-                }
-                .font(.sora(16, weight: .medium))
-                .foregroundColor(viewModel.canUpdate ? Color(red: 0.2, green: 0.6, blue: 0.5) : .gray)
-                .disabled(!viewModel.canUpdate || viewModel.isLoading)
-            )
+            
+            // Update Button at bottom
+            updateButton
+                .padding(.horizontal, 16)
+                .padding(.bottom, 16)
+                .background(Color.white)
         }
+        .navigationTitle("Edit Budget")
+        .navigationBarTitleDisplayMode(.large)
         .alert("Confirm Update", isPresented: $showingConfirmDialog) {
             Button("Cancel", role: .cancel) { }
             Button("Update") {
@@ -73,7 +60,7 @@ struct EditBudgetView: View {
         }
         .alert("Success", isPresented: $showingSuccessAlert) {
             Button("OK") {
-                presentationMode.wrappedValue.dismiss()
+                dismiss()
             }
         } message: {
             Text("Budget updated successfully!")
@@ -163,6 +150,39 @@ struct EditBudgetView: View {
                 }
             }
         }
+    }
+    
+    // MARK: - Update Button
+    private var updateButton: some View {
+        Button(action: {
+            if viewModel.hasChanges {
+                showingConfirmDialog = true
+            } else {
+                viewModel.errorMessage = "No changes made to the budget"
+            }
+        }) {
+            HStack {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(0.8)
+                } else {
+                    Text("Update Budget")
+                        .font(.sora(16, weight: .semibold))
+                        .foregroundColor(.white)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 55)
+            .background(
+                viewModel.canUpdate && viewModel.hasChanges && !viewModel.isLoading
+                    ? Color.secondary
+                    : Color.gray.opacity(0.6)
+            )
+            .cornerRadius(12)
+        }
+        .disabled(!viewModel.canUpdate || !viewModel.hasChanges || viewModel.isLoading)
+        .padding(.top, 16)
     }
     
     private var monthName: String {

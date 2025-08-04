@@ -48,7 +48,7 @@ struct CreateBudgetView: View {
                     presentationMode.wrappedValue.dismiss()
                 }
                 .font(.sora(16))
-                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4)),
+                .foregroundColor(Color.secondary),
                 
                 trailing: Button("Save") {
                     Task {

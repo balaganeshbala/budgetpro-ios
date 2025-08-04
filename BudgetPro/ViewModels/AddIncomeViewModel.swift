@@ -126,7 +126,7 @@ class AddIncomeViewModel: ObservableObject, TransactionFormViewModelProtocol {
             
             // Note: You would need to create an "income" table in your database
             try await supabaseManager.client
-                .from("income")
+                .from("incomes")
                 .insert(incomeData)
                 .execute()
             

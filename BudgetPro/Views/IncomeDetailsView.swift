@@ -1,0 +1,49 @@
+//
+//  IncomeDetailsView.swift
+//  BudgetPro
+//
+//  Created by Claude on 04/08/25.
+//
+
+import SwiftUI
+
+struct IncomeDetailsView: View {
+    @StateObject private var viewModel: IncomeDetailsViewModel
+    let income: Income
+    
+    init(income: Income) {
+        self.income = income
+        self._viewModel = StateObject(wrappedValue: IncomeDetailsViewModel(income: income))
+    }
+    
+    var body: some View {
+        TransactionFormView(
+            viewModel: viewModel,
+            transactionType: .income,
+            mode: .update,
+            categories: IncomeCategory.userSelectableCategories,
+            selectedCategory: viewModel.selectedCategory,
+            onCategorySelected: { category in
+                viewModel.selectedCategory = category
+            },
+            categoryDisplayName: { $0.displayName },
+            categoryIconName: { $0.iconName },
+            categoryColor: { $0.color }
+        )
+    }
+}
+
+struct IncomeDetailsView_Previews: PreviewProvider {
+    static var previews: some View {
+        IncomeDetailsView(
+            income: Income(
+                id: 1,
+                source: "Salary",
+                amount: 50000.0,
+                category: "salary",
+                date: Date(),
+                categoryIcon: "briefcase.fill"
+            )
+        )
+    }
+}

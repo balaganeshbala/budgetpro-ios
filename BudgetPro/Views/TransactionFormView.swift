@@ -268,7 +268,7 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
                         dismiss()
                     }) {
                         Image(systemName: "chevron.left")
-                            .foregroundColor(.white)
+                            .foregroundColor(.primary)
                             .font(.title3)
                     }
                 }
@@ -280,7 +280,7 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
                             showingDeleteAlert = true
                         }) {
                             Image(systemName: "trash")
-                                .foregroundColor(.white)
+                                .foregroundColor(.red)
                         }
                     }
                 }
@@ -341,7 +341,8 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
     private func successAlertActions() -> some View {
         if mode.isUpdate {
             Button("OK") {
-                dismiss()
+                // Navigate back to root view (Home screen)
+                navigateToRoot()
             }
         } else {
             Button("Add Another") {
@@ -407,6 +408,35 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
         viewModel.loadInitialData()
     }
     
+    private func navigateToRoot() {
+        // Find the navigation controller and pop to root
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first,
+           let rootViewController = window.rootViewController {
+            
+            // Find the navigation controller in the hierarchy
+            func findNavigationController(from viewController: UIViewController) -> UINavigationController? {
+                if let navController = viewController as? UINavigationController {
+                    return navController
+                }
+                if let tabController = viewController as? UITabBarController,
+                   let selectedViewController = tabController.selectedViewController {
+                    return findNavigationController(from: selectedViewController)
+                }
+                for child in viewController.children {
+                    if let navController = findNavigationController(from: child) {
+                        return navController
+                    }
+                }
+                return nil
+            }
+            
+            if let navController = findNavigationController(from: rootViewController) {
+                navController.popToRootViewController(animated: true)
+            }
+        }
+    }
+    
     private func handleCategorySelection(category: CategoryType) {
         onCategorySelected(category)
         viewModel.validateForm()
@@ -427,15 +457,15 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
     private func configureNavigationBar() {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(Color.primary)
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
-        appearance.backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.white]
+        appearance.backgroundColor = UIColor.systemBackground
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
+        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
+        appearance.backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.label]
         
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
         UINavigationBar.appearance().compactAppearance = appearance
-        UINavigationBar.appearance().tintColor = UIColor.white
+        UINavigationBar.appearance().tintColor = UIColor.label
     }
 }
 
@@ -614,7 +644,7 @@ struct TransactionSaveButton<ViewModel: TransactionFormViewModelProtocol>: View 
             .frame(height: 55)
             .background(
                 viewModel.isFormValid && !viewModel.isLoading
-                    ? Color(red: 1.0, green: 0.4, blue: 0.4)
+                    ? Color.secondary
                     : Color.gray.opacity(0.6)
             )
             .cornerRadius(12)
@@ -652,7 +682,7 @@ struct TransactionUpdateButton<ViewModel: TransactionFormViewModelProtocol>: Vie
             .frame(height: 55)
             .background(
                 viewModel.isFormValid && viewModel.hasChanges && !viewModel.isLoading
-                    ? Color(red: 1.0, green: 0.4, blue: 0.4)
+                    ? Color.secondary
                     : Color.gray.opacity(0.6)
             )
             .cornerRadius(12)
@@ -674,7 +704,7 @@ struct TransactionLoadingOverlay: View {
             .overlay(
                 VStack {
                     ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: Color(red: 1.0, green: 0.4, blue: 0.4)))
+                        .progressViewStyle(CircularProgressViewStyle(tint: Color.secondary))
                         .scaleEffect(1.5)
                     
                     Text(mode.isUpdate ? transactionType.updateLoadingText : transactionType.loadingText)

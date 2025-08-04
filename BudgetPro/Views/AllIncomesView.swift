@@ -1,47 +1,38 @@
 //
-//  AllExpensesView.swift
+//  AllIncomesView.swift
 //  BudgetPro
 //
-//  Created by Balaganesh S on 15/07/25.
+//  Created by Claude on 04/08/25.
 //
-
 
 import SwiftUI
 
-// MARK: - Sort Type Enum
-enum SortType: String, CaseIterable {
-    case dateNewest = "Date (Newest First)"
-    case dateOldest = "Date (Oldest First)"
-    case amountHighest = "Amount (Highest First)"
-    case amountLowest = "Amount (Lowest First)"
-}
-
-// MARK: - All Expenses View
-struct AllExpensesView: View {
-    @StateObject private var viewModel: AllExpensesViewModel
+// MARK: - All Incomes View
+struct AllIncomesView: View {
+    @StateObject private var viewModel: AllIncomesViewModel
     
-    let expenses: [Expense]
+    let incomes: [Income]
     let month: Int
     let year: Int
     
-    init(expenses: [Expense], month: Int, year: Int) {
-        self.expenses = expenses
+    init(incomes: [Income], month: Int, year: Int) {
+        self.incomes = incomes
         self.month = month
         self.year = year
-        self._viewModel = StateObject(wrappedValue: AllExpensesViewModel(expenses: expenses))
+        self._viewModel = StateObject(wrappedValue: AllIncomesViewModel(incomes: incomes))
     }
     
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                // Expense Summary Section
-                ExpenseSummaryView(expenses: expenses)
+                // Income Summary Section
+                IncomeSummaryView(incomes: incomes)
                 
                 // Sort Section
                 sortSection
                 
-                // Expenses List
-                expensesListSection
+                // Incomes List
+                incomesListSection
                 
                 Spacer(minLength: 20)
             }
@@ -65,7 +56,7 @@ struct AllExpensesView: View {
     private var sortSection: some View {
         VStack(spacing: 8) {
             HStack {
-                Text("All Expenses")
+                Text("All Incomes")
                     .font(.sora(18, weight: .semibold))
                     .foregroundColor(.black)
                 
@@ -105,37 +96,37 @@ struct AllExpensesView: View {
         }
     }
     
-    // MARK: - Expenses List Section
-    private var expensesListSection: some View {
+    // MARK: - Incomes List Section
+    private var incomesListSection: some View {
         VStack(spacing: 0) {
-            if viewModel.sortedExpenses.isEmpty {
+            if viewModel.sortedIncomes.isEmpty {
                 EmptyStateView(
-                    icon: "creditcard",
-                    title: "No expenses yet",
-                    subtitle: "Add your first expense to track spending",
-                    buttonTitle: "Add Expense",
+                    icon: "dollarsign.circle",
+                    title: "No incomes yet",
+                    subtitle: "Add your income sources to track earnings",
+                    buttonTitle: "Add Income",
                     action: {
-                        // Navigate to add expense
+                        // Navigate to add income
                     }
                 )
             } else {
                 LazyVStack(spacing: 0) {
-                    ForEach(Array(viewModel.sortedExpenses.enumerated()), id: \.offset) { index, expense in
-                        TransactionRow<Expense, ExpenseDetailsView>(
-                            title: expense.name,
-                            amount: expense.amount,
-                            dateString: expense.dateString,
-                            categoryIcon: expense.categoryIcon,
-                            categoryColor: expense.categoryColor,
+                    ForEach(Array(viewModel.sortedIncomes.enumerated()), id: \.offset) { index, income in
+                        TransactionRow<Income, IncomeDetailsView>(
+                            title: income.source,
+                            amount: income.amount,
+                            dateString: income.dateString,
+                            categoryIcon: income.categoryIcon,
+                            categoryColor: IncomeCategory.from(categoryName: income.category).color,
                             iconShape: .roundedRectangle,
                             amountColor: .black,
                             showChevron: true,
                             destination: {
-                                ExpenseDetailsView(expense: expense)
+                                IncomeDetailsView(income: income)
                             }
                         )
                         
-                        if index < viewModel.sortedExpenses.count - 1 {
+                        if index < viewModel.sortedIncomes.count - 1 {
                             Divider()
                                 .padding(.horizontal, 16)
                         }
@@ -155,76 +146,75 @@ struct AllExpensesView: View {
     }
 }
 
-// MARK: - All Expenses View Model
+// MARK: - All Incomes View Model
 @MainActor
-class AllExpensesViewModel: ObservableObject {
-    @Published var sortedExpenses: [Expense] = []
+class AllIncomesViewModel: ObservableObject {
+    @Published var sortedIncomes: [Income] = []
     @Published var currentSortType: SortType = .dateNewest
     
-    private let originalExpenses: [Expense]
+    private let originalIncomes: [Income]
     
-    init(expenses: [Expense]) {
-        self.originalExpenses = expenses
-        self.sortedExpenses = expenses
-        sortExpenses()
+    init(incomes: [Income]) {
+        self.originalIncomes = incomes
+        self.sortedIncomes = incomes
+        sortIncomes()
     }
     
     func setSortType(_ sortType: SortType) {
         currentSortType = sortType
-        sortExpenses()
+        sortIncomes()
     }
     
-    
-    private func sortExpenses() {
+    private func sortIncomes() {
         switch currentSortType {
         case .dateNewest:
-            sortedExpenses = originalExpenses.sorted { $0.date > $1.date }
+            sortedIncomes = originalIncomes.sorted { $0.date > $1.date }
         case .dateOldest:
-            sortedExpenses = originalExpenses.sorted { $0.date < $1.date }
+            sortedIncomes = originalIncomes.sorted { $0.date < $1.date }
         case .amountHighest:
-            sortedExpenses = originalExpenses.sorted { $0.amount > $1.amount }
+            sortedIncomes = originalIncomes.sorted { $0.amount > $1.amount }
         case .amountLowest:
-            sortedExpenses = originalExpenses.sorted { $0.amount < $1.amount }
+            sortedIncomes = originalIncomes.sorted { $0.amount < $1.amount }
         }
     }
 }
 
-// MARK: - Expense Summary View
-struct ExpenseSummaryView: View {
-    let expenses: [Expense]
+// MARK: - Income Summary View
+struct IncomeSummaryView: View {
+    let incomes: [Income]
     
-    private var totalExpense: Double {
-        expenses.reduce(0) { $0 + $1.amount }
+    private var totalIncome: Double {
+        incomes.reduce(0) { $0 + $1.amount }
     }
     
     private var categoryTotals: [String: Double] {
         var totals: [String: Double] = [:]
-        for expense in expenses {
-            totals[expense.category, default: 0] += expense.amount
+        for income in incomes {
+            totals[income.category, default: 0] += income.amount
         }
         return totals
     }
     
     private var sortedCategories: [(category: String, amount: Double)] {
-            categoryTotals.map { (category: $0.key, amount: $0.value) }
-                .sorted { $0.amount > $1.amount }
-        }
+        categoryTotals.map { (category: $0.key, amount: $0.value) }
+            .sorted { $0.amount > $1.amount }
+    }
     
     var body: some View {
         VStack(spacing: 16) {
-            // Total Expense Section
+            // Total Income Section
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("Total Expenses")
+                    Text("Total Income")
                         .font(.sora(16, weight: .medium))
                         .foregroundColor(.gray)
                     Spacer()
                 }
                 
                 HStack {
-                    Text("₹\(formatAmount(totalExpense))")
+                    Text("₹\(formatAmount(totalIncome))")
                         .font(.sora(24, weight: .bold))
-                        .foregroundColor(Color.secondary)
+                        .foregroundColor(Color.primary)
                     Spacer()
                 }
             }
@@ -234,16 +224,16 @@ struct ExpenseSummaryView: View {
                 
                 // Category Breakdown Section
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Expenses by Category")
+                    Text("Income by Category")
                         .font(.sora(16, weight: .medium))
                         .foregroundColor(.gray)
                     
                     LazyVStack(spacing: 12) {
                         ForEach(sortedCategories.prefix(5), id: \.category) { categoryData in
-                            CategoryBreakdownRow(
+                            IncomeCategoryBreakdownRow(
                                 category: categoryData.category,
                                 amount: categoryData.amount,
-                                percentage: totalExpense > 0 ? (categoryData.amount / totalExpense) * 100 : 0
+                                percentage: totalIncome > 0 ? (categoryData.amount / totalIncome) * 100 : 0
                             )
                         }
                     }
@@ -264,14 +254,14 @@ struct ExpenseSummaryView: View {
     }
 }
 
-// MARK: - Category Breakdown Row
-struct CategoryBreakdownRow: View {
+// MARK: - Income Category Breakdown Row
+struct IncomeCategoryBreakdownRow: View {
     let category: String
     let amount: Double
     let percentage: Double
     
     private var categoryColor: Color {
-        return ExpenseCategory.from(categoryName: category).color
+        return IncomeCategory.from(categoryName: category).color
     }
     
     var body: some View {
@@ -281,7 +271,7 @@ struct CategoryBreakdownRow: View {
                 .fill(categoryColor)
                 .frame(width: 8, height: 8)
             
-            Text(category)
+            Text(IncomeCategory.from(categoryName: category).displayName)
                 .font(.sora(14, weight: .medium))
                 .foregroundColor(.black)
             
@@ -307,84 +297,37 @@ struct CategoryBreakdownRow: View {
     }
 }
 
-
-// MARK: - Empty State View
-struct EmptyStateView: View {
-    let icon: String
-    let title: String
-    let subtitle: String
-    let buttonTitle: String
-    let action: () -> Void
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: icon)
-                .font(.system(size: 48))
-                .foregroundColor(.gray.opacity(0.5))
-            
-            VStack(spacing: 8) {
-                Text(title)
-                    .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.black)
-                
-                Text(subtitle)
-                    .font(.sora(14))
-                    .foregroundColor(.gray.opacity(0.8))
-                    .multilineTextAlignment(.center)
-            }
-            
-            Button(action: action) {
-                Text(buttonTitle)
-                    .font(.sora(14, weight: .medium))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                    .background(Color.secondary)
-                    .cornerRadius(8)
-            }
-        }
-        .padding(.vertical, 32)
-        .padding(.horizontal, 16)
-        .background(Color.white)
-        .cornerRadius(16)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
-    }
-}
-
 // MARK: - Preview
-struct AllExpensesView_Previews: PreviewProvider {
+struct AllIncomesView_Previews: PreviewProvider {
     static var previews: some View {
-        AllExpensesView(
-            expenses: [
-                Expense(
+        AllIncomesView(
+            incomes: [
+                Income(
                     id: 1,
-                    name: "Lunch at Restaurant",
-                    amount: 850,
-                    category: "Food",
+                    source: "Monthly Salary",
+                    amount: 50000,
+                    category: "salary",
                     date: Date(),
-                    categoryIcon: "fork.knife",
-                    categoryColor: .orange
+                    categoryIcon: "briefcase.fill"
                 ),
-                Expense(
+                Income(
                     id: 2,
-                    name: "Metro Card Recharge",
-                    amount: 500,
-                    category: "Transport",
-                    date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date(),
-                    categoryIcon: "car.fill",
-                    categoryColor: .blue
+                    source: "Freelance Project",
+                    amount: 15000,
+                    category: "sideHustle",
+                    date: Calendar.current.date(byAdding: .day, value: -5, to: Date()) ?? Date(),
+                    categoryIcon: "laptopcomputer"
                 ),
-                Expense(
+                Income(
                     id: 3,
-                    name: "Movie Tickets",
-                    amount: 600,
-                    category: "Entertainment",
-                    date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date(),
-                    categoryIcon: "tv",
-                    categoryColor: .purple
+                    source: "Investment Returns",
+                    amount: 5000,
+                    category: "investment",
+                    date: Calendar.current.date(byAdding: .day, value: -10, to: Date()) ?? Date(),
+                    categoryIcon: "chart.line.uptrend.xyaxis"
                 )
             ],
-            month: 7,
+            month: 8,
             year: 2025
         )
     }

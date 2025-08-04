@@ -38,7 +38,7 @@ struct SplashView: View {
             VStack(spacing: 20) {
                 // App Icon
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(red: 1.0, green: 0.4, blue: 0.4))
+                    .fill(Color.secondary)
                     .frame(width: 80, height: 80)
                     .overlay(
                         Image(systemName: "chart.pie.fill")
@@ -53,7 +53,7 @@ struct SplashView: View {
                 
                 // Loading Indicator
                 ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: Color(red: 1.0, green: 0.4, blue: 0.4)))
+                    .progressViewStyle(CircularProgressViewStyle(tint: Color.secondary))
                     .scaleEffect(1.2)
                     .padding(.top, 20)
             }

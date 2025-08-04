@@ -269,7 +269,7 @@ struct SignUpView: View {
                         .frame(height: 50)
                     }
                     .frame(maxWidth: .infinity)
-                    .background(viewModel.isFormValid ? Color(red: 1.0, green: 0.4, blue: 0.4) : Color.gray.opacity(0.6))
+                    .background(viewModel.isFormValid ? Color.secondary : Color.gray.opacity(0.6))
                     .cornerRadius(8)
                     .disabled(!viewModel.isFormValid || viewModel.isLoading)
                     .contentShape(Rectangle())
@@ -287,7 +287,7 @@ struct SignUpView: View {
                         }) {
                             Text("Sign In")
                                 .font(.sora(16, weight: .medium))
-                                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
+                                .foregroundColor(Color.secondary)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
                         }

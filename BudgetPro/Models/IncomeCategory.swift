@@ -9,15 +9,19 @@ import SwiftUI
 
 enum IncomeCategory: String, CaseIterable {
     case salary
-    case freelance
-    case business
     case investment
+    case business
     case rental
+    case sideHustle
+    case service
     case gift
-    case bonus
     case pension
-    case dividends
     case interest
+    case dividend
+    case royalties
+    case refund
+    case benefits
+    case rewards
     case other
     
     /// Returns all categories except 'other' for user-facing selections
@@ -28,15 +32,19 @@ enum IncomeCategory: String, CaseIterable {
     var displayName: String {
         switch self {
         case .salary: return "Salary"
-        case .freelance: return "Freelance"
-        case .business: return "Business"
         case .investment: return "Investment"
+        case .business: return "Business"
         case .rental: return "Rental"
+        case .sideHustle: return "Side Hustle"
+        case .service: return "Service"
         case .gift: return "Gift"
-        case .bonus: return "Bonus"
         case .pension: return "Pension"
-        case .dividends: return "Dividends"
         case .interest: return "Interest"
+        case .dividend: return "Dividend"
+        case .royalties: return "Royalties"
+        case .refund: return "Refund"
+        case .benefits: return "Benefits"
+        case .rewards: return "Rewards"
         case .other: return "Other"
         }
     }
@@ -44,31 +52,39 @@ enum IncomeCategory: String, CaseIterable {
     var iconName: String {
         switch self {
         case .salary: return "briefcase.fill"
-        case .freelance: return "laptopcomputer"
-        case .business: return "building.2.fill"
         case .investment: return "chart.line.uptrend.xyaxis"
+        case .business: return "building.2.fill"
         case .rental: return "house.and.flag.fill"
+        case .sideHustle: return "laptopcomputer"
+        case .service: return "wrench.and.screwdriver.fill"
         case .gift: return "gift.fill"
-        case .bonus: return "star.fill"
         case .pension: return "person.fill.checkmark"
-        case .dividends: return "percent"
         case .interest: return "banknote.fill"
+        case .dividend: return "percent"
+        case .royalties: return "music.note"
+        case .refund: return "arrow.counterclockwise.circle.fill"
+        case .benefits: return "shield.checkered"
+        case .rewards: return "star.fill"
         case .other: return "ellipsis.circle"
         }
     }
     
     var color: Color {
         switch self {
-        case .salary: return .blue
-        case .freelance: return .purple
-        case .business: return .green
-        case .investment: return .orange
-        case .rental: return .brown
+        case .salary: return .green
+        case .investment: return .blue
+        case .business: return .orange
+        case .rental: return .purple
+        case .sideHustle: return .red
+        case .service: return Color(.systemTeal)
         case .gift: return .pink
-        case .bonus: return .yellow
-        case .pension: return .gray
-        case .dividends: return .cyan
-        case .interest: return .mint
+        case .pension: return .indigo
+        case .interest: return .brown
+        case .dividend: return .cyan
+        case .royalties: return Color(.systemPurple)
+        case .refund: return Color(.systemGreen)
+        case .benefits: return Color(.systemGray)
+        case .rewards: return Color(.systemYellow)
         case .other: return .secondary
         }
     }
@@ -84,15 +100,19 @@ enum IncomeCategory: String, CaseIterable {
         
         switch lowercased {
         case "salary", "wage", "wages": return .salary
-        case "freelance", "freelancing": return .freelance
-        case "business": return .business
         case "investment", "investments": return .investment
+        case "business": return .business
         case "rental", "rent": return .rental
+        case "side hustle", "sidehustle", "freelance": return .sideHustle
+        case "service", "services": return .service
         case "gift", "gifts": return .gift
-        case "bonus": return .bonus
         case "pension": return .pension
-        case "dividends", "dividend": return .dividends
         case "interest": return .interest
+        case "dividend", "dividends": return .dividend
+        case "royalties", "royalty": return .royalties
+        case "refund", "refunds": return .refund
+        case "benefits", "benefit": return .benefits
+        case "rewards", "reward": return .rewards
         default: return .other
         }
     }
