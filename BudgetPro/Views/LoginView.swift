@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LoginView: View {
     @StateObject private var viewModel = LoginViewModel()
+    @EnvironmentObject private var coordinator: AuthenticationCoordinator
     @FocusState private var focusField: Field?
     
     enum Field: Hashable {
@@ -171,7 +172,7 @@ struct LoginView: View {
                         .foregroundColor(.gray)
                     
                     Button(action: {
-                        viewModel.showSignUp()
+                        viewModel.showSignUp(coordinator: coordinator)
                     }) {
                         Text("Sign Up")
                             .font(.sora(16, weight: .medium))
@@ -184,9 +185,6 @@ struct LoginView: View {
                 .padding(.bottom, 40)
                 
                 Spacer()
-            }
-            .sheet(isPresented: $viewModel.showingSignUp) {
-                SignUpView()
             }
         }
     }

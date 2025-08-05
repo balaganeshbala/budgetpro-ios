@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SignUpView: View {
     @StateObject private var viewModel = SignUpViewModel()
+    @EnvironmentObject private var coordinator: AuthenticationCoordinator
     @Environment(\.presentationMode) var presentationMode
     @FocusState private var focusedField: Field?
     

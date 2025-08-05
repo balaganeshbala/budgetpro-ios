@@ -25,18 +25,14 @@ struct EditBudgetView: View {
     
     var body: some View {
         VStack(spacing: 0) {
+            
+            totalBudgetCard
+            
             ScrollView {
-                VStack(spacing: 20) {
-                    // Total Budget Summary
-                    totalBudgetCard
-                    
-                    // Budget Categories
-                    budgetCategoriesSection
-                    
-                    Spacer(minLength: 20)
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 20)
+                // Budget Categories
+                budgetCategoriesSection
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 20)
             }
             .background(Color.gray.opacity(0.1))
             
@@ -47,7 +43,7 @@ struct EditBudgetView: View {
                 .background(Color.white)
         }
         .navigationTitle("Edit Budget")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline)
         .alert("Confirm Update", isPresented: $showingConfirmDialog) {
             Button("Cancel", role: .cancel) { }
             Button("Update") {
@@ -96,20 +92,14 @@ struct EditBudgetView: View {
                 Spacer()
                 
                 if viewModel.hasChanges {
-                    VStack(alignment: .trailing, spacing: 4) {
-                        Text("Changes")
-                            .font(.sora(12))
+                    HStack(spacing: 4) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 12))
                             .foregroundColor(.orange)
                         
-                        HStack(spacing: 4) {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .font(.system(size: 12))
-                                .foregroundColor(.orange)
-                            
-                            Text("Modified")
-                                .font(.sora(12, weight: .medium))
-                                .foregroundColor(.orange)
-                        }
+                        Text("Modified")
+                            .font(.sora(12, weight: .medium))
+                            .foregroundColor(.orange)
                     }
                 }
             }
@@ -135,7 +125,6 @@ struct EditBudgetView: View {
                         .scaleEffect(0.8)
                 }
             }
-            .padding(.horizontal, 16)
             
             LazyVStack(spacing: 12) {
                 ForEach(viewModel.editableBudgets.indices, id: \.self) { index in

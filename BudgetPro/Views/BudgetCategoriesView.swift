@@ -32,7 +32,7 @@ struct BudgetCategoriesView: View {
         }
         .background(Color.gray.opacity(0.1))
         .navigationTitle("\(monthName)")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(false)
     }
     

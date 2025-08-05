@@ -15,31 +15,22 @@ struct ProfileView: View {
     @State private var showingAbout = false
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(spacing: 20) {
-                    // User Info Card
-                    userInfoCard
-                    
-                    // Settings Options
-                    settingsOptionsCard
-                    
-                    Spacer(minLength: 100)
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 20)
+        ScrollView {
+            VStack(spacing: 20) {
+                // User Info Card
+                userInfoCard
+                
+                // Settings Options
+                settingsOptionsCard
+                
+                Spacer(minLength: 100)
             }
-            .background(Color.gray.opacity(0.1))
-            .navigationTitle("Profile")
-            .navigationBarTitleDisplayMode(.large)
-            .navigationBarItems(
-                trailing: Button("Done") {
-                    presentationMode.wrappedValue.dismiss()
-                }
-                .font(.sora(16, weight: .medium))
-                .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
-            )
+            .padding(.horizontal, 16)
+            .padding(.top, 20)
         }
+        .background(Color.gray.opacity(0.1))
+        .navigationTitle("Profile")
+        .navigationBarTitleDisplayMode(.inline)
         .alert("Sign Out", isPresented: $showingSignOutAlert) {
             Button("Cancel", role: .cancel) { }
             Button("Sign Out", role: .destructive) {

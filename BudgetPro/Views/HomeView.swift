@@ -2,9 +2,9 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
+    @EnvironmentObject private var coordinator: MainCoordinator
     @State private var selectedMonth = Calendar.current.component(.month, from: Date())
     @State private var selectedYear = Calendar.current.component(.year, from: Date())
-    @State private var showingProfile = false
 
     @State private var showingMonthPicker = false
     @State private var tempMonth = Calendar.current.component(.month, from: Date())
@@ -12,9 +12,8 @@ struct HomeView: View {
     @State private var hasLoadedInitialData = false
     
     var body: some View {
-        NavigationView {
+        GeometryReader { geometry in
             ZStack {
-                // Gray background that extends to full screen
                 Color.gray.opacity(0.1)
                     .ignoresSafeArea(.all)
                 
@@ -35,95 +34,25 @@ struct HomeView: View {
                             // Only show other sections if budget exists
                             if !viewModel.isLoading && !viewModel.budgetCategories.isEmpty {
                                 // Recent Expenses Section
-                                TransactionSection<Expense, TransactionRow<Expense, ExpenseDetailsView>, AddExpenseView, AllExpensesView>(
-                                    title: "Expenses",
-                                    items: viewModel.recentExpenses,
-                                    emptyStateIcon: "creditcard",
-                                    emptyStateTitle: "No expenses yet",
-                                    emptyStateSubtitle: "Add your first expense to track spending",
-                                    addButtonTitle: "Add Expense",
-                                    showMoreDetails: viewModel.recentExpenses.count > 0,
-                                    moreDetailsDestination: {
-                                        AllExpensesView(
-                                            expenses: viewModel.recentExpenses,
-                                            month: selectedMonth,
-                                            year: selectedYear
-                                        )
-                                    },
-                                    rowView: { expense in
-                                        TransactionRow<Expense, ExpenseDetailsView>(
-                                            title: expense.name,
-                                            amount: expense.amount,
-                                            dateString: expense.dateString,
-                                            categoryIcon: expense.categoryIcon,
-                                            categoryColor: expense.categoryColor,
-                                            iconShape: .roundedRectangle,
-                                            amountColor: .black,
-                                            showChevron: true,
-                                            destination: {
-                                                ExpenseDetailsView(expense: expense)
-                                            }
-                                        )
-                                    },
-                                    addView: {
-                                        AddExpenseView()
-                                    }
-                                )
+                                expensesSection
                                 
                                 // Recent Incomes Section
-                                TransactionSection<Income, TransactionRow<Income, IncomeDetailsView>, AddIncomeView, AllIncomesView>(
-                                    title: "Incomes",
-                                    items: viewModel.recentIncomes,
-                                    emptyStateIcon: "dollarsign.circle",
-                                    emptyStateTitle: "No incomes yet",
-                                    emptyStateSubtitle: "Add your income sources to track earnings",
-                                    addButtonTitle: "Add Income",
-                                    showMoreDetails: viewModel.recentIncomes.count > 0,
-                                    moreDetailsDestination: {
-                                        AllIncomesView(
-                                            incomes: viewModel.recentIncomes,
-                                            month: selectedMonth,
-                                            year: selectedYear
-                                        )
-                                    },
-                                    rowView: { income in
-                                        TransactionRow<Income, IncomeDetailsView>(
-                                            title: income.source,
-                                            amount: income.amount,
-                                            dateString: income.dateString,
-                                            categoryIcon: income.categoryIcon,
-                                            categoryColor: IncomeCategory.from(categoryName: income.category).color,
-                                            iconShape: .roundedRectangle,
-                                            amountColor: .black,
-                                            showChevron: true,
-                                            destination: {
-                                                IncomeDetailsView(income: income)
-                                            }
-                                        )
-                                    },
-                                    addView: {
-                                        AddIncomeView()
-                                    }
-                                )
+                                incomesSection
                                 
                                 // Options/Features Section
                                 optionsSection
                             }
-                            
-                            Spacer(minLength: 100)
                         }
                         .padding(.horizontal, 16)
                         .padding(.top, 20)
+                        .padding(.bottom, 20)
                     }
                 }
             }
-            .navigationBarHidden(true)
-            .refreshable {
-                await viewModel.refreshData(month: selectedMonth, year: selectedYear)
-            }
         }
-        .sheet(isPresented: $showingProfile) {
-            ProfileView()
+        .navigationBarHidden(true)
+        .refreshable {
+            await viewModel.refreshData(month: selectedMonth, year: selectedYear)
         }
 
         .overlay(
@@ -183,13 +112,253 @@ struct HomeView: View {
         }
     }
     
+    // MARK: - Expenses Section
+    private var expensesSection: some View {
+        VStack(spacing: 16) {
+            if viewModel.recentExpenses.isEmpty {
+                VStack(spacing: 16) {
+                    HStack {
+                        Text("Expenses")
+                            .font(.sora(18, weight: .semibold))
+                            .foregroundColor(.black)
+                        Spacer()
+                    }
+                    
+                    VStack(spacing: 16) {
+                        Image(systemName: "creditcard")
+                            .font(.system(size: 40))
+                            .foregroundColor(.gray.opacity(0.6))
+                        
+                        VStack(spacing: 8) {
+                            Text("No expenses yet")
+                                .font(.sora(16, weight: .medium))
+                                .foregroundColor(.gray)
+                            
+                            Text("Add your first expense to track spending")
+                                .font(.sora(14))
+                                .foregroundColor(.gray.opacity(0.8))
+                                .multilineTextAlignment(.center)
+                        }
+                        
+                        Button(action: {
+                            coordinator.navigate(to: .addExpense)
+                        }) {
+                            Text("Add Expense")
+                                .font(.sora(14, weight: .medium))
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 24)
+                                .padding(.vertical, 12)
+                                .background(Color.secondary)
+                                .cornerRadius(8)
+                        }
+                    }
+                    .padding(.vertical, 16)
+                }
+                .padding(16)
+                .background(Color.white)
+                .cornerRadius(16)
+                .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+            } else {
+                VStack(spacing: 16) {
+                    HStack {
+                        Text("Expenses")
+                            .font(.sora(18, weight: .semibold))
+                            .foregroundColor(.black)
+                        Spacer()
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                    
+                    VStack(spacing: 0) {
+                        ForEach(Array(viewModel.recentExpenses.prefix(5).enumerated()), id: \.offset) { index, expense in
+                            Button(action: {
+                                coordinator.navigate(to: .expenseDetails(expense: expense))
+                            }) {
+                                ExpenseRowView(expense: expense)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                            
+                            if index < min(viewModel.recentExpenses.count - 1, 4) {
+                                Divider()
+                                    .padding(.horizontal, 16)
+                            }
+                        }
+                        
+                        Button(action: {
+                            coordinator.navigate(to: .addExpense)
+                        }) {
+                            VStack {
+                                Divider()
+                                HStack {
+                                    Spacer()
+                                    Image(systemName: "plus")
+                                        .font(.system(size: 12, weight: .semibold))
+                                        .foregroundColor(Color.secondary)
+                                    Text("Add New")
+                                        .font(.sora(14, weight: .medium))
+                                        .foregroundColor(Color.secondary)
+                                    Spacer()
+                                }
+                                .padding(16)
+                            }
+                        }
+                        
+                        if !viewModel.recentExpenses.isEmpty {
+                            VStack {
+                                Divider()
+                                Button(action: {
+                                    coordinator.navigate(to: .allExpenses(expenses: viewModel.recentExpenses, month: selectedMonth, year: selectedYear))
+                                }) {
+                                    HStack {
+                                        Spacer()
+                                        Text("More Details")
+                                            .font(.sora(14, weight: .medium))
+                                            .foregroundColor(Color.secondary)
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 12))
+                                            .foregroundColor(Color.secondary)
+                                        Spacer()
+                                    }
+                                    .padding(16)
+                                }
+                            }
+                        }
+                    }
+                }
+                .background(Color.white)
+                .cornerRadius(16)
+                .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+            }
+        }
+    }
+    
+    // MARK: - Incomes Section  
+    private var incomesSection: some View {
+        VStack(spacing: 16) {
+            if viewModel.recentIncomes.isEmpty {
+                VStack(spacing: 16) {
+                    HStack {
+                        Text("Incomes")
+                            .font(.sora(18, weight: .semibold))
+                            .foregroundColor(.black)
+                        Spacer()
+                    }
+                    
+                    VStack(spacing: 16) {
+                        Image(systemName: "dollarsign.circle")
+                            .font(.system(size: 40))
+                            .foregroundColor(.gray.opacity(0.6))
+                        
+                        VStack(spacing: 8) {
+                            Text("No incomes yet")
+                                .font(.sora(16, weight: .medium))
+                                .foregroundColor(.gray)
+                            
+                            Text("Add your income sources to track earnings")
+                                .font(.sora(14))
+                                .foregroundColor(.gray.opacity(0.8))
+                                .multilineTextAlignment(.center)
+                        }
+                        
+                        Button(action: {
+                            coordinator.navigate(to: .addIncome)
+                        }) {
+                            Text("Add Income")
+                                .font(.sora(14, weight: .medium))
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 24)
+                                .padding(.vertical, 12)
+                                .background(Color.secondary)
+                                .cornerRadius(8)
+                        }
+                    }
+                    .padding(.vertical, 16)
+                }
+                .padding(16)
+                .background(Color.white)
+                .cornerRadius(16)
+                .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+            } else {
+                VStack(spacing: 16) {
+                    HStack {
+                        Text("Incomes")
+                            .font(.sora(18, weight: .semibold))
+                            .foregroundColor(.black)
+                        Spacer()
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                    
+                    VStack(spacing: 0) {
+                        ForEach(Array(viewModel.recentIncomes.prefix(5).enumerated()), id: \.offset) { index, income in
+                            Button(action: {
+                                coordinator.navigate(to: .incomeDetails(income: income))
+                            }) {
+                                IncomeRowView(income: income)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                            
+                            if index < min(viewModel.recentIncomes.count - 1, 4) {
+                                Divider()
+                                    .padding(.horizontal, 16)
+                            }
+                        }
+                        
+                        Button(action: {
+                            coordinator.navigate(to: .addIncome)
+                        }) {
+                            VStack {
+                                Divider()
+                                HStack {
+                                    Spacer()
+                                    Image(systemName: "plus")
+                                        .font(.system(size: 12, weight: .semibold))
+                                        .foregroundColor(Color.secondary)
+                                    Text("Add New")
+                                        .font(.sora(14, weight: .medium))
+                                        .foregroundColor(Color.secondary)
+                                    Spacer()
+                                }
+                                .padding(16)
+                            }
+                        }
+                        
+                        if !viewModel.recentIncomes.isEmpty {
+                            VStack {
+                                Divider()
+                                Button(action: {
+                                    coordinator.navigate(to: .allIncomes(incomes: viewModel.recentIncomes, month: selectedMonth, year: selectedYear))
+                                }) {
+                                    HStack {
+                                        Spacer()
+                                        Text("More Details")
+                                            .font(.sora(14, weight: .medium))
+                                            .foregroundColor(Color.secondary)
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 12))
+                                            .foregroundColor(Color.secondary)
+                                        Spacer()
+                                    }
+                                    .padding(16)
+                                }
+                            }
+                        }
+                    }
+                }
+                .background(Color.white)
+                .cornerRadius(16)
+                .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+            }
+        }
+    }
+    
     // MARK: - Header View
     private var headerView: some View {
         VStack(spacing: 0) {
             HStack {
                 // Profile Button
                 Button(action: {
-                    showingProfile = true
+                    coordinator.navigate(to: .profile)
                 }) {
                     Circle()
                         .fill(Color.secondary.opacity(0.2))
@@ -244,11 +413,9 @@ struct HomeView: View {
                 if !viewModel.budgetCategories.isEmpty {
                     // Edit Budget Button - Only show for current and future months
                     if !isPastMonth(month: selectedMonth, year: selectedYear) {
-                        NavigationLink(destination: EditBudgetView(
-                            budgetCategories: viewModel.budgetCategories,
-                            month: selectedMonth,
-                            year: selectedYear
-                        )) {
+                        Button(action: {
+                            coordinator.navigate(to: .editBudget(budgetCategories: viewModel.budgetCategories, month: selectedMonth, year: selectedYear))
+                        }) {
                             Label {
                                 Text("Edit")
                                     .font(.sora(14, weight: .semibold))
@@ -282,37 +449,32 @@ struct HomeView: View {
                 // Budget exists - show summary with remaining amount highlighted on top
                 VStack(spacing: 20) {
                     // Remaining Amount - Highlighted at the top
-                    VStack(spacing: 16) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Remaining Budget")
-                                    .font(.sora(18, weight: .medium))
-                                    .foregroundColor(.gray)
-                                
-                                Text("₹\(formatAmount(viewModel.totalBudget - viewModel.totalSpent))")
-                                    .font(.sora(30, weight: .bold))
-                                    .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : Color.primary)
-                            }
-                            
-                            Spacer()
-                        }
-                        .padding(20)
-                        .background(
-                            LinearGradient(
-                                gradient: Gradient(colors: [
-                                    viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.05) : Color.primary.opacity(0.05),
-                                    viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.1) : Color.primary.opacity(0.1)
-                                ]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .cornerRadius(16)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.2) : Color.primary.opacity(0.2), lineWidth: 1)
-                        )
+                    VStack(alignment: .center, spacing: 8) {
+                        Text("Remaining Budget")
+                            .font(.sora(18, weight: .medium))
+                            .foregroundColor(.gray)
+                        
+                        Text("₹\(formatAmount(viewModel.totalBudget - viewModel.totalSpent))")
+                            .font(.sora(30, weight: .bold))
+                            .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : Color.primary)
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding(20)
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.05) : Color.primary.opacity(0.05),
+                                viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.1) : Color.primary.opacity(0.1)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .cornerRadius(16)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.2) : Color.primary.opacity(0.2), lineWidth: 1)
+                    )
                     
                     // Budget Summary Row
                     HStack(spacing: 16) {
@@ -385,12 +547,9 @@ struct HomeView: View {
                     }
                     
                     // More Details Button
-                    NavigationLink(destination: BudgetCategoriesView(
-                        budgetCategories: viewModel.budgetCategories,
-                        totalBudget: viewModel.totalBudget,
-                        month: selectedMonth,
-                        year: selectedYear
-                    )) {
+                    Button(action: {
+                        coordinator.navigate(to: .budgetCategories(budgetCategories: viewModel.budgetCategories, totalBudget: viewModel.totalBudget, month: selectedMonth, year: selectedYear))
+                    }) {
                         HStack {
                             Text("View Budget Details")
                                 .font(.sora(14, weight: .medium))
@@ -543,7 +702,9 @@ struct HomeView: View {
                 .foregroundColor(.gray.opacity(0.8))
                 .multilineTextAlignment(.center)
             
-            NavigationLink(destination: CreateBudgetView(month: selectedMonth, year: selectedYear)) {
+            Button(action: {
+                coordinator.navigate(to: .createBudget(month: selectedMonth, year: selectedYear))
+            }) {
                 Text("Create Budget")
                     .font(.sora(14, weight: .medium))
                     .foregroundColor(.white)
@@ -557,285 +718,92 @@ struct HomeView: View {
     }
 }
 
-// MARK: - Reusable Transaction Section
-struct TransactionSection<T, RowView: View, AddView: View, MoreDetailsView: View>: View {
-    let title: String
-    let items: [T]
-    let emptyStateIcon: String
-    let emptyStateTitle: String
-    let emptyStateSubtitle: String
-    let addButtonTitle: String
-    let showMoreDetails: Bool
-    let moreDetailsDestination: (() -> MoreDetailsView)?
-    let rowView: (T) -> RowView
-    let addView: () -> AddView
+
+// MARK: - Row Views
+struct ExpenseRowView: View {
+    let expense: Expense
     
     var body: some View {
-        VStack(spacing: 16) {
-            if items.isEmpty {
-                // Header inside empty state card
-                VStack(spacing: 16) {
-                    // Header
-                    HStack {
-                        Text(title)
-                            .font(.sora(18, weight: .semibold))
-                            .foregroundColor(.black)
-                        
-                        Spacer()
-                    }
-                    
-                    // Empty state content
-                    VStack(spacing: 16) {
-                        Image(systemName: emptyStateIcon)
-                            .font(.system(size: 40))
-                            .foregroundColor(.gray.opacity(0.6))
-                        
-                        VStack(spacing: 8) {
-                            Text(emptyStateTitle)
-                                .font(.sora(16, weight: .medium))
-                                .foregroundColor(.gray)
-                            
-                            Text(emptyStateSubtitle)
-                                .font(.sora(14))
-                                .foregroundColor(.gray.opacity(0.8))
-                                .multilineTextAlignment(.center)
-                        }
-                        
-                        NavigationLink(destination: addView()) {
-                            Text(addButtonTitle)
-                                .font(.sora(14, weight: .medium))
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 24)
-                                .padding(.vertical, 12)
-                                .background(Color.secondary)
-                                .cornerRadius(8)
-                        }
-                    }
-                    .padding(.vertical, 16)
-                }
-                .padding(16)
-                .background(Color.white)
-                .cornerRadius(16)
-                .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
-            } else {
-                VStack(spacing: 16) {
-                    // Header
-                    HStack {
-                        Text(title)
-                            .font(.sora(18, weight: .semibold))
-                            .foregroundColor(.black)
-                        
-                        Spacer()
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 16)
-                    
-                    // Items list
-                    VStack(spacing: 0) {
-                        ForEach(Array(items.prefix(5).enumerated()), id: \.offset) { index, item in
-                            rowView(item)
-                            
-                            if index < min(items.count - 1, 4) {
-                                Divider()
-                                    .padding(.horizontal, 16)
-                            }
-                        }
-                        
-                        // Add New Button
-                        NavigationLink(destination: addView()) {
-                            VStack {
-                                Divider()
-                                HStack {
-                                    Spacer()
-                                    Image(systemName: "plus")
-                                        .font(.system(size: 12, weight: .semibold))
-                                        .foregroundColor(Color.secondary)
-                                    Text("Add New")
-                                        .font(.sora(14, weight: .medium))
-                                        .foregroundColor(Color.secondary)
-                                    Spacer()
-                                }
-                                .padding(16)
-                            }
-                        }
-                        
-                        // More Details Button (if applicable)
-                        if showMoreDetails && !items.isEmpty, let moreDetailsDestination = moreDetailsDestination {
-                            VStack {
-                                Divider()
-                                NavigationLink(destination: moreDetailsDestination()) {
-                                    HStack {
-                                        Spacer()
-                                        Text("More Details")
-                                            .font(.sora(14, weight: .medium))
-                                            .foregroundColor(Color.secondary)
-                                        Image(systemName: "chevron.right")
-                                            .font(.system(size: 12))
-                                            .foregroundColor(Color.secondary)
-                                        Spacer()
-                                    }
-                                    .padding(16)
-                                }
-                            }
-                        }
-                    }
-                }
-                .background(Color.white)
-                .cornerRadius(16)
-                .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        HStack(spacing: 10) {
+            RoundedRectangle(cornerRadius: 10, style: .circular)
+                .fill(expense.categoryColor.opacity(0.2))
+                .frame(width: 40, height: 40)
+                .overlay(
+                    Image(systemName: expense.categoryIcon)
+                        .foregroundColor(expense.categoryColor)
+                        .font(.system(size: 16))
+                )
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(expense.name)
+                    .font(.sora(14, weight: .medium))
+                    .foregroundColor(.black)
+                
+                Text(expense.dateString)
+                    .font(.sora(12))
+                    .foregroundColor(.gray)
             }
-        }
-    }
-}
-
-// MARK: - Supporting Views
-
-struct SectionHeader: View {
-    let title: String
-    let showMoreButton: Bool
-    let moreAction: (() -> Void)?
-    
-    init(title: String, showMoreButton: Bool = true, moreAction: (() -> Void)? = nil) {
-        self.title = title
-        self.showMoreButton = showMoreButton
-        self.moreAction = moreAction
-    }
-    
-    var body: some View {
-        HStack {
-            Text(title)
-                .font(.sora(18, weight: .semibold))
-                .foregroundColor(.black)
             
             Spacer()
             
-            if showMoreButton, let action = moreAction {
-                Button(action: action) {
-                    HStack(spacing: 4) {
-                        Text("More")
-                            .font(.sora(14))
-                            .foregroundColor(Color.primary)
-                        
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 12))
-                            .foregroundColor(Color.primary)
-                    }
-                }
-            }
+            Text("₹\(formatAmount(expense.amount))")
+                .font(.sora(14, weight: .semibold))
+                .foregroundColor(.black)
+            
+            Image(systemName: "chevron.right")
+                .font(.sora(14, weight: .semibold))
+                .foregroundStyle(Color.gray)
         }
         .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .contentShape(Rectangle())
+    }
+    
+    private func formatAmount(_ amount: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
 }
 
-struct EmptyStateCard: View {
-    let icon: String
-    let title: String
-    let subtitle: String
-    let buttonTitle: String
-    let action: () -> Void
+struct IncomeRowView: View {
+    let income: Income
     
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: icon)
-                .font(.system(size: 40))
-                .foregroundColor(.gray.opacity(0.6))
-            
-            VStack(spacing: 8) {
-                Text(title)
-                    .font(.sora(16, weight: .medium))
-                    .foregroundColor(.gray)
-                
-                Text(subtitle)
-                    .font(.sora(14))
-                    .foregroundColor(.gray.opacity(0.8))
-                    .multilineTextAlignment(.center)
-            }
-            
-            Button(action: action) {
-                Text(buttonTitle)
-                    .font(.sora(14, weight: .medium))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                    .background(Color.secondary)
-                    .cornerRadius(8)
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 32)
-        .padding(.horizontal, 16)
-        .background(Color.white)
-        .cornerRadius(16)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
-    }
-}
-
-// MARK: - Generic Transaction Row
-struct TransactionRow<T, Destination: View>: View {
-    let title: String
-    let amount: Double
-    let dateString: String
-    let categoryIcon: String
-    let categoryColor: Color?
-    let iconShape: IconShape
-    let amountColor: Color
-    let showChevron: Bool
-    let destination: () -> Destination
-    
-    enum IconShape {
-        case circle
-        case roundedRectangle
-    }
-    
-    var body: some View {
-        NavigationLink(destination: destination()) {
-            HStack(spacing: 10) {
-                // Category icon with dynamic shape
-                Group {
-                    switch iconShape {
-                    case .circle:
-                        Circle()
-                            .fill((categoryColor ?? Color.primary).opacity(0.2))
-                            .frame(width: 40, height: 40)
-                    case .roundedRectangle:
-                        RoundedRectangle(cornerRadius: 10, style: .circular)
-                            .fill((categoryColor ?? Color.primary).opacity(0.2))
-                            .frame(width: 40, height: 40)
-                    }
-                }
+        HStack(spacing: 10) {
+            RoundedRectangle(cornerRadius: 10, style: .circular)
+                .fill(IncomeCategory.from(categoryName: income.category).color.opacity(0.2))
+                .frame(width: 40, height: 40)
                 .overlay(
-                    Image(systemName: categoryIcon)
-                        .foregroundColor(categoryColor ?? Color.primary)
+                    Image(systemName: income.categoryIcon)
+                        .foregroundColor(IncomeCategory.from(categoryName: income.category).color)
                         .font(.system(size: 16))
                 )
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(income.source)
+                    .font(.sora(14, weight: .medium))
+                    .foregroundColor(.black)
                 
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(title)
-                        .font(.sora(14, weight: .medium))
-                        .foregroundColor(.black)
-                    
-                    Text(dateString)
-                        .font(.sora(12))
-                        .foregroundColor(.gray)
-                }
-                
-                Spacer()
-                
-                Text("₹\(formatAmount(amount))")
-                    .font(.sora(14, weight: .semibold))
-                    .foregroundColor(amountColor)
-                
-                if showChevron {
-                    Image(systemName: "chevron.right")
-                        .font(.sora(14, weight: .semibold))
-                        .foregroundStyle(Color.gray)
-                }
+                Text(income.dateString)
+                    .font(.sora(12))
+                    .foregroundColor(.gray)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .contentShape(Rectangle())
+            
+            Spacer()
+            
+            Text("₹\(formatAmount(income.amount))")
+                .font(.sora(14, weight: .semibold))
+                .foregroundColor(.black)
+            
+            Image(systemName: "chevron.right")
+                .font(.sora(14, weight: .semibold))
+                .foregroundStyle(Color.gray)
         }
-        .buttonStyle(PlainButtonStyle())
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .contentShape(Rectangle())
     }
     
     private func formatAmount(_ amount: Double) -> String {
@@ -879,79 +847,6 @@ struct OptionRow: View {
             .padding(.vertical, 16)
         }
         .buttonStyle(PlainButtonStyle())
-    }
-}
-
-struct MonthYearSelector: View {
-    @Binding var selectedMonth: Int
-    @Binding var selectedYear: Int
-    let onSelectionChanged: () -> Void
-    
-    private let monthNames = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-    
-    var body: some View {
-        HStack {
-            Spacer()
-            
-            Menu {
-                ForEach(1...12, id: \.self) { month in
-                    Button(action: {
-                        selectedMonth = month
-                        onSelectionChanged()
-                    }) {
-                        HStack {
-                            Text(monthNames[month])
-                            if selectedMonth == month {
-                                Image(systemName: "checkmark")
-                            }
-                        }
-                    }
-                }
-            } label: {
-                HStack {
-                    Text(monthNames[selectedMonth])
-                        .font(.sora(16, weight: .medium))
-                        .foregroundColor(.white)
-                    
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 12))
-                        .foregroundColor(.white)
-                }
-            }
-            
-            Text("-")
-                .font(.sora(16, weight: .medium))
-                .foregroundColor(.white)
-            
-            Menu {
-                ForEach((2020...2030).reversed(), id: \.self) { year in
-                    Button(action: {
-                        selectedYear = year
-                        onSelectionChanged()
-                    }) {
-                        HStack {
-                            Text("\(year)")
-                            if selectedYear == year {
-                                Image(systemName: "checkmark")
-                            }
-                        }
-                    }
-                }
-            } label: {
-                HStack {
-                    Text("\(selectedYear)")
-                        .font(.sora(16, weight: .medium))
-                        .foregroundColor(.white)
-                    
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 12))
-                        .foregroundColor(.white)
-                }
-            }
-            
-            Spacer()
-        }
     }
 }
 

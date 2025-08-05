@@ -50,7 +50,7 @@ struct AllExpensesView: View {
         }
         .background(Color.gray.opacity(0.1))
         .navigationTitle(monthYearTitle)
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             // Set navigation bar to white/system background
             let appearance = UINavigationBarAppearance()

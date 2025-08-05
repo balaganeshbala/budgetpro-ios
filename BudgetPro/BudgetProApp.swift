@@ -3,19 +3,22 @@ import SwiftUI
 @main
 struct BudgetProApp: App {
     init() {
-        // Configure status bar appearance
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor.white
+        // Configure navigation bar appearance
+        let navAppearance = UINavigationBarAppearance()
+        navAppearance.configureWithOpaqueBackground()
+        navAppearance.backgroundColor = UIColor.white
         
-        UINavigationBar.appearance().standardAppearance = appearance
-        UINavigationBar.appearance().scrollEdgeAppearance = appearance
-        UINavigationBar.appearance().compactAppearance = appearance
+        UINavigationBar.appearance().standardAppearance = navAppearance
+        UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
+        UINavigationBar.appearance().compactAppearance = navAppearance
+        
+        UITabBar.appearance().backgroundColor = UIColor.white
     }
     
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .tint(Color.secondary)
                 .preferredColorScheme(.light)
         }
     }
