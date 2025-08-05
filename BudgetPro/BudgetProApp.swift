@@ -12,22 +12,13 @@ struct BudgetProApp: App {
         UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
         UINavigationBar.appearance().compactAppearance = navAppearance
         
-        // Configure tab bar appearance to prevent transparency issues
-        let tabAppearance = UITabBarAppearance()
-        tabAppearance.configureWithOpaqueBackground()
-        tabAppearance.backgroundColor = UIColor.systemBackground
-        
-        UITabBar.appearance().standardAppearance = tabAppearance
-        UITabBar.appearance().scrollEdgeAppearance = tabAppearance
-        UITabBar.appearance().isTranslucent = false
-        
-        // Ensure tab bar doesn't add extra safe area padding
-        UITabBar.appearance().itemPositioning = .automatic
+        UITabBar.appearance().backgroundColor = UIColor.white
     }
     
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .tint(Color.secondary)
                 .preferredColorScheme(.light)
         }
     }

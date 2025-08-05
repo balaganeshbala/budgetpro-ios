@@ -268,7 +268,7 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
                         dismiss()
                     }) {
                         Image(systemName: "chevron.left")
-                            .foregroundColor(.primary)
+                            .foregroundColor(.secondary)
                             .font(.title3)
                     }
                 }

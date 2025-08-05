@@ -35,7 +35,7 @@ struct AboutView: View {
             }
             .background(Color.gray.opacity(0.1))
             .navigationTitle("About BudgetPro")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(
                 trailing: Button("Done") {
                     presentationMode.wrappedValue.dismiss()

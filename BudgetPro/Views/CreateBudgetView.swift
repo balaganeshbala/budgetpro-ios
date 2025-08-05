@@ -42,7 +42,7 @@ struct CreateBudgetView: View {
             }
             .background(Color.gray.opacity(0.1))
             .navigationTitle("Create Budget")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(
                 leading: Button("Cancel") {
                     presentationMode.wrappedValue.dismiss()

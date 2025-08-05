@@ -45,7 +45,7 @@ struct HomeView: View {
                         }
                         .padding(.horizontal, 16)
                         .padding(.top, 20)
-                        .padding(.bottom, 10)
+                        .padding(.bottom, 20)
                     }
                 }
             }
@@ -449,37 +449,32 @@ struct HomeView: View {
                 // Budget exists - show summary with remaining amount highlighted on top
                 VStack(spacing: 20) {
                     // Remaining Amount - Highlighted at the top
-                    VStack(spacing: 16) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Remaining Budget")
-                                    .font(.sora(18, weight: .medium))
-                                    .foregroundColor(.gray)
-                                
-                                Text("₹\(formatAmount(viewModel.totalBudget - viewModel.totalSpent))")
-                                    .font(.sora(30, weight: .bold))
-                                    .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : Color.primary)
-                            }
-                            
-                            Spacer()
-                        }
-                        .padding(20)
-                        .background(
-                            LinearGradient(
-                                gradient: Gradient(colors: [
-                                    viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.05) : Color.primary.opacity(0.05),
-                                    viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.1) : Color.primary.opacity(0.1)
-                                ]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .cornerRadius(16)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.2) : Color.primary.opacity(0.2), lineWidth: 1)
-                        )
+                    VStack(alignment: .center, spacing: 8) {
+                        Text("Remaining Budget")
+                            .font(.sora(18, weight: .medium))
+                            .foregroundColor(.gray)
+                        
+                        Text("₹\(formatAmount(viewModel.totalBudget - viewModel.totalSpent))")
+                            .font(.sora(30, weight: .bold))
+                            .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : Color.primary)
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding(20)
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.05) : Color.primary.opacity(0.05),
+                                viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.1) : Color.primary.opacity(0.1)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .cornerRadius(16)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.2) : Color.primary.opacity(0.2), lineWidth: 1)
+                    )
                     
                     // Budget Summary Row
                     HStack(spacing: 16) {
