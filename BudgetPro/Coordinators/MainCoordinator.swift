@@ -37,6 +37,7 @@ class MainCoordinator: Coordinator {
         case allExpenses(expenses: [Expense], month: Int, year: Int)
         case allIncomes(incomes: [Income], month: Int, year: Int)
         case budgetCategories(budgetCategories: [BudgetCategory], totalBudget: Double, month: Int, year: Int)
+        case savingsAnalysis(expenses: [Expense], incomes: [Income], totalBudget: Double, month: String, year: String)
         case about
     }
     
@@ -123,6 +124,9 @@ class MainCoordinator: Coordinator {
                 .environmentObject(self)
         case .budgetCategories(let budgetCategories, let totalBudget, let month, let year):
             BudgetCategoriesView(budgetCategories: budgetCategories, totalBudget: totalBudget, month: month, year: year)
+                .environmentObject(self)
+        case .savingsAnalysis(let expenses, let incomes, let totalBudget, let month, let year):
+            SavingsAnalysisScreen(expenses: expenses, incomes: incomes, totalBudget: totalBudget, month: month, year: year)
                 .environmentObject(self)
         case .about:
             AboutView()

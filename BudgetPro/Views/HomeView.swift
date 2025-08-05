@@ -595,7 +595,18 @@ struct HomeView: View {
                     iconColor: Color.primary,
                     title: "Savings Analysis",
                     action: {
-                        // Navigate to savings analysis
+                        let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                                         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+                        let monthString = monthNames[selectedMonth - 1]
+                        let yearString = String(selectedYear)
+                        
+                        coordinator.navigate(to: .savingsAnalysis(
+                            expenses: viewModel.recentExpenses,
+                            incomes: viewModel.recentIncomes,
+                            totalBudget: viewModel.totalBudget,
+                            month: monthString,
+                            year: yearString
+                        ))
                     }
                 )
             }
