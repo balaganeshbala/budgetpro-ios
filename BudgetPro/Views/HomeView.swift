@@ -851,11 +851,12 @@ struct OptionRow: View {
                 Spacer()
                 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12))
+                    .font(.system(size: 12)) 
                     .foregroundColor(.gray)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 16)
+            .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
     }

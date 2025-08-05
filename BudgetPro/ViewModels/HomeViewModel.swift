@@ -213,7 +213,6 @@ class HomeViewModel: ObservableObject {
                 .gte("date", value: getMonthStartDate(month: month, year: year))
                 .lt("date", value: getMonthEndDate(month: month, year: year))
                 .order("date", ascending: false)
-                .limit(10)
                 .execute()
                 .value
             

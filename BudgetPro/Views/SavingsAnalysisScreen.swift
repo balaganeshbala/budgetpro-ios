@@ -45,15 +45,15 @@ struct SavingsAnalysisScreen: View {
             if incomes.isEmpty {
                 VStack(spacing: 16) {
                     Image(systemName: "chart.line.uptrend.xyaxis")
-                        .font(.system(size: 60))
+                        .font(.sora(60))
                         .foregroundColor(.gray)
                     
                     Text("No Income Data Available")
-                        .font(.system(size: 18, weight: .semibold, design: .rounded))
+                        .font(.sora(18, weight: .semibold))
                         .foregroundColor(.primary)
                     
                     Text("Add income entries to view your savings analysis.")
-                        .font(.system(size: 14, design: .rounded))
+                        .font(.sora(14))
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
                 }
@@ -85,7 +85,6 @@ struct SavingsAnalysisScreen: View {
         .navigationTitle("\(month) \(year)")
         .navigationBarTitleDisplayMode(.inline)
     }
-    
 
 }
 
@@ -96,13 +95,13 @@ struct SectionHeader: View {
     var body: some View {
         HStack {
             Text(text)
-                .font(.system(size: 20, weight: .bold, design: .rounded))
+                .font(.sora(20, weight: .bold))
             Spacer()
         }
     }
 }
 
-// MARK: - Savings Summary Card
+// MARK: - Redesigned Savings Summary Card
 struct SavingsSummaryCard: View {
     let totalIncome: Double
     let effectiveExpenses: Double
@@ -110,49 +109,138 @@ struct SavingsSummaryCard: View {
     let savingsRate: Double
     
     var body: some View {
-        VStack(spacing: 24) {
-            HStack(spacing: 16) {
-                SummaryItem(
-                    title: "Total Income",
-                    value: CommonHelpers.formatCurrency(totalIncome),
-                    color: Color(red: 0.259, green: 0.561, blue: 0.490),
-                    icon: "arrow.up"
+        VStack(spacing: 12) {
+            // First row: Net Savings and Savings Rate
+            HStack(spacing: 12) {
+                ModernSummaryItem(
+                    title: "Net Savings",
+                    value: CommonHelpers.formatCurrencyWithSign(savings, showSign: false),
+                    color: savings >= 0 ? Color(red: 0.259, green: 0.561, blue: 0.490) : .red,
+                    icon: savings >= 0 ? "arrow.up.circle.fill" : "arrow.down.circle.fill",
+                    isPositive: savings >= 0
                 )
                 
-                SummaryItem(
-                    title: "Effective Expenses",
-                    value: CommonHelpers.formatCurrency(effectiveExpenses),
-                    color: Color(red: 1.0, green: 0.420, blue: 0.420),
-                    icon: "arrow.down"
-                )
-            }
-            
-            HStack(spacing: 16) {
-                SummaryItem(
-                    title: "Balance",
-                    value: CommonHelpers.formatCurrencyWithSign(savings),
-                    color: savings >= 0 ? .primary : .red,
-                    icon: savings >= 0 ? "trending.up" : "trending.down"
-                )
-                
-                SummaryItem(
+                ModernSummaryItem(
                     title: "Savings Rate",
                     value: String(format: "%.1f%%", savingsRate),
                     color: CommonHelpers.getSavingsRateColor(savingsRate),
-                    icon: CommonHelpers.getSavingsRateIcon(savingsRate)
+                    icon: "percent",
+                    isPositive: savingsRate >= 0
+                )
+            }
+            
+            // Second row: Income and Expenses
+            HStack(spacing: 12) {
+                ModernSummaryItem(
+                    title: "Income",
+                    value: CommonHelpers.formatCurrency(totalIncome),
+                    color: Color(red: 0.259, green: 0.561, blue: 0.490),
+                    icon: "plus.circle.fill",
+                    isPositive: true
+                )
+                
+                ModernSummaryItem(
+                    title: "Expenses",
+                    value: CommonHelpers.formatCurrency(effectiveExpenses),
+                    color: Color(red: 1.0, green: 0.420, blue: 0.420),
+                    icon: "minus.circle.fill",
+                    isPositive: false
                 )
             }
         }
-        .padding(16)
-        .background(Color.white)
-        .cornerRadius(16)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        .padding(20)
+        .background(
+            LinearGradient(
+                gradient: Gradient(colors: [Color.white, Color.gray.opacity(0.02)]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
+        .cornerRadius(20)
+        .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
+        .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
     }
-    
-
 }
 
-// MARK: - Summary Item
+// MARK: - Compact Metric Card
+struct CompactMetricCard: View {
+    let title: String
+    let value: String
+    let color: Color
+    let icon: String
+    
+    var body: some View {
+        HStack(spacing: 10) {
+            // Icon
+            Image(systemName: icon)
+                .font(.sora(16, weight: .medium))
+                .foregroundColor(color)
+                .frame(width: 28, height: 28)
+                .background(color.opacity(0.1))
+                .clipShape(Circle())
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.sora(11, weight: .medium))
+                    .foregroundColor(Color.gray)
+                
+                Text(value)
+                    .font(.sora(14, weight: .bold))
+                    .foregroundColor(color)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+            
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(color: color.opacity(0.08), radius: 1, x: 0, y: 1)
+    }
+}
+
+// MARK: - Modern Summary Item
+struct ModernSummaryItem: View {
+    let title: String
+    let value: String
+    let color: Color
+    let icon: String
+    let isPositive: Bool
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            // Icon with background
+            Image(systemName: icon)
+                .font(.sora(20, weight: .medium))
+                .foregroundColor(color)
+                .frame(width: 40, height: 40)
+                .background(color.opacity(0.1))
+                .clipShape(Circle())
+            
+            VStack(spacing: 4) {
+                Text(title)
+                    .font(.sora(12, weight: .medium))
+                    .foregroundColor(Color.gray)
+                
+                Text(value)
+                    .font(.sora(16, weight: .bold))
+                    .foregroundColor(color)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 16)
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: color.opacity(0.1), radius: 2, x: 0, y: 1)
+    }
+}
+
+// MARK: - Summary Item (Legacy - keeping for compatibility)
 struct SummaryItem: View {
     let title: String
     let value: String
@@ -172,16 +260,16 @@ struct SummaryItem: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 6) {
                 Image(systemName: icon)
-                    .font(.system(size: 14))
+                    .font(.sora(14))
                     .foregroundColor(color)
                 
                 Text(title)
-                    .font(.system(size: 14, design: .rounded))
+                    .font(.sora(14))
                     .foregroundColor(.gray)
             }
             
             Text(prefix + value)
-                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .font(.sora(16, weight: .bold))
                 .foregroundColor(color)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -196,12 +284,12 @@ struct SavingsRateIndicator: View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Savings Rate")
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
+                    .font(.sora(16, weight: .semibold))
                     .foregroundColor(.black)
                 
                 Text("Financial experts recommend saving at least 20% of your income.")
                     .lineSpacing(4)
-                    .font(.system(size: 14, design: .rounded))
+                    .font(.sora(14))
                     .foregroundColor(.gray)
             }
             
@@ -209,7 +297,7 @@ struct SavingsRateIndicator: View {
                 HStack {
                     Spacer()
                     Text(String(format: "%.1f%%", savingsRate))
-                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                        .font(.sora(13, weight: .bold))
                         .foregroundColor(CommonHelpers.getSavingsRateColor(savingsRate))
                 }
                 
@@ -246,19 +334,19 @@ struct SavingsRateIndicator: View {
                 // Labels below progress bar
                 HStack {
                     Text("0%")
-                        .font(.system(size: 12, design: .rounded))
+                        .font(.sora(12))
                         .foregroundColor(.gray)
                     
                     Spacer()
                     
                     Text("20%")
-                        .font(.system(size: 12, design: .rounded))
+                        .font(.sora(12))
                         .foregroundColor(.gray)
                     
                     Spacer()
                     
                     Text("40%")
-                        .font(.system(size: 12, design: .rounded))
+                        .font(.sora(12))
                         .foregroundColor(.gray)
                 }
                 .padding(.top, 8)
@@ -267,10 +355,10 @@ struct SavingsRateIndicator: View {
                 HStack(spacing: 12) {
                     Image(systemName: CommonHelpers.getSavingsRateIcon(savingsRate))
                         .foregroundColor(CommonHelpers.getSavingsRateColor(savingsRate))
-                        .font(.system(size: 16))
+                        .font(.sora(16))
                     
                     Text(CommonHelpers.getSavingsRateMessage(savingsRate))
-                        .font(.system(size: 14, design: .rounded))
+                        .font(.sora(14))
                         .foregroundColor(CommonHelpers.getSavingsRateColor(savingsRate))
                         .lineSpacing(4)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -313,7 +401,7 @@ struct SavingsRecommendations: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Recommendations")
-                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                .font(.sora(16, weight: .semibold))
                 .foregroundColor(.black)
             
             VStack(spacing: 16) {
@@ -353,7 +441,7 @@ struct RecommendationItem: View {
         HStack(alignment: .top, spacing: 12) {
             VStack {
                 Image(systemName: icon)
-                    .font(.system(size: 20))
+                    .font(.sora(20))
                     .foregroundColor(color)
                     .frame(width: 36, height: 36)
                     .background(color.opacity(0.1))
@@ -363,11 +451,11 @@ struct RecommendationItem: View {
             
             VStack(alignment: .leading, spacing: 8) {
                 Text(title)
-                    .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    .font(.sora(14, weight: .semibold))
                     .foregroundColor(.black)
                 
                 Text(description)
-                    .font(.system(size: 14, design: .rounded))
+                    .font(.sora(14))
                     .foregroundColor(.gray)
                     .fixedSize(horizontal: false, vertical: true)
                     .lineSpacing(4)
