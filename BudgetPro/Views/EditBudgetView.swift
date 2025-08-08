@@ -13,6 +13,7 @@ struct EditBudgetView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showingSuccessAlert = false
     @State private var showingConfirmDialog = false
+    @State private var keyboardHeight: CGFloat = 0
     
     let month: Int
     let year: Int
@@ -34,16 +35,17 @@ struct EditBudgetView: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 20)
             }
+            .scrollDismissesKeyboard(.interactively)
             .background(Color.gray.opacity(0.1))
-            
-            // Update Button at bottom
-            updateButton
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
-                .background(Color.white)
         }
+
         .navigationTitle("Edit Budget")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                toolbarUpdateButton
+            }
+        }
         .alert("Confirm Update", isPresented: $showingConfirmDialog) {
             Button("Cancel", role: .cancel) { }
             Button("Update") {
@@ -77,37 +79,59 @@ struct EditBudgetView: View {
     
     // MARK: - Total Budget Card
     private var totalBudgetCard: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 0) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Total Budget")
                         .font(.sora(14))
                         .foregroundColor(.gray)
                     
-                    Text("₹\(Int(viewModel.totalBudget))")
-                        .font(.sora(24, weight: .bold))
-                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                    if viewModel.hasChanges {
+                        // Show both old and new budget when there are changes
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack(spacing: 8) {
+                                Text("₹\(Int(viewModel.totalBudget))")
+                                    .font(.sora(24, weight: .bold))
+                                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                                
+                                Text("(Updated)")
+                                    .font(.sora(12, weight: .medium))
+                                    .foregroundColor(.orange)
+                            }
+                            
+                            HStack(spacing: 4) {
+                                Text("was ₹\(Int(originalTotalBudget))")
+                                    .font(.sora(14))
+                                    .foregroundColor(.gray)
+                                    .strikethrough()
+                                
+                                let difference = viewModel.totalBudget - originalTotalBudget
+                                Text(difference >= 0 ? "+₹\(Int(abs(difference)))" : "-₹\(Int(abs(difference)))")
+                                    .font(.sora(12, weight: .semibold))
+                                    .foregroundColor(difference >= 0 ? .green : .red)
+                            }
+                        }
+                    } else {
+                        // Show normal budget when no changes
+                        Text("₹\(Int(viewModel.totalBudget))")
+                            .font(.sora(24, weight: .bold))
+                            .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                    }
                 }
                 
                 Spacer()
-                
-                if viewModel.hasChanges {
-                    HStack(spacing: 4) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .font(.system(size: 12))
-                            .foregroundColor(.orange)
-                        
-                        Text("Modified")
-                            .font(.sora(12, weight: .medium))
-                            .foregroundColor(.orange)
-                    }
-                }
             }
+            .padding(16)
+            .frame(maxWidth: .infinity)
+
+            Divider()
         }
-        .padding(16)
         .background(Color.white)
-        .cornerRadius(12)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+    }
+    
+    // MARK: - Computed Properties
+    private var originalTotalBudget: Double {
+        return viewModel.originalBudgets.values.reduce(0, +)
     }
     
     // MARK: - Budget Categories Section
@@ -141,8 +165,8 @@ struct EditBudgetView: View {
         }
     }
     
-    // MARK: - Update Button
-    private var updateButton: some View {
+    // MARK: - Toolbar Update Button
+    private var toolbarUpdateButton: some View {
         Button(action: {
             if viewModel.hasChanges {
                 showingConfirmDialog = true
@@ -150,28 +174,21 @@ struct EditBudgetView: View {
                 viewModel.errorMessage = "No changes made to the budget"
             }
         }) {
-            HStack {
-                if viewModel.isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .scaleEffect(0.8)
-                } else {
-                    Text("Update Budget")
-                        .font(.sora(16, weight: .semibold))
-                        .foregroundColor(.white)
-                }
+            if viewModel.isLoading {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .secondary))
+                    .scaleEffect(0.8)
+            } else {
+                Text("Update")
+                    .font(.sora(15, weight: .semibold))
+                    .foregroundColor(
+                        viewModel.canUpdate && viewModel.hasChanges && !viewModel.isLoading
+                            ? .secondary
+                            : .gray
+                    )
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 55)
-            .background(
-                viewModel.canUpdate && viewModel.hasChanges && !viewModel.isLoading
-                    ? Color.secondary
-                    : Color.gray.opacity(0.6)
-            )
-            .cornerRadius(12)
         }
         .disabled(!viewModel.canUpdate || !viewModel.hasChanges || viewModel.isLoading)
-        .padding(.top, 16)
     }
     
     private var monthName: String {

@@ -11,10 +11,12 @@ import SwiftUI
 struct BudgetCategoriesView: View {
     let budgetCategories: [BudgetCategory]
     let totalBudget: Double
+    let expenses: [Expense]
     let month: Int
     let year: Int
     
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject private var coordinator: MainCoordinator
     
     var body: some View {
         ScrollView {
@@ -69,11 +71,15 @@ struct BudgetCategoriesView: View {
                 
                 Spacer()
             }
-            .padding(.horizontal, 16)
             
             LazyVStack(spacing: 12) {
                 ForEach(sortedCategories) { category in
-                    BudgetCategoryCard(category: category, totalBudget: totalBudget)
+                    Button(action: {
+                        coordinator.navigate(to: .categoryDetail(category: category, expenses: expenses, month: month, year: year))
+                    }) {
+                        BudgetCategoryCard(category: category, totalBudget: totalBudget)
+                    }
+                    .buttonStyle(PlainButtonStyle())
                 }
             }
         }
@@ -244,9 +250,11 @@ struct BudgetCategoriesView_Previews: PreviewProvider {
                     BudgetCategory(id: "3", name: "Entertainment", budget: 5000, spent: 3200)
                 ],
                 totalBudget: 28000,
+                expenses: [],
                 month: 7,
                 year: 2025
             )
         }
+        .environmentObject(MainCoordinator())
     }
 }

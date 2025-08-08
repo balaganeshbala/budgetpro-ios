@@ -548,7 +548,7 @@ struct HomeView: View {
                     
                     // More Details Button
                     Button(action: {
-                        coordinator.navigate(to: .budgetCategories(budgetCategories: viewModel.budgetCategories, totalBudget: viewModel.totalBudget, month: selectedMonth, year: selectedYear))
+                        coordinator.navigate(to: .budgetCategories(budgetCategories: viewModel.budgetCategories, totalBudget: viewModel.totalBudget, expenses: viewModel.recentExpenses, month: selectedMonth, year: selectedYear))
                     }) {
                         HStack {
                             Text("View Budget Details")

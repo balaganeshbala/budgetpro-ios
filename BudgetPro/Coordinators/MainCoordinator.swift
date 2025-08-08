@@ -36,7 +36,8 @@ class MainCoordinator: Coordinator {
         case incomeDetails(income: Income)
         case allExpenses(expenses: [Expense], month: Int, year: Int)
         case allIncomes(incomes: [Income], month: Int, year: Int)
-        case budgetCategories(budgetCategories: [BudgetCategory], totalBudget: Double, month: Int, year: Int)
+        case budgetCategories(budgetCategories: [BudgetCategory], totalBudget: Double, expenses: [Expense], month: Int, year: Int)
+        case categoryDetail(category: BudgetCategory, expenses: [Expense], month: Int, year: Int)
         case savingsAnalysis(expenses: [Expense], incomes: [Income], totalBudget: Double, month: String, year: String)
         case about
     }
@@ -122,8 +123,11 @@ class MainCoordinator: Coordinator {
         case .allIncomes(let incomes, let month, let year):
             AllIncomesView(incomes: incomes, month: month, year: year)
                 .environmentObject(self)
-        case .budgetCategories(let budgetCategories, let totalBudget, let month, let year):
-            BudgetCategoriesView(budgetCategories: budgetCategories, totalBudget: totalBudget, month: month, year: year)
+        case .budgetCategories(let budgetCategories, let totalBudget, let expenses, let month, let year):
+            BudgetCategoriesView(budgetCategories: budgetCategories, totalBudget: totalBudget, expenses: expenses, month: month, year: year)
+                .environmentObject(self)
+        case .categoryDetail(let category, let expenses, let month, let year):
+            CategoryDetailView(category: category, expenses: expenses, month: month, year: year)
                 .environmentObject(self)
         case .savingsAnalysis(let expenses, let incomes, let totalBudget, let month, let year):
             SavingsAnalysisScreen(expenses: expenses, incomes: incomes, totalBudget: totalBudget, month: month, year: year)
