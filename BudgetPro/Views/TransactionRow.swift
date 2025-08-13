@@ -42,7 +42,7 @@ struct TransactionRow<T, Destination: View>: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
                         .font(.sora(14, weight: .medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.primaryText)
                     
                     Text(dateString)
                         .font(.sora(12))

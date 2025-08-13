@@ -14,7 +14,7 @@ struct HomeView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Color.gray.opacity(0.1)
+                Color.groupedBackground
                     .ignoresSafeArea(.all)
                 
                 VStack(spacing: 0) {
@@ -92,7 +92,7 @@ struct HomeView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .incomeDataChanged)) { _ in
-            // Only refresh when income data actually changes
+        // Only refresh when income data actually changes
             Task {
                 await viewModel.refreshData(month: selectedMonth, year: selectedYear)
             }
@@ -120,23 +120,23 @@ struct HomeView: View {
                     HStack {
                         Text("Expenses")
                             .font(.sora(18, weight: .semibold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.primaryText)
                         Spacer()
                     }
                     
                     VStack(spacing: 16) {
                         Image(systemName: "creditcard")
                             .font(.system(size: 40))
-                            .foregroundColor(.gray.opacity(0.6))
+                            .foregroundColor(.secondaryText.opacity(0.6))
                         
                         VStack(spacing: 8) {
                             Text("No expenses yet")
                                 .font(.sora(16, weight: .medium))
-                                .foregroundColor(.gray)
+                                .foregroundColor(.secondaryText)
                             
                             Text("Add your first expense to track spending")
                                 .font(.sora(14))
-                                .foregroundColor(.gray.opacity(0.8))
+                                .foregroundColor(.tertiaryText)
                                 .multilineTextAlignment(.center)
                         }
                         
@@ -155,15 +155,15 @@ struct HomeView: View {
                     .padding(.vertical, 16)
                 }
                 .padding(16)
-                .background(Color.white)
+                .background(Color.cardBackground)
                 .cornerRadius(16)
-                .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
             } else {
                 VStack(spacing: 16) {
                     HStack {
                         Text("Expenses")
                             .font(.sora(18, weight: .semibold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.primaryText)
                         Spacer()
                     }
                     .padding(.horizontal, 16)
@@ -225,9 +225,9 @@ struct HomeView: View {
                         }
                     }
                 }
-                .background(Color.white)
+                .background(Color.cardBackground)
                 .cornerRadius(16)
-                .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
             }
         }
     }
@@ -240,23 +240,23 @@ struct HomeView: View {
                     HStack {
                         Text("Incomes")
                             .font(.sora(18, weight: .semibold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.primaryText)
                         Spacer()
                     }
                     
                     VStack(spacing: 16) {
                         Image(systemName: "dollarsign.circle")
                             .font(.system(size: 40))
-                            .foregroundColor(.gray.opacity(0.6))
+                            .foregroundColor(.secondaryText.opacity(0.6))
                         
                         VStack(spacing: 8) {
                             Text("No incomes yet")
                                 .font(.sora(16, weight: .medium))
-                                .foregroundColor(.gray)
+                                .foregroundColor(.secondaryText)
                             
                             Text("Add your income sources to track earnings")
                                 .font(.sora(14))
-                                .foregroundColor(.gray.opacity(0.8))
+                                .foregroundColor(.tertiaryText)
                                 .multilineTextAlignment(.center)
                         }
                         
@@ -275,15 +275,15 @@ struct HomeView: View {
                     .padding(.vertical, 16)
                 }
                 .padding(16)
-                .background(Color.white)
+                .background(Color.cardBackground)
                 .cornerRadius(16)
-                .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
             } else {
                 VStack(spacing: 16) {
                     HStack {
                         Text("Incomes")
                             .font(.sora(18, weight: .semibold))
-                            .foregroundColor(.black)
+                            .foregroundColor(.primaryText)
                         Spacer()
                     }
                     .padding(.horizontal, 16)
@@ -345,9 +345,9 @@ struct HomeView: View {
                         }
                     }
                 }
-                .background(Color.white)
+                .background(Color.cardBackground)
                 .cornerRadius(16)
-                .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
             }
         }
     }
@@ -396,48 +396,24 @@ struct HomeView: View {
             
             Divider()
         }
-        .background(Color.white)
+        .background(Color.cardBackground)
     }
     
     // MARK: - Budget Overview Card
+    @ViewBuilder
     private var budgetOverviewCard: some View {
-        VStack(spacing: 16) {
-            // Header
-            HStack {
-                Text("Budget Overview")
-                    .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.black)
-                
-                Spacer()
-                
-                if !viewModel.budgetCategories.isEmpty {
-                    // Edit Budget Button - Only show for current and future months
-                    if !isPastMonth(month: selectedMonth, year: selectedYear) {
-                        Button(action: {
-                            coordinator.navigate(to: .editBudget(budgetCategories: viewModel.budgetCategories, month: selectedMonth, year: selectedYear))
-                        }) {
-                            Label {
-                                Text("Edit")
-                                    .font(.sora(14, weight: .semibold))
-                            } icon: {
-                                if #available(iOS 16.0, *) {
-                                    Image(systemName: "pencil")
-                                        .fontWeight(.bold)
-                                } else {
-                                    // Fallback on earlier versions
-                                }
-                            }
-                            .foregroundColor(Color.secondary)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.secondary.opacity(0.1))
-                            .cornerRadius(16)
-                        }
-                    }
+        if viewModel.budgetCategories.isEmpty {
+            // No budget state - show custom empty state
+            VStack(spacing: 16) {
+                // Header
+                HStack {
+                    Text("Budget Overview")
+                        .font(.sora(18, weight: .semibold))
+                        .foregroundColor(.primaryText)
+                    
+                    Spacer()
                 }
-            }
-            
-            if viewModel.budgetCategories.isEmpty {
+                
                 if isPastMonth(month: selectedMonth, year: selectedYear) {
                     // Past month no budget state
                     pastMonthNoBudgetState
@@ -445,132 +421,26 @@ struct HomeView: View {
                     // Current/future month no budget state
                     currentMonthNoBudgetState
                 }
-            } else {
-                // Budget exists - show summary with remaining amount highlighted on top
-                VStack(spacing: 20) {
-                    // Remaining Amount - Highlighted at the top
-                    VStack(alignment: .center, spacing: 8) {
-                        Text("Remaining Budget")
-                            .font(.sora(18, weight: .medium))
-                            .foregroundColor(.gray)
-                        
-                        Text("₹\(formatAmount(viewModel.totalBudget - viewModel.totalSpent))")
-                            .font(.sora(30, weight: .bold))
-                            .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : Color.primary)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(20)
-                    .background(
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.05) : Color.primary.opacity(0.05),
-                                viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.1) : Color.primary.opacity(0.1)
-                            ]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .cornerRadius(16)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.2) : Color.primary.opacity(0.2), lineWidth: 1)
-                    )
-                    
-                    // Budget Summary Row
-                    HStack(spacing: 16) {
-                        // Total Budget
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Total Budget")
-                                .font(.sora(14))
-                                .foregroundColor(.gray)
-                            
-                            Text("₹\(formatAmount(viewModel.totalBudget))")
-                                .font(.sora(20, weight: .semibold))
-                                .foregroundColor(.black)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        Divider()
-                            .frame(height: 30)
-                        
-                        // Total Spent
-                        VStack(alignment: .trailing, spacing: 4) {
-                            Text("Total Spent")
-                                .font(.sora(14))
-                                .foregroundColor(.gray)
-                            
-                            Text("₹\(formatAmount(viewModel.totalSpent))")
-                                .font(.sora(20, weight: .semibold))
-                                .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : .orange)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                    }
-                    
-                    // Progress Bar with Percentage
-                    VStack(spacing: 8) {
-                        HStack {
-                            Text("Budget Usage")
-                                .font(.sora(14, weight: .medium))
-                                .foregroundColor(.gray)
-                            
-                            Spacer()
-                            
-                            Text("\(Int((viewModel.totalSpent / max(viewModel.totalBudget, 1)) * 100))%")
-                                .font(.sora(16, weight: .bold))
-                                .foregroundColor(viewModel.totalSpent > viewModel.totalBudget ? .red : .orange)
-                        }
-                        
-                        GeometryReader { geometry in
-                            ZStack(alignment: .leading) {
-                                Rectangle()
-                                    .fill(Color.gray.opacity(0.15))
-                                    .frame(height: 10)
-                                    .cornerRadius(5)
-                                
-                                Rectangle()
-                                    .fill(
-                                        LinearGradient(
-                                            gradient: Gradient(colors: [
-                                                viewModel.totalSpent > viewModel.totalBudget ? Color.red : Color.orange,
-                                                viewModel.totalSpent > viewModel.totalBudget ? Color.red.opacity(0.8) : Color.orange.opacity(0.8)
-                                            ]),
-                                            startPoint: .leading,
-                                            endPoint: .trailing
-                                        )
-                                    )
-                                    .frame(width: min(geometry.size.width, geometry.size.width * (viewModel.totalSpent / max(viewModel.totalBudget, 1))), height: 10)
-                                    .cornerRadius(5)
-                                    .animation(.easeInOut(duration: 0.5), value: viewModel.totalSpent)
-                            }
-                        }
-                        .frame(height: 10)
-                    }
-                    
-                    // More Details Button
-                    Button(action: {
-                        coordinator.navigate(to: .budgetCategories(budgetCategories: viewModel.budgetCategories, totalBudget: viewModel.totalBudget, expenses: viewModel.recentExpenses, month: selectedMonth, year: selectedYear))
-                    }) {
-                        HStack {
-                            Text("View Budget Details")
-                                .font(.sora(14, weight: .medium))
-                                .foregroundColor(Color.secondary)
-                            
-                            Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(Color.secondary)
-                        }
-                        .padding(.vertical, 16)
-                        .padding(.horizontal, 4)
-                    }
-                }
             }
+            .padding(16)
+            .background(Color.cardBackground)
+            .cornerRadius(16)
+            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
+        } else {
+            // Budget exists - use reusable component
+            BudgetOverviewCard(
+                totalBudget: viewModel.totalBudget,
+                totalSpent: viewModel.totalSpent,
+                showEditButton: !isPastMonth(month: selectedMonth, year: selectedYear),
+                showDetailsButton: true,
+                onEditTapped: {
+                    coordinator.navigate(to: .editBudget(budgetCategories: viewModel.budgetCategories, month: selectedMonth, year: selectedYear))
+                },
+                onDetailsTapped: {
+                    coordinator.navigate(to: .budgetCategories(budgetCategories: viewModel.budgetCategories, totalBudget: viewModel.totalBudget, expenses: viewModel.recentExpenses, month: selectedMonth, year: selectedYear))
+                }
+            )
         }
-        .padding(16)
-        .background(Color.white)
-        .cornerRadius(16)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     
@@ -581,7 +451,7 @@ struct HomeView: View {
             HStack {
                 Text("Quick Actions")
                     .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Spacer()
             }
@@ -611,9 +481,9 @@ struct HomeView: View {
                 )
             }
         }
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(16)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     // MARK: - Skeleton Loading
@@ -621,7 +491,7 @@ struct HomeView: View {
         VStack(spacing: 16) {
             HStack {
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.gray.opacity(0.2))
+                    .fill(Color.secondarySystemFill)
                     .frame(width: 120, height: 20)
                 
                 Spacer()
@@ -631,22 +501,22 @@ struct HomeView: View {
                 ForEach(0..<3, id: \.self) { _ in
                     HStack {
                         RoundedRectangle(cornerRadius: 4)
-                            .fill(Color.gray.opacity(0.2))
+                            .fill(Color.secondarySystemFill)
                             .frame(width: 80, height: 16)
                         
                         Spacer()
                         
                         RoundedRectangle(cornerRadius: 4)
-                            .fill(Color.gray.opacity(0.2))
+                            .fill(Color.secondarySystemFill)
                             .frame(width: 60, height: 16)
                     }
                 }
             }
         }
         .padding(16)
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(16)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
         .redacted(reason: .placeholder)
     }
     
@@ -680,15 +550,15 @@ struct HomeView: View {
             
             Image(systemName: "clock.arrow.circlepath")
                 .font(.system(size: 64))
-                .foregroundColor(.gray)
+                .foregroundColor(.secondaryText)
             
             Text("No Budget Data Available")
                 .font(.sora(18, weight: .semibold))
-                .foregroundColor(.black)
+                .foregroundColor(.primaryText)
             
             Text("Budget data for past months cannot be created. Please select the current month to set a budget.")
                 .font(.sora(14))
-                .foregroundColor(.gray)
+                .foregroundColor(.secondaryText)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 8)
             
@@ -702,15 +572,15 @@ struct HomeView: View {
         VStack(spacing: 16) {
             Image(systemName: "chart.pie")
                 .font(.system(size: 40))
-                .foregroundColor(.gray.opacity(0.6))
+                .foregroundColor(.secondaryText.opacity(0.6))
             
             Text("No budget created yet")
                 .font(.sora(16, weight: .medium))
-                .foregroundColor(.gray)
+                .foregroundColor(.secondaryText)
             
             Text("Create your first budget to track your expenses")
                 .font(.sora(14))
-                .foregroundColor(.gray.opacity(0.8))
+                .foregroundColor(.tertiaryText)
                 .multilineTextAlignment(.center)
             
             Button(action: {
@@ -748,22 +618,22 @@ struct ExpenseRowView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(expense.name)
                     .font(.sora(14, weight: .medium))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Text(expense.dateString)
                     .font(.sora(12))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondaryText)
             }
             
             Spacer()
             
             Text("₹\(formatAmount(expense.amount))")
                 .font(.sora(14, weight: .semibold))
-                .foregroundColor(.black)
+                .foregroundColor(.primaryText)
             
             Image(systemName: "chevron.right")
                 .font(.sora(14, weight: .semibold))
-                .foregroundStyle(Color.gray)
+                .foregroundStyle(Color.secondaryText)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
@@ -795,22 +665,22 @@ struct IncomeRowView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(income.source)
                     .font(.sora(14, weight: .medium))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Text(income.dateString)
                     .font(.sora(12))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondaryText)
             }
             
             Spacer()
             
             Text("₹\(formatAmount(income.amount))")
                 .font(.sora(14, weight: .semibold))
-                .foregroundColor(.black)
+                .foregroundColor(.primaryText)
             
             Image(systemName: "chevron.right")
                 .font(.sora(14, weight: .semibold))
-                .foregroundStyle(Color.gray)
+                .foregroundStyle(Color.secondaryText)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
@@ -846,13 +716,13 @@ struct OptionRow: View {
                 
                 Text(title)
                     .font(.sora(16, weight: .medium))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Spacer()
                 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12)) 
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondaryText)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 16)

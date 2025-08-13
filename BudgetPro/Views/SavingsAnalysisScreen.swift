@@ -39,22 +39,19 @@ struct SavingsAnalysisScreen: View {
     
     var body: some View {
         ZStack {
-            Color.gray.opacity(0.1)
-                .ignoresSafeArea()
-            
             if incomes.isEmpty {
                 VStack(spacing: 16) {
                     Image(systemName: "chart.line.uptrend.xyaxis")
                         .font(.sora(60))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     
                     Text("No Income Data Available")
                         .font(.sora(18, weight: .semibold))
-                        .foregroundColor(.primary)
+                        .foregroundColor(.primaryText)
                     
                     Text("Add income entries to view your savings analysis.")
                         .font(.sora(14))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                         .multilineTextAlignment(.center)
                 }
                 .padding()
@@ -96,6 +93,7 @@ struct SectionHeader: View {
         HStack {
             Text(text)
                 .font(.sora(20, weight: .bold))
+                .foregroundColor(.primaryText)
             Spacer()
         }
     }
@@ -151,7 +149,7 @@ struct SavingsSummaryCard: View {
         .padding(20)
         .background(
             LinearGradient(
-                gradient: Gradient(colors: [Color.white, Color.gray.opacity(0.02)]),
+                gradient: Gradient(colors: [Color.cardBackground, Color.cardBackground.opacity(0.8)]),
                 startPoint: .top,
                 endPoint: .bottom
             )
@@ -182,7 +180,7 @@ struct CompactMetricCard: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.sora(11, weight: .medium))
-                    .foregroundColor(Color.gray)
+                    .foregroundColor(.secondaryText)
                 
                 Text(value)
                     .font(.sora(14, weight: .bold))
@@ -196,7 +194,7 @@ struct CompactMetricCard: View {
         .frame(maxWidth: .infinity)
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(10)
         .shadow(color: color.opacity(0.08), radius: 1, x: 0, y: 1)
     }
@@ -223,7 +221,7 @@ struct ModernSummaryItem: View {
             VStack(spacing: 4) {
                 Text(title)
                     .font(.sora(12, weight: .medium))
-                    .foregroundColor(Color.gray)
+                    .foregroundColor(.secondaryText)
                 
                 Text(value)
                     .font(.sora(16, weight: .bold))
@@ -234,7 +232,7 @@ struct ModernSummaryItem: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(12)
         .shadow(color: color.opacity(0.1), radius: 2, x: 0, y: 1)
     }
@@ -265,7 +263,7 @@ struct SummaryItem: View {
                 
                 Text(title)
                     .font(.sora(14))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondaryText)
             }
             
             Text(prefix + value)
@@ -285,12 +283,12 @@ struct SavingsRateIndicator: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Savings Rate")
                     .font(.sora(16, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Text("Financial experts recommend saving at least 20% of your income.")
                     .lineSpacing(4)
                     .font(.sora(14))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondaryText)
             }
             
             VStack(spacing: 8) {
@@ -335,19 +333,19 @@ struct SavingsRateIndicator: View {
                 HStack {
                     Text("0%")
                         .font(.sora(12))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     
                     Spacer()
                     
                     Text("20%")
                         .font(.sora(12))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     
                     Spacer()
                     
                     Text("40%")
                         .font(.sora(12))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                 }
                 .padding(.top, 8)
                 
@@ -369,9 +367,9 @@ struct SavingsRateIndicator: View {
             }
         }
         .padding(16)
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(16)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     private func getProgressWidth(_ rate: Double) -> CGFloat {
@@ -402,7 +400,7 @@ struct SavingsRecommendations: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Recommendations")
                 .font(.sora(16, weight: .semibold))
-                .foregroundColor(.black)
+                .foregroundColor(.primaryText)
             
             VStack(spacing: 16) {
                 ForEach(getRecommendations(), id: \.title) { recommendation in
@@ -416,9 +414,9 @@ struct SavingsRecommendations: View {
             }
         }
         .padding(16)
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(16)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     private func getRecommendations() -> [(title: String, description: String, icon: String, color: Color)] {
@@ -452,11 +450,11 @@ struct RecommendationItem: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(title)
                     .font(.sora(14, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Text(description)
                     .font(.sora(14))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondaryText)
                     .fixedSize(horizontal: false, vertical: true)
                     .lineSpacing(4)
             }
@@ -469,13 +467,31 @@ struct RecommendationItem: View {
 // MARK: - Preview
 struct SavingsAnalysisScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SavingsAnalysisScreen(
-            expenses: sampleExpenses,
-            incomes: sampleIncomes,
-            totalBudget: 50000,
-            month: "Jan",
-            year: "2024"
-        )
+        Group {
+            NavigationView {
+                SavingsAnalysisScreen(
+                    expenses: sampleExpenses,
+                    incomes: sampleIncomes,
+                    totalBudget: 50000,
+                    month: "Jan",
+                    year: "2024"
+                )
+            }
+            .preferredColorScheme(.light)
+            .previewDisplayName("Light Mode")
+            
+            NavigationView {
+                SavingsAnalysisScreen(
+                    expenses: sampleExpenses,
+                    incomes: sampleIncomes,
+                    totalBudget: 50000,
+                    month: "Jan",
+                    year: "2024"
+                )
+            }
+            .preferredColorScheme(.dark)
+            .previewDisplayName("Dark Mode")
+        }
     }
     
     // Sample data for preview

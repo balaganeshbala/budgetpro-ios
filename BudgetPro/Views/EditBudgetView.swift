@@ -25,18 +25,21 @@ struct EditBudgetView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack {
+            Color.groupedBackground
+                .ignoresSafeArea(.all)
             
-            totalBudgetCard
-            
-            ScrollView {
-                // Budget Categories
-                budgetCategoriesSection
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 20)
+            VStack(spacing: 0) {
+                totalBudgetCard
+                
+                ScrollView {
+                    // Budget Categories
+                    budgetCategoriesSection
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 20)
+                }
+                .scrollDismissesKeyboard(.interactively)
             }
-            .scrollDismissesKeyboard(.interactively)
-            .background(Color.gray.opacity(0.1))
         }
 
         .navigationTitle("Edit Budget")
@@ -84,7 +87,7 @@ struct EditBudgetView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Total Budget")
                         .font(.sora(14))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     
                     if viewModel.hasChanges {
                         // Show both old and new budget when there are changes
@@ -102,7 +105,7 @@ struct EditBudgetView: View {
                             HStack(spacing: 4) {
                                 Text("was ₹\(Int(originalTotalBudget))")
                                     .font(.sora(14))
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.secondaryText)
                                     .strikethrough()
                                 
                                 let difference = viewModel.totalBudget - originalTotalBudget
@@ -126,7 +129,7 @@ struct EditBudgetView: View {
 
             Divider()
         }
-        .background(Color.white)
+        .background(Color.cardBackground)
     }
     
     // MARK: - Computed Properties
@@ -140,7 +143,7 @@ struct EditBudgetView: View {
             HStack {
                 Text("Budget Categories")
                     .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Spacer()
                 
@@ -183,8 +186,8 @@ struct EditBudgetView: View {
                     .font(.sora(15, weight: .semibold))
                     .foregroundColor(
                         viewModel.canUpdate && viewModel.hasChanges && !viewModel.isLoading
-                            ? .secondary
-                            : .gray
+                            ? Color.adaptiveSecondary
+                            : .secondaryText
                     )
             }
         }
@@ -241,7 +244,7 @@ struct EditBudgetCategoryInput: View {
                 HStack {
                     Text(budgetCategory.category.displayName)
                         .font(.sora(16, weight: .medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.primaryText)
                     
                     if hasChanged {
                         Image(systemName: "circle.fill")
@@ -253,12 +256,12 @@ struct EditBudgetCategoryInput: View {
                 HStack(spacing: 8) {
                     Text("Current: ₹\(Int(budgetCategory.amount))")
                         .font(.sora(12))
-                        .foregroundColor(hasChanged ? .orange : .gray)
+                        .foregroundColor(hasChanged ? .orange : .secondaryText)
                     
                     if hasChanged && originalAmount != budgetCategory.amount {
                         Text("(was ₹\(Int(originalAmount)))")
                             .font(.sora(11))
-                            .foregroundColor(.gray.opacity(0.6))
+                            .foregroundColor(.secondaryText.opacity(0.6))
                     }
                 }
             }
@@ -270,11 +273,11 @@ struct EditBudgetCategoryInput: View {
                 HStack {
                     Text("₹")
                         .font(.sora(16))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     
                     TextField("0", text: $textAmount)
                         .font(.sora(16, weight: .medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.primaryText)
                         .keyboardType(.decimalPad)
                         .focused($isFocused)
                         .multilineTextAlignment(.trailing)
@@ -289,20 +292,20 @@ struct EditBudgetCategoryInput: View {
                             (isFocused ? Color(red: 0.2, green: 0.6, blue: 0.5) : Color.gray.opacity(0.3)), 
                             lineWidth: hasChanged ? 2 : (isFocused ? 2 : 1)
                         )
-                        .background(Color.white)
+                        .background(Color.cardBackground)
                 )
                 .cornerRadius(8)
             }
             .frame(width: 100)
         }
         .padding(16)
-        .background(hasChanged ? Color.orange.opacity(0.05) : Color.white)
+        .background(hasChanged ? Color.orange.opacity(0.05) : Color.cardBackground)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
                 .stroke(hasChanged ? Color.orange.opacity(0.3) : Color.clear, lineWidth: 1)
         )
         .cornerRadius(12)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
         .onChange(of: textAmount) { newValue in
             let cleanedValue = newValue.replacingOccurrences(of: "[^0-9.]", with: "", options: .regularExpression)
             if cleanedValue != newValue {
@@ -323,13 +326,34 @@ struct EditBudgetCategoryInput: View {
 
 struct EditBudgetView_Previews: PreviewProvider {
     static var previews: some View {
-        EditBudgetView(
-            budgetCategories: [
-                BudgetCategory(id: "1", name: "Food", budget: 15000, spent: 12000),
-                BudgetCategory(id: "2", name: "Transport", budget: 8000, spent: 9500)
-            ],
-            month: 7,
-            year: 2025
-        )
+        Group {
+            NavigationView {
+                EditBudgetView(
+                    budgetCategories: [
+                        BudgetCategory(id: "1", name: "Food", budget: 15000, spent: 12000),
+                        BudgetCategory(id: "2", name: "Transport", budget: 8000, spent: 9500),
+                        BudgetCategory(id: "3", name: "Entertainment", budget: 5000, spent: 3200)
+                    ],
+                    month: 7,
+                    year: 2025
+                )
+            }
+            .preferredColorScheme(.light)
+            .previewDisplayName("Light Mode")
+            
+            NavigationView {
+                EditBudgetView(
+                    budgetCategories: [
+                        BudgetCategory(id: "1", name: "Food", budget: 15000, spent: 12000),
+                        BudgetCategory(id: "2", name: "Transport", budget: 8000, spent: 9500),
+                        BudgetCategory(id: "3", name: "Entertainment", budget: 5000, spent: 3200)
+                    ],
+                    month: 7,
+                    year: 2025
+                )
+            }
+            .preferredColorScheme(.dark)
+            .previewDisplayName("Dark Mode")
+        }
     }
 }

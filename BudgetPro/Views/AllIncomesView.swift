@@ -39,7 +39,7 @@ struct AllIncomesView: View {
             .padding(.horizontal, 16)
             .padding(.top, 16)
         }
-        .background(Color.gray.opacity(0.1))
+        .background(Color.groupedBackground)
         .navigationTitle(monthYearTitle)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
@@ -58,7 +58,7 @@ struct AllIncomesView: View {
             HStack {
                 Text("All Incomes")
                     .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Spacer()
                 
@@ -85,7 +85,7 @@ struct AllIncomesView: View {
             HStack {
                 Text("Sorted by: ")
                     .font(.sora(14))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondaryText)
                 
                 Text(viewModel.currentSortType.rawValue)
                     .font(.sora(14, weight: .medium))
@@ -119,7 +119,7 @@ struct AllIncomesView: View {
                             categoryIcon: income.categoryIcon,
                             categoryColor: IncomeCategory.from(categoryName: income.category).color,
                             iconShape: .roundedRectangle,
-                            amountColor: .black,
+                            amountColor: .primaryText,
                             showChevron: true,
                             destination: {
                                 IncomeDetailsView(income: income)
@@ -132,9 +132,9 @@ struct AllIncomesView: View {
                         }
                     }
                 }
-                .background(Color.white)
+                .background(Color.cardBackground)
                 .cornerRadius(12)
-                .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
             }
         }
     }
@@ -207,14 +207,14 @@ struct IncomeSummaryView: View {
                 HStack {
                     Text("Total Income")
                         .font(.sora(16, weight: .medium))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     Spacer()
                 }
                 
                 HStack {
                     Text("₹\(formatAmount(totalIncome))")
                         .font(.sora(24, weight: .bold))
-                        .foregroundColor(Color.primary)
+                        .foregroundColor(.primaryText)
                     Spacer()
                 }
             }
@@ -226,7 +226,7 @@ struct IncomeSummaryView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Income by Category")
                         .font(.sora(16, weight: .medium))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     
                     LazyVStack(spacing: 12) {
                         ForEach(sortedCategories.prefix(5), id: \.category) { categoryData in
@@ -241,9 +241,9 @@ struct IncomeSummaryView: View {
             }
         }
         .padding(20)
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(12)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     private func formatAmount(_ amount: Double) -> String {
@@ -273,18 +273,18 @@ struct IncomeCategoryBreakdownRow: View {
             
             Text(IncomeCategory.from(categoryName: category).displayName)
                 .font(.sora(14, weight: .medium))
-                .foregroundColor(.black)
+                .foregroundColor(.primaryText)
             
             Spacer()
             
             VStack(alignment: .trailing, spacing: 2) {
                 Text("₹\(formatAmount(amount))")
                     .font(.sora(14, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Text("\(String(format: "%.1f", percentage))%")
                     .font(.sora(12))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondaryText)
             }
         }
     }
@@ -299,36 +299,85 @@ struct IncomeCategoryBreakdownRow: View {
 
 // MARK: - Preview
 struct AllIncomesView_Previews: PreviewProvider {
+    static var sampleIncomes: [Income] {
+        [
+            Income(
+                id: 1,
+                source: "Monthly Salary",
+                amount: 50000,
+                category: "salary",
+                date: Date(),
+                categoryIcon: "briefcase.fill"
+            ),
+            Income(
+                id: 2,
+                source: "Freelance Project",
+                amount: 15000,
+                category: "sideHustle",
+                date: Calendar.current.date(byAdding: .day, value: -5, to: Date()) ?? Date(),
+                categoryIcon: "laptopcomputer"
+            ),
+            Income(
+                id: 3,
+                source: "Investment Returns",
+                amount: 5000,
+                category: "investment",
+                date: Calendar.current.date(byAdding: .day, value: -10, to: Date()) ?? Date(),
+                categoryIcon: "chart.line.uptrend.xyaxis"
+            ),
+            Income(
+                id: 4,
+                source: "Rental Income",
+                amount: 12000,
+                category: "investment",
+                date: Calendar.current.date(byAdding: .day, value: -15, to: Date()) ?? Date(),
+                categoryIcon: "house.fill"
+            ),
+            Income(
+                id: 5,
+                source: "Bonus",
+                amount: 8000,
+                category: "salary",
+                date: Calendar.current.date(byAdding: .day, value: -20, to: Date()) ?? Date(),
+                categoryIcon: "gift.fill"
+            )
+        ]
+    }
+    
     static var previews: some View {
-        AllIncomesView(
-            incomes: [
-                Income(
-                    id: 1,
-                    source: "Monthly Salary",
-                    amount: 50000,
-                    category: "salary",
-                    date: Date(),
-                    categoryIcon: "briefcase.fill"
-                ),
-                Income(
-                    id: 2,
-                    source: "Freelance Project",
-                    amount: 15000,
-                    category: "sideHustle",
-                    date: Calendar.current.date(byAdding: .day, value: -5, to: Date()) ?? Date(),
-                    categoryIcon: "laptopcomputer"
-                ),
-                Income(
-                    id: 3,
-                    source: "Investment Returns",
-                    amount: 5000,
-                    category: "investment",
-                    date: Calendar.current.date(byAdding: .day, value: -10, to: Date()) ?? Date(),
-                    categoryIcon: "chart.line.uptrend.xyaxis"
+        Group {
+            // Light Theme Preview
+            NavigationView {
+                AllIncomesView(
+                    incomes: sampleIncomes,
+                    month: 8,
+                    year: 2025
                 )
-            ],
-            month: 8,
-            year: 2025
-        )
+            }
+            .preferredColorScheme(.light)
+            .previewDisplayName("Light Theme")
+            
+            // Dark Theme Preview
+            NavigationView {
+                AllIncomesView(
+                    incomes: sampleIncomes,
+                    month: 8,
+                    year: 2025
+                )
+            }
+            .preferredColorScheme(.dark)
+            .previewDisplayName("Dark Theme")
+            
+            // Empty State Preview
+            NavigationView {
+                AllIncomesView(
+                    incomes: [],
+                    month: 8,
+                    year: 2025
+                )
+            }
+            .preferredColorScheme(.light)
+            .previewDisplayName("Empty State")
+        }
     }
 }

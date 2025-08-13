@@ -26,7 +26,7 @@ struct TransactionsTable: View {
                 buildTransactionList()
             }
         }
-        .background(Color.white)
+        .background(Color.cardBackground)
         .onAppear {
             sortedTransactions = transactions
             sortData()
@@ -42,11 +42,11 @@ struct TransactionsTable: View {
         VStack(spacing: 16) {
             Image(systemName: "receipt")
                 .font(.system(size: 48))
-                .foregroundColor(.gray)
+                .foregroundColor(.secondaryText)
             
             Text("No transactions yet")
                 .font(.sora(16, weight: .medium))
-                .foregroundColor(.gray)
+                .foregroundColor(.secondaryText)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 32)
@@ -61,6 +61,7 @@ struct TransactionsTable: View {
             // Divider
             Divider()
                 .frame(height: 1)
+                .background(Color.separator)
             
             // Table Body
             LazyVStack(spacing: 0) {
@@ -71,6 +72,7 @@ struct TransactionsTable: View {
                         if index < sortedTransactions.count - 1 {
                             Divider()
                                 .frame(height: 1)
+                                .background(Color.separator)
                         }
                     }
                 }
@@ -113,6 +115,7 @@ struct TransactionsTable: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 8)
+        .background(Color.cardBackground)
     }
     
     // MARK: - Header Cell
@@ -131,12 +134,12 @@ struct TransactionsTable: View {
             
             Text(title)
                 .font(.sora(12, weight: isActive ? .bold : .semibold))
-                .foregroundColor(isActive ? Color.secondary : .black.opacity(0.87))
+                .foregroundColor(isActive ? Color.adaptiveSecondary : .secondaryText)
             
             if let _ = onTap, isActive {
                 Image(systemName: isAscending ? "arrow.up" : "arrow.down")
                     .font(.system(size: 14))
-                    .foregroundColor(Color.secondary)
+                    .foregroundColor(Color.adaptiveSecondary)
             }
             
             if alignment == .leading {
@@ -167,13 +170,13 @@ struct TransactionsTable: View {
                 // Date column
                 Text(formatDate(transaction.date))
                     .font(.sora(13, weight: .regular))
-                    .foregroundColor(.black.opacity(0.87))
+                    .foregroundColor(.primaryText)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 // Description column
                 Text(transaction.name)
                     .font(.sora(13, weight: .regular))
-                    .foregroundColor(.black.opacity(0.87))
+                    .foregroundColor(.primaryText)
                     .lineLimit(1)
                     .truncationMode(.tail)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -181,12 +184,12 @@ struct TransactionsTable: View {
                 // Amount column
                 Text(formatRupees(transaction.amount))
                     .font(.sora(13, weight: .regular))
-                    .foregroundColor(.black.opacity(0.87))
+                    .foregroundColor(.primaryText)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
-            .background(Color.white)
+            .background(Color.cardBackground)
             .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
@@ -241,39 +244,80 @@ struct TransactionsTable: View {
 // MARK: - Preview
 struct TransactionsTable_Previews: PreviewProvider {
     static var previews: some View {
-        VStack {
-            TransactionsTable(transactions: [
-                Expense(
-                    id: 1,
-                    name: "Grocery Shopping",
-                    amount: 2500,
-                    category: "Food",
-                    date: Date(),
-                    categoryIcon: "cart.fill",
-                    categoryColor: .green
-                ),
-                Expense(
-                    id: 2,
-                    name: "Uber Ride",
-                    amount: 350,
-                    category: "Transport",
-                    date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date(),
-                    categoryIcon: "car.fill",
-                    categoryColor: .blue
-                ),
-                Expense(
-                    id: 3,
-                    name: "Movie Tickets",
-                    amount: 800,
-                    category: "Entertainment",
-                    date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date(),
-                    categoryIcon: "tv.fill",
-                    categoryColor: .purple
-                )
-            ])
+        Group {
+            // Light mode preview
+            VStack {
+                TransactionsTable(transactions: [
+                    Expense(
+                        id: 1,
+                        name: "Grocery Shopping",
+                        amount: 2500,
+                        category: "Food",
+                        date: Date(),
+                        categoryIcon: "cart.fill",
+                        categoryColor: .green
+                    ),
+                    Expense(
+                        id: 2,
+                        name: "Uber Ride",
+                        amount: 350,
+                        category: "Transport",
+                        date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date(),
+                        categoryIcon: "car.fill",
+                        categoryColor: .blue
+                    ),
+                    Expense(
+                        id: 3,
+                        name: "Movie Tickets",
+                        amount: 800,
+                        category: "Entertainment",
+                        date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date(),
+                        categoryIcon: "tv.fill",
+                        categoryColor: .purple
+                    )
+                ])
+                
+                Spacer()
+            }
+            .background(Color.groupedBackground)
+            .preferredColorScheme(.light)
             
-            Spacer()
+            // Dark mode preview
+            VStack {
+                TransactionsTable(transactions: [
+                    Expense(
+                        id: 1,
+                        name: "Grocery Shopping",
+                        amount: 2500,
+                        category: "Food",
+                        date: Date(),
+                        categoryIcon: "cart.fill",
+                        categoryColor: .green
+                    ),
+                    Expense(
+                        id: 2,
+                        name: "Uber Ride",
+                        amount: 350,
+                        category: "Transport",
+                        date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date(),
+                        categoryIcon: "car.fill",
+                        categoryColor: .blue
+                    ),
+                    Expense(
+                        id: 3,
+                        name: "Movie Tickets",
+                        amount: 800,
+                        category: "Entertainment",
+                        date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date(),
+                        categoryIcon: "tv.fill",
+                        categoryColor: .purple
+                    )
+                ])
+                
+                Spacer()
+            }
+            .background(Color.groupedBackground)
+            .preferredColorScheme(.dark)
         }
-        .background(Color.gray.opacity(0.1))
     }
 }

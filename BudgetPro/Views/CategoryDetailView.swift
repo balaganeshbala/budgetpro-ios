@@ -41,132 +41,22 @@ struct CategoryDetailView: View {
                 .padding(.top, 20)
             }
         }
-        .background(Color.gray.opacity(0.1))
+        .background(Color.groupedBackground)
         .navigationTitle(category.name)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(false)
 
     }
     
-    // MARK: - Budget Overview Card (Simplified)
+    // MARK: - Budget Overview Card (Reusable Component)
     private var budgetOverviewCard: some View {
-        VStack(spacing: 16) {
-            // Header
-            HStack {
-                Text("Budget Overview")
-                    .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.black)
-                
-                Spacer()
-            }
-            
-            // Budget content
-            VStack(spacing: 20) {
-                // Remaining Amount - Highlighted at the top
-                VStack(alignment: .center, spacing: 8) {
-                    Text("Remaining Budget")
-                        .font(.sora(18, weight: .medium))
-                        .foregroundColor(.gray)
-                    
-                    Text("₹\(formatAmount(max(0, category.budget - category.spent)))")
-                        .font(.sora(30, weight: .bold))
-                        .foregroundColor(category.spent > category.budget ? .red : Color.primary)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(20)
-                .background(
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            category.spent > category.budget ? Color.red.opacity(0.05) : Color.primary.opacity(0.05),
-                            category.spent > category.budget ? Color.red.opacity(0.1) : Color.primary.opacity(0.1)
-                        ]),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .cornerRadius(16)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(category.spent > category.budget ? Color.red.opacity(0.2) : Color.primary.opacity(0.2), lineWidth: 1)
-                )
-                
-                // Budget Summary Row
-                HStack(spacing: 16) {
-                    // Total Budget
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Budget")
-                            .font(.sora(14))
-                            .foregroundColor(.gray)
-                        
-                        Text("₹\(formatAmount(category.budget))")
-                            .font(.sora(20, weight: .semibold))
-                            .foregroundColor(.black)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    Divider()
-                        .frame(height: 30)
-                    
-                    // Total Spent
-                    VStack(alignment: .trailing, spacing: 4) {
-                        Text("Spent")
-                            .font(.sora(14))
-                            .foregroundColor(.gray)
-                        
-                        Text("₹\(formatAmount(category.spent))")
-                            .font(.sora(20, weight: .semibold))
-                            .foregroundColor(category.spent > category.budget ? .red : .orange)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                }
-                
-                // Progress Bar with Percentage (only if budget > 0)
-                if category.budget > 0 {
-                    VStack(spacing: 8) {
-                        HStack {
-                            Text("Budget Usage")
-                                .font(.sora(14, weight: .medium))
-                                .foregroundColor(.gray)
-                            
-                            Spacer()
-                            
-                            Text("\(Int((category.spent / max(category.budget, 1)) * 100))%")
-                                .font(.sora(16, weight: .bold))
-                                .foregroundColor(category.spent > category.budget ? .red : .orange)
-                        }
-                        
-                        GeometryReader { geometry in
-                            ZStack(alignment: .leading) {
-                                Rectangle()
-                                    .fill(Color.gray.opacity(0.15))
-                                    .frame(height: 10)
-                                    .cornerRadius(5)
-                                
-                                Rectangle()
-                                    .fill(
-                                        LinearGradient(
-                                            gradient: Gradient(colors: [
-                                                category.spent > category.budget ? Color.red : Color.orange,
-                                                category.spent > category.budget ? Color.red.opacity(0.8) : Color.orange.opacity(0.8)
-                                            ]),
-                                            startPoint: .leading,
-                                            endPoint: .trailing
-                                        )
-                                    )
-                                    .frame(width: min(geometry.size.width, geometry.size.width * (category.spent / max(category.budget, 1))), height: 10)
-                                    .cornerRadius(5)
-                                    .animation(.easeInOut(duration: 0.5), value: category.spent)
-                            }
-                        }
-                        .frame(height: 10)
-                    }
-                }
-            }
-        }
-        .padding(16)
-        .background(Color.white)
-        .cornerRadius(16)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        BudgetOverviewCard(
+            title: "\(category.name) Budget",
+            totalBudget: category.budget,
+            totalSpent: category.spent,
+            showEditButton: false,
+            showDetailsButton: false
+        )
     }
     
     // MARK: - Transactions Section
@@ -185,13 +75,13 @@ struct CategoryDetailView: View {
             HStack {
                 Text("Transactions")
                     .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Spacer()
                 
                 Text("\(categoryExpenses.count) items")
                     .font(.sora(14))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondaryText)
             }
             .padding(.horizontal, 16)
             .padding(.top, 16)
@@ -199,9 +89,9 @@ struct CategoryDetailView: View {
             // Use the new TransactionsTable
             TransactionsTable(transactions: categoryExpenses)
         }
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(16)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     private var emptyTransactionsView: some View {
@@ -209,7 +99,7 @@ struct CategoryDetailView: View {
             HStack {
                 Text("Transactions")
                     .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Spacer()
             }
@@ -217,25 +107,25 @@ struct CategoryDetailView: View {
             VStack(spacing: 16) {
                 Image(systemName: "creditcard")
                     .font(.system(size: 40))
-                    .foregroundColor(.gray.opacity(0.6))
+                    .foregroundColor(.secondaryText.opacity(0.6))
                 
                 VStack(spacing: 8) {
                     Text("No transactions yet")
                         .font(.sora(16, weight: .medium))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     
                     Text("No expenses found for \(category.name) category")
                         .font(.sora(14))
-                        .foregroundColor(.gray.opacity(0.8))
+                        .foregroundColor(.tertiaryText)
                         .multilineTextAlignment(.center)
                 }
             }
             .padding(.vertical, 20)
         }
         .padding(16)
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(16)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
 
@@ -256,11 +146,11 @@ struct CategoryDetailView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(category.name)
                         .font(.sora(20, weight: .bold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.primaryText)
                     
                     Text(monthName)
                         .font(.sora(14))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                 }
                 
                 Spacer()
@@ -270,7 +160,7 @@ struct CategoryDetailView: View {
             
             Divider()
         }
-        .background(Color.white)
+        .background(Color.cardBackground)
     }
     
     // MARK: - Helper Functions
@@ -298,57 +188,59 @@ struct CategoryDetailView: View {
     }
 }
 
-// MARK: - Category Expense Row View
-struct CategoryExpenseRowView: View {
-    let expense: Expense
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 10, style: .circular)
-                .fill(expense.categoryColor.opacity(0.2))
-                .frame(width: 40, height: 40)
-                .overlay(
-                    Image(systemName: expense.categoryIcon)
-                        .foregroundColor(expense.categoryColor)
-                        .font(.system(size: 16))
-                )
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(expense.name)
-                    .font(.sora(14, weight: .medium))
-                    .foregroundColor(.black)
-                
-                Text(expense.dateString)
-                    .font(.sora(12))
-                    .foregroundColor(.gray)
-            }
-            
-            Spacer()
-            
-            Text("₹\(formatAmount(expense.amount))")
-                .font(.sora(14, weight: .semibold))
-                .foregroundColor(.black)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .contentShape(Rectangle())
-    }
-    
-    private func formatAmount(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "0"
-    }
-}
-
 // MARK: - Preview
 struct CategoryDetailView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             CategoryDetailView(
                 category: BudgetCategory(id: "1", name: "Food", budget: 15000, spent: 12000),
-                expenses: [],
+                expenses: [
+                    Expense(
+                        id: 1,
+                        name: "Grocery Shopping",
+                        amount: 2500,
+                        category: "Food",
+                        date: Date().addingTimeInterval(-86400 * 2), // 2 days ago
+                        categoryIcon: ExpenseCategory.food.iconName,
+                        categoryColor: ExpenseCategory.food.color
+                    ),
+                    Expense(
+                        id: 2,
+                        name: "Restaurant Dinner",
+                        amount: 1800,
+                        category: "Food",
+                        date: Date().addingTimeInterval(-86400 * 5), // 5 days ago
+                        categoryIcon: ExpenseCategory.food.iconName,
+                        categoryColor: ExpenseCategory.food.color
+                    ),
+                    Expense(
+                        id: 3,
+                        name: "Coffee Shop",
+                        amount: 450,
+                        category: "Food",
+                        date: Date().addingTimeInterval(-86400 * 1), // 1 day ago
+                        categoryIcon: ExpenseCategory.food.iconName,
+                        categoryColor: ExpenseCategory.food.color
+                    ),
+                    Expense(
+                        id: 4,
+                        name: "Lunch Delivery",
+                        amount: 650,
+                        category: "Food",
+                        date: Date().addingTimeInterval(-86400 * 3), // 3 days ago
+                        categoryIcon: ExpenseCategory.food.iconName,
+                        categoryColor: ExpenseCategory.food.color
+                    ),
+                    Expense(
+                        id: 5,
+                        name: "Snacks & Beverages",
+                        amount: 320,
+                        category: "Food",
+                        date: Date().addingTimeInterval(-86400 * 7), // 1 week ago
+                        categoryIcon: ExpenseCategory.food.iconName,
+                        categoryColor: ExpenseCategory.food.color
+                    )
+                ],
                 month: 7,
                 year: 2025
             )

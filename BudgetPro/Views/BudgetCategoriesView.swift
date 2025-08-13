@@ -32,7 +32,7 @@ struct BudgetCategoriesView: View {
             .padding(.horizontal, 16)
             .padding(.top, 20)
         }
-        .background(Color.gray.opacity(0.1))
+        .background(Color.groupedBackground)
         .navigationTitle("\(monthName)")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(false)
@@ -45,20 +45,20 @@ struct BudgetCategoriesView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Total Budget")
                         .font(.sora(14))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     
                     Text("₹\(Int(totalBudget))")
                         .font(.sora(24, weight: .bold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.primaryText)
                 }
                 
                 Spacer()
             }
         }
         .padding(16)
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(12)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     // MARK: - Categories Section
@@ -67,7 +67,7 @@ struct BudgetCategoriesView: View {
             HStack {
                 Text("By Category")
                     .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Spacer()
             }
@@ -121,13 +121,13 @@ struct BudgetCategoryCard: View {
     
     private var statusInfo: (text: String, color: Color) {
         if category.budget == 0 && category.spent > 0 {
-            return ("Unplanned", .purple)
+            return ("Unplanned", .adaptiveSecondary)
         } else if category.budget == 0 {
-            return ("No Budget", .gray)
+            return ("No Budget", .secondaryText)
         } else if percentageSpent > 1 {
-            return ("Overspent", .red)
+            return ("Overspent", .overBudgetColor)
         } else {
-            return ("On Track", .green)
+            return ("On Track", .successColor)
         }
     }
     
@@ -149,11 +149,11 @@ struct BudgetCategoryCard: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(category.name)
                             .font(.sora(16, weight: .medium))
-                            .foregroundColor(.black)
+                            .foregroundColor(.primaryText)
                         
                         Text("\(Int(percentOfTotal))% of total budget")
                             .font(.sora(12))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.secondaryText)
                     }
                 }
                 
@@ -174,11 +174,11 @@ struct BudgetCategoryCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Budget")
                         .font(.sora(12))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     
                     Text("₹\(Int(category.budget))")
                         .font(.sora(16, weight: .semibold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.primaryText)
                 }
                 
                 Spacer()
@@ -186,11 +186,11 @@ struct BudgetCategoryCard: View {
                 VStack(alignment: .trailing, spacing: 4) {
                     Text("Spent")
                         .font(.sora(12))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     
                     Text("₹\(Int(category.spent))")
                         .font(.sora(16, weight: .semibold))
-                        .foregroundColor(percentageSpent > 1 ? .red : .black)
+                        .foregroundColor(percentageSpent > 1 ? .overBudgetColor : .primaryText)
                 }
                 
                 Spacer()
@@ -198,11 +198,11 @@ struct BudgetCategoryCard: View {
                 VStack(alignment: .trailing, spacing: 4) {
                     Text("Remaining")
                         .font(.sora(12))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     
                     Text("₹\(Int(max(0, category.budget - category.spent)))")
                         .font(.sora(16, weight: .semibold))
-                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                        .foregroundColor(Color.budgetProgressColor)
                 }
             }
             
@@ -211,12 +211,12 @@ struct BudgetCategoryCard: View {
                 GeometryReader { geometry in
                     ZStack(alignment: .leading) {
                         Rectangle()
-                            .fill(Color.gray.opacity(0.2))
+                            .fill(Color.secondarySystemFill)
                             .frame(height: 6)
                             .cornerRadius(3)
                         
                         Rectangle()
-                            .fill(percentageSpent > 1 ? Color.red : Color(red: 0.2, green: 0.6, blue: 0.5))
+                            .fill(percentageSpent > 1 ? Color.overBudgetColor : Color.budgetProgressColor)
                             .frame(width: min(geometry.size.width, geometry.size.width * percentageSpent), height: 6)
                             .cornerRadius(3)
                     }
@@ -225,9 +225,9 @@ struct BudgetCategoryCard: View {
             }
         }
         .padding(16)
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(12)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     // Helper computed properties for category styling
@@ -242,19 +242,40 @@ struct BudgetCategoryCard: View {
 
 struct BudgetCategoriesView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
-            BudgetCategoriesView(
-                budgetCategories: [
-                    BudgetCategory(id: "1", name: "Food", budget: 15000, spent: 12000),
-                    BudgetCategory(id: "2", name: "Transport", budget: 8000, spent: 9500),
-                    BudgetCategory(id: "3", name: "Entertainment", budget: 5000, spent: 3200)
-                ],
-                totalBudget: 28000,
-                expenses: [],
-                month: 7,
-                year: 2025
-            )
+        Group {
+            // Light mode preview
+            NavigationView {
+                BudgetCategoriesView(
+                    budgetCategories: [
+                        BudgetCategory(id: "1", name: "Food", budget: 15000, spent: 12000),
+                        BudgetCategory(id: "2", name: "Transport", budget: 8000, spent: 9500),
+                        BudgetCategory(id: "3", name: "Entertainment", budget: 5000, spent: 3200)
+                    ],
+                    totalBudget: 28000,
+                    expenses: [],
+                    month: 7,
+                    year: 2025
+                )
+            }
+            .environmentObject(MainCoordinator())
+            .preferredColorScheme(.light)
+            
+            // Dark mode preview
+            NavigationView {
+                BudgetCategoriesView(
+                    budgetCategories: [
+                        BudgetCategory(id: "1", name: "Food", budget: 15000, spent: 12000),
+                        BudgetCategory(id: "2", name: "Transport", budget: 8000, spent: 9500),
+                        BudgetCategory(id: "3", name: "Entertainment", budget: 5000, spent: 3200)
+                    ],
+                    totalBudget: 28000,
+                    expenses: [],
+                    month: 7,
+                    year: 2025
+                )
+            }
+            .environmentObject(MainCoordinator())
+            .preferredColorScheme(.dark)
         }
-        .environmentObject(MainCoordinator())
     }
 }

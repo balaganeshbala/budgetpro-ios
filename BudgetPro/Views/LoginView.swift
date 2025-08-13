@@ -16,11 +16,11 @@ struct LoginView: View {
                 VStack(spacing: 8) {
                     Text("Welcome Back!")
                         .font(.sora(32, weight: .bold))
-                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                        .foregroundColor(Color.primary)
                     
                     Text("Sign in to continue")
                         .font(.sora(16))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                 }
                 .padding(.bottom, 60)
                 .padding(.top, 60)
@@ -29,11 +29,12 @@ struct LoginView: View {
                 VStack(spacing: 0) {
                     HStack {
                         Image(systemName: "envelope")
-                            .foregroundColor(.gray)
+                            .foregroundColor(.secondaryText)
                             .frame(width: 20, height: 20)
                         
                         TextField("Email", text: $viewModel.email)
                             .font(.sora(16))
+                            .foregroundColor(.primaryText)
                             .textFieldStyle(PlainTextFieldStyle())
                             .autocapitalization(.none)
                             .keyboardType(.emailAddress)
@@ -47,10 +48,10 @@ struct LoginView: View {
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 16)
-                    .background(Color.white)
+                    .background(Color.inputBackground)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(focusField == .email ? Color(red: 0.2, green: 0.6, blue: 0.5) : Color.gray.opacity(0.3), lineWidth: focusField == .email ? 2 : 1)
+                            .stroke(focusField == .email ? Color.focusedInputBorder : Color.inputBorder, lineWidth: focusField == .email ? 2 : 1)
                     )
                     .contentShape(Rectangle())
                     .onTapGesture {
@@ -64,12 +65,13 @@ struct LoginView: View {
                 VStack(spacing: 0) {
                     HStack {
                         Image(systemName: "lock")
-                            .foregroundColor(.gray)
+                            .foregroundColor(.secondaryText)
                             .frame(width: 20, height: 20)
                         
                         if viewModel.isPasswordVisible {
                             TextField("Password", text: $viewModel.password)
                                 .font(.sora(16))
+                                .foregroundColor(.primaryText)
                                 .textFieldStyle(PlainTextFieldStyle())
                                 .focused($focusField, equals: .password)
                                 .onChange(of: viewModel.password) { _ in
@@ -78,6 +80,7 @@ struct LoginView: View {
                         } else {
                             SecureField("Password", text: $viewModel.password)
                                 .font(.sora(16))
+                                .foregroundColor(.primaryText)
                                 .textFieldStyle(PlainTextFieldStyle())
                                 .focused($focusField, equals: .password)
                                 .onChange(of: viewModel.password) { _ in
@@ -89,7 +92,7 @@ struct LoginView: View {
                             viewModel.togglePasswordVisibility()
                         }) {
                             Image(systemName: viewModel.isPasswordVisible ? "eye.slash" : "eye")
-                                .foregroundColor(.gray)
+                                .foregroundColor(.secondaryText)
                                 .padding(.horizontal, 4)
                                 .padding(.vertical, 4)
                         }
@@ -97,10 +100,10 @@ struct LoginView: View {
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 16)
-                    .background(Color.white)
+                    .background(Color.inputBackground)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(focusField == .password ? Color(red: 0.2, green: 0.6, blue: 0.5) : Color.gray.opacity(0.3), lineWidth: focusField == .password ? 2 : 1)
+                            .stroke(focusField == .password ? Color.focusedInputBorder : Color.inputBorder, lineWidth: focusField == .password ? 2 : 1)
                     )
                     .contentShape(Rectangle())
                     .onTapGesture {
@@ -114,7 +117,7 @@ struct LoginView: View {
                 if !viewModel.errorMessage.isEmpty {
                     Text(viewModel.errorMessage)
                         .font(.sora(14))
-                        .foregroundColor(.red)
+                        .foregroundColor(.errorColor)
                         .padding(.horizontal, 20)
                         .padding(.bottom, 16)
                         .multilineTextAlignment(.center)
@@ -140,7 +143,7 @@ struct LoginView: View {
                     .frame(height: 50)
                 }
                 .frame(maxWidth: .infinity)
-                .background(viewModel.isFormValid ? Color.secondary : Color.gray.opacity(0.6))
+                .background(viewModel.isFormValid ? Color.secondary : Color.secondarySystemFill)
                 .cornerRadius(8)
                 .disabled(!viewModel.isFormValid || viewModel.isLoading)
                 .contentShape(Rectangle())
@@ -150,16 +153,16 @@ struct LoginView: View {
                 // OR divider
                 HStack {
                     Rectangle()
-                        .fill(Color.gray.opacity(0.3))
+                        .fill(Color.separator)
                         .frame(height: 1)
                     
                     Text("OR")
                         .font(.sora(14))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                         .padding(.horizontal, 16)
                     
                     Rectangle()
-                        .fill(Color.gray.opacity(0.3))
+                        .fill(Color.separator)
                         .frame(height: 1)
                 }
                 .padding(.horizontal, 20)
@@ -169,7 +172,7 @@ struct LoginView: View {
                 HStack {
                     Text("Don't have an account?")
                         .font(.sora(16))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     
                     Button(action: {
                         viewModel.showSignUp(coordinator: coordinator)
@@ -187,6 +190,7 @@ struct LoginView: View {
                 Spacer()
             }
         }
+        .background(Color.appBackground)
     }
 }
 

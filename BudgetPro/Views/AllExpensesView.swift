@@ -48,7 +48,7 @@ struct AllExpensesView: View {
             .padding(.horizontal, 16)
             .padding(.top, 16)
         }
-        .background(Color.gray.opacity(0.1))
+        .background(Color.groupedBackground)
         .navigationTitle(monthYearTitle)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
@@ -67,7 +67,7 @@ struct AllExpensesView: View {
             HStack {
                 Text("All Expenses")
                     .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Spacer()
                 
@@ -94,7 +94,7 @@ struct AllExpensesView: View {
             HStack {
                 Text("Sorted by: ")
                     .font(.sora(14))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondaryText)
                 
                 Text(viewModel.currentSortType.rawValue)
                     .font(.sora(14, weight: .medium))
@@ -128,7 +128,7 @@ struct AllExpensesView: View {
                             categoryIcon: expense.categoryIcon,
                             categoryColor: expense.categoryColor,
                             iconShape: .roundedRectangle,
-                            amountColor: .black,
+                            amountColor: .primaryText,
                             showChevron: true,
                             destination: {
                                 ExpenseDetailsView(expense: expense)
@@ -141,9 +141,9 @@ struct AllExpensesView: View {
                         }
                     }
                 }
-                .background(Color.white)
+                .background(Color.cardBackground)
                 .cornerRadius(12)
-                .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
             }
         }
     }
@@ -217,7 +217,7 @@ struct ExpenseSummaryView: View {
                 HStack {
                     Text("Total Expenses")
                         .font(.sora(16, weight: .medium))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     Spacer()
                 }
                 
@@ -236,7 +236,7 @@ struct ExpenseSummaryView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Expenses by Category")
                         .font(.sora(16, weight: .medium))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     
                     LazyVStack(spacing: 12) {
                         ForEach(sortedCategories.prefix(5), id: \.category) { categoryData in
@@ -251,9 +251,9 @@ struct ExpenseSummaryView: View {
             }
         }
         .padding(20)
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(12)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     private func formatAmount(_ amount: Double) -> String {
@@ -283,18 +283,18 @@ struct CategoryBreakdownRow: View {
             
             Text(category)
                 .font(.sora(14, weight: .medium))
-                .foregroundColor(.black)
+                .foregroundColor(.primaryText)
             
             Spacer()
             
             VStack(alignment: .trailing, spacing: 2) {
                 Text("₹\(formatAmount(amount))")
                     .font(.sora(14, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Text("\(String(format: "%.1f", percentage))%")
                     .font(.sora(12))
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondaryText)
             }
         }
     }
@@ -320,16 +320,16 @@ struct EmptyStateView: View {
         VStack(spacing: 16) {
             Image(systemName: icon)
                 .font(.system(size: 48))
-                .foregroundColor(.gray.opacity(0.5))
+                .foregroundColor(.secondaryText.opacity(0.6))
             
             VStack(spacing: 8) {
                 Text(title)
                     .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Text(subtitle)
                     .font(.sora(14))
-                    .foregroundColor(.gray.opacity(0.8))
+                    .foregroundColor(.tertiaryText)
                     .multilineTextAlignment(.center)
             }
             
@@ -345,47 +345,98 @@ struct EmptyStateView: View {
         }
         .padding(.vertical, 32)
         .padding(.horizontal, 16)
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(16)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
 }
 
 // MARK: - Preview
 struct AllExpensesView_Previews: PreviewProvider {
+    static var sampleExpenses: [Expense] {
+        [
+            Expense(
+                id: 1,
+                name: "Lunch at Restaurant",
+                amount: 850,
+                category: "Food",
+                date: Date(),
+                categoryIcon: "fork.knife",
+                categoryColor: .orange
+            ),
+            Expense(
+                id: 2,
+                name: "Metro Card Recharge",
+                amount: 500,
+                category: "Transport",
+                date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date(),
+                categoryIcon: "car.fill",
+                categoryColor: .blue
+            ),
+            Expense(
+                id: 3,
+                name: "Movie Tickets",
+                amount: 600,
+                category: "Entertainment",
+                date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date(),
+                categoryIcon: "tv",
+                categoryColor: .purple
+            ),
+            Expense(
+                id: 4,
+                name: "Grocery Shopping",
+                amount: 2500,
+                category: "Food",
+                date: Calendar.current.date(byAdding: .day, value: -3, to: Date()) ?? Date(),
+                categoryIcon: "cart.fill",
+                categoryColor: .green
+            ),
+            Expense(
+                id: 5,
+                name: "Coffee",
+                amount: 150,
+                category: "Food",
+                date: Calendar.current.date(byAdding: .day, value: -4, to: Date()) ?? Date(),
+                categoryIcon: "cup.and.saucer.fill",
+                categoryColor: .brown
+            )
+        ]
+    }
+    
     static var previews: some View {
-        AllExpensesView(
-            expenses: [
-                Expense(
-                    id: 1,
-                    name: "Lunch at Restaurant",
-                    amount: 850,
-                    category: "Food",
-                    date: Date(),
-                    categoryIcon: "fork.knife",
-                    categoryColor: .orange
-                ),
-                Expense(
-                    id: 2,
-                    name: "Metro Card Recharge",
-                    amount: 500,
-                    category: "Transport",
-                    date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date(),
-                    categoryIcon: "car.fill",
-                    categoryColor: .blue
-                ),
-                Expense(
-                    id: 3,
-                    name: "Movie Tickets",
-                    amount: 600,
-                    category: "Entertainment",
-                    date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date(),
-                    categoryIcon: "tv",
-                    categoryColor: .purple
+        Group {
+            // Light Theme Preview
+            NavigationView {
+                AllExpensesView(
+                    expenses: sampleExpenses,
+                    month: 7,
+                    year: 2025
                 )
-            ],
-            month: 7,
-            year: 2025
-        )
+            }
+            .preferredColorScheme(.light)
+            .previewDisplayName("Light Theme")
+            
+            // Dark Theme Preview
+            NavigationView {
+                AllExpensesView(
+                    expenses: sampleExpenses,
+                    month: 7,
+                    year: 2025
+                )
+            }
+            .preferredColorScheme(.dark)
+            .previewDisplayName("Dark Theme")
+            
+            // Empty State Preview
+            NavigationView {
+                AllExpensesView(
+                    expenses: [],
+                    month: 7,
+                    year: 2025
+                )
+            }
+            .preferredColorScheme(.light)
+            .previewDisplayName("Empty State")
+        }
     }
 }

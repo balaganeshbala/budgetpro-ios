@@ -166,6 +166,9 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
     
     private var mainContent: some View {
         ZStack {
+            Color.groupedBackground
+                .ignoresSafeArea(.all)
+            
             formScrollView
             
             if viewModel.isLoading {
@@ -179,14 +182,15 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
     
     private var formScrollView: some View {
         ScrollView {
-            Color.clear
-                .frame(height: 0)
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    focusedField = nil
-                }
-            
-            formContentCard
+            LazyVStack(spacing: 20) {
+                formContentCard
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 20)
+            .padding(.bottom, 20)
+        }
+        .onTapGesture {
+            focusedField = nil
         }
     }
     
@@ -195,10 +199,11 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
             titleSection
             formFields
             actionButton
-            Spacer(minLength: 30)
         }
-        .padding(.horizontal, 16)
-        .frame(minHeight: UIScreen.main.bounds.height - 150)
+        .padding(16)
+        .background(Color.cardBackground)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
         .onTapGesture {
             focusedField = nil
         }
@@ -208,10 +213,9 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
         HStack {
             Text(transactionType.title)
                 .font(.sora(20, weight: .semibold))
-                .foregroundColor(.black)
+                .foregroundColor(.primaryText)
             Spacer()
         }
-        .padding(.top, 24)
     }
     
     private var formFields: some View {
@@ -286,6 +290,7 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
                 }
             }
             .onAppear(perform: handleViewAppear)
+            .onDisappear(perform: handleViewDisappear)
             .overlay(overlayDialogs)
             .alert("Success", isPresented: $showingSuccessAlert, actions: successAlertActions, message: successAlertMessage)
             .alert("Error", isPresented: $showingErrorAlert, actions: errorAlertActions, message: errorAlertMessage)
@@ -408,6 +413,12 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
         viewModel.loadInitialData()
     }
     
+    private func handleViewDisappear() {
+        // Dismiss keyboard when view disappears
+        focusedField = nil
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+    
     private func navigateToRoot() {
         // Find the navigation controller and pop to root
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -477,8 +488,8 @@ struct TransactionNameInputField<ViewModel: TransactionFormViewModelProtocol>: V
     let transactionType: TransactionType
     
     var body: some View {
-        FloatingLabelTextField(
-            label: transactionType.nameFieldLabel,
+        CustomTextField(
+            hint: transactionType.nameFieldLabel,
             iconName: transactionType.nameFieldIcon,
             text: $viewModel.transactionName,
             keyboardType: .default,
@@ -514,8 +525,8 @@ struct TransactionAmountInputField<ViewModel: TransactionFormViewModelProtocol>:
     var focusedField: FocusState<TransactionField?>.Binding
     
     var body: some View {
-        FloatingLabelTextField(
-            label: "Amount",
+        CustomTextField(
+            hint: "Amount",
             iconName: "indianrupeesign",
             text: $viewModel.amountText,
             keyboardType: .decimalPad,
@@ -569,8 +580,12 @@ struct TransactionDateSelectorField<ViewModel: TransactionFormViewModelProtocol>
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 16)
-                .background(Color.gray.opacity(0.1))
+                .background(Color.inputBackground)
                 .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.inputBorder, lineWidth: 1)
+                )
             }
         }
     }
@@ -608,8 +623,12 @@ struct TransactionCategorySelectorField<CategoryType>: View where CategoryType: 
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 16)
-                .background(Color.gray.opacity(0.1))
+                .background(Color.inputBackground)
                 .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.inputBorder, lineWidth: 1)
+                )
             }
             .buttonStyle(PlainButtonStyle())
         }
@@ -716,5 +735,148 @@ struct TransactionLoadingOverlay: View {
                 .background(Color.black.opacity(0.8))
                 .cornerRadius(16)
             )
+    }
+}
+
+// MARK: - Preview Support
+
+// Mock View Model for Previews
+class MockTransactionFormViewModel: TransactionFormViewModelProtocol {
+    @Published var transactionName: String = ""
+    @Published var amountText: String = ""
+    @Published var selectedDate: Date = Date()
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String = ""
+    @Published var isSuccess: Bool = false
+    @Published var hasChanges: Bool = false
+    
+    var isFormValid: Bool {
+        !transactionName.isEmpty && !amountText.isEmpty
+    }
+    
+    var formattedDateForDisplay: String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: selectedDate)
+    }
+    
+    var successMessage: String {
+        "Transaction updated successfully!"
+    }
+    
+    func loadInitialData() {
+        // Mock implementation
+    }
+    
+    func validateForm() {
+        // Mock implementation
+    }
+    
+    func resetForm() {
+        transactionName = ""
+        amountText = ""
+        selectedDate = Date()
+    }
+    
+    func saveTransaction() async {
+        // Mock implementation
+    }
+    
+    func updateTransaction() async {
+        // Mock implementation
+    }
+    
+    func deleteTransaction() async {
+        // Mock implementation
+    }
+    
+    func clearError() {
+        errorMessage = ""
+    }
+}
+
+// MARK: - Previews
+
+struct TransactionFormView_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            // Add Expense Form - Light Mode
+            NavigationView {
+                TransactionFormView(
+                    viewModel: MockTransactionFormViewModel(),
+                    transactionType: .expense,
+                    mode: .add,
+                    categories: ExpenseCategory.userSelectableCategories,
+                    selectedCategory: ExpenseCategory.food,
+                    onCategorySelected: { _ in },
+                    categoryDisplayName: { $0.displayName },
+                    categoryIconName: { $0.iconName },
+                    categoryColor: { $0.color }
+                )
+            }
+            .preferredColorScheme(.light)
+            .previewDisplayName("Add Expense - Light")
+            
+            // Add Expense Form - Dark Mode
+            NavigationView {
+                TransactionFormView(
+                    viewModel: MockTransactionFormViewModel(),
+                    transactionType: .expense,
+                    mode: .add,
+                    categories: ExpenseCategory.userSelectableCategories,
+                    selectedCategory: ExpenseCategory.food,
+                    onCategorySelected: { _ in },
+                    categoryDisplayName: { $0.displayName },
+                    categoryIconName: { $0.iconName },
+                    categoryColor: { $0.color }
+                )
+            }
+            .preferredColorScheme(.dark)
+            .previewDisplayName("Add Expense - Dark")
+            
+            // Update Income Form - Light Mode
+            NavigationView {
+                TransactionFormView(
+                    viewModel: {
+                        let vm = MockTransactionFormViewModel()
+                        vm.transactionName = "Salary"
+                        vm.amountText = "50000"
+                        return vm
+                    }(),
+                    transactionType: .income,
+                    mode: .update,
+                    categories: IncomeCategory.userSelectableCategories,
+                    selectedCategory: IncomeCategory.salary,
+                    onCategorySelected: { _ in },
+                    categoryDisplayName: { $0.displayName },
+                    categoryIconName: { $0.iconName },
+                    categoryColor: { $0.color }
+                )
+            }
+            .preferredColorScheme(.light)
+            .previewDisplayName("Update Income - Light")
+            
+            // Update Income Form - Dark Mode
+            NavigationView {
+                TransactionFormView(
+                    viewModel: {
+                        let vm = MockTransactionFormViewModel()
+                        vm.transactionName = "Salary"
+                        vm.amountText = "50000"
+                        return vm
+                    }(),
+                    transactionType: .income,
+                    mode: .update,
+                    categories: IncomeCategory.userSelectableCategories,
+                    selectedCategory: IncomeCategory.salary,
+                    onCategorySelected: { _ in },
+                    categoryDisplayName: { $0.displayName },
+                    categoryIconName: { $0.iconName },
+                    categoryColor: { $0.color }
+                )
+            }
+            .preferredColorScheme(.dark)
+            .previewDisplayName("Update Income - Dark")
+        }
     }
 }
