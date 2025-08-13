@@ -44,11 +44,11 @@ struct MonthYearPicker: View {
         }) {
             HStack(spacing: 10) {
                 Image(systemName: "calendar")
-                    .foregroundColor(Color.secondary)
+                    .foregroundColor(.secondary)
                 
                 Text("\(months[selectedMonth - 1]) \(String(selectedYear))")
                     .font(.sora(16, weight: .semibold))
-                    .foregroundColor(Color.secondary)
+                    .foregroundColor(.secondary)
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
@@ -118,15 +118,15 @@ struct MonthYearPickerDialog: View {
             
             VStack(spacing: 20) {
                 Text("Select Month & Year")
-                    .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .font(.sora(_: 18, weight: .semibold))
+                    .foregroundColor(.primaryText)
                 
                 HStack(spacing: 0) {
                     // Month Picker
                     Picker("Month", selection: $selectedMonth) {
                         ForEach(availableMonths, id: \.self) { month in
                             Text(months[month - 1])
-                                .font(.sora(16))
+                                .font(.sora(_: 16))
                                 .tag(month)
                         }
                     }
@@ -144,7 +144,7 @@ struct MonthYearPickerDialog: View {
                     Picker("Year", selection: $selectedYear) {
                         ForEach(years, id: \.self) { year in
                             Text(String(year))
-                                .font(.sora(16))
+                                .font(.sora(_: 16))
                                 .tag(year)
                         }
                     }
@@ -158,27 +158,27 @@ struct MonthYearPickerDialog: View {
                         isPresented = false
                     }) {
                         Text("Cancel")
-                            .font(.sora(16, weight: .medium))
-                            .foregroundColor(.gray)
+                            .font(.sora(_: 16, weight: .medium))
+                            .foregroundColor(.secondaryText)
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)
-                            .background(Color.gray.opacity(0.1))
+                            .background(Color.secondarySystemFill)
                             .cornerRadius(8)
                     }
                     
                     Button(action: onDone) {
                         Text("Done")
-                            .font(.sora(16, weight: .semibold))
+                            .font(.sora(_: 16, weight: .semibold))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)
-                            .background(Color(red: 0.2, green: 0.6, blue: 0.5))
+                            .background(Color.primary)
                             .cornerRadius(8)
                     }
                 }
             }
             .padding(24)
-            .background(Color.white)
+            .background(Color.cardBackground)
             .cornerRadius(16)
             .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
             .padding(.horizontal, 40)
@@ -189,11 +189,50 @@ struct MonthYearPickerDialog: View {
 
 struct MonthYearPicker_Previews: PreviewProvider {
     static var previews: some View {
-        MonthYearPicker(
-            selectedMonth: .constant(7),
-            selectedYear: .constant(2025),
-            showingPicker: .constant(false),
-            onChanged: { _, _ in }
-        )
+        Group {
+            // Light Mode
+            VStack {
+                MonthYearPicker(
+                    selectedMonth: .constant(7),
+                    selectedYear: .constant(2025),
+                    showingPicker: .constant(false),
+                    onChanged: { _, _ in }
+                )
+                
+                // Show dialog preview
+                MonthYearPickerDialog(
+                    selectedMonth: .constant(7),
+                    selectedYear: .constant(2025),
+                    isPresented: .constant(true),
+                    months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                    years: Array(2023...2025),
+                    onDone: {}
+                )
+            }
+            .preferredColorScheme(.light)
+            .previewDisplayName("Light Mode")
+            
+            // Dark Mode
+            VStack {
+                MonthYearPicker(
+                    selectedMonth: .constant(7),
+                    selectedYear: .constant(2025),
+                    showingPicker: .constant(false),
+                    onChanged: { _, _ in }
+                )
+                
+                // Show dialog preview
+                MonthYearPickerDialog(
+                    selectedMonth: .constant(7),
+                    selectedYear: .constant(2025),
+                    isPresented: .constant(true),
+                    months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                    years: Array(2023...2025),
+                    onDone: {}
+                )
+            }
+            .preferredColorScheme(.dark)
+            .previewDisplayName("Dark Mode")
+        }
     }
 }
