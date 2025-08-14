@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum IncomeCategory: String, CaseIterable {
+enum IncomeCategory: String, CaseIterable, CategoryProtocol {
     case salary
     case investment
     case business

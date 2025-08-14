@@ -116,7 +116,7 @@ enum TransactionField {
 }
 
 // MARK: - Generic Transaction Form View
-struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, CategoryType: Hashable>: View {
+struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, CategoryType: CategoryProtocol>: View {
     @StateObject private var viewModel: ViewModel
     @State private var showingDatePicker = false
     @State private var showingCategoryPicker = false
@@ -132,9 +132,6 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
     let categories: [CategoryType]
     let selectedCategory: CategoryType
     let onCategorySelected: (CategoryType) -> Void
-    let categoryDisplayName: (CategoryType) -> String
-    let categoryIconName: (CategoryType) -> String
-    let categoryColor: (CategoryType) -> Color
     
     init(
         viewModel: @autoclosure @escaping () -> ViewModel,
@@ -142,10 +139,7 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
         mode: TransactionFormMode,
         categories: [CategoryType],
         selectedCategory: CategoryType,
-        onCategorySelected: @escaping (CategoryType) -> Void,
-        categoryDisplayName: @escaping (CategoryType) -> String,
-        categoryIconName: @escaping (CategoryType) -> String,
-        categoryColor: @escaping (CategoryType) -> Color
+        onCategorySelected: @escaping (CategoryType) -> Void
     ) {
         self._viewModel = StateObject(wrappedValue: viewModel())
         self.transactionType = transactionType
@@ -153,9 +147,6 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
         self.categories = categories
         self.selectedCategory = selectedCategory
         self.onCategorySelected = onCategorySelected
-        self.categoryDisplayName = categoryDisplayName
-        self.categoryIconName = categoryIconName
-        self.categoryColor = categoryColor
     }
     
     // MARK: - Computed Properties
@@ -233,7 +224,6 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
             
             TransactionCategorySelectorField(
                 selectedCategory: selectedCategory,
-                categoryDisplayName: categoryDisplayName,
                 onTap: { showingCategoryPicker = true }
             )
             
@@ -335,9 +325,9 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
             items: categories,
             selectedItem: selectedCategory,
             onItemSelected: handleCategorySelection,
-            itemDisplayName: categoryDisplayName,
-            itemIcon: categoryIconName,
-            itemColor: categoryColor,
+            itemDisplayName: { $0.displayName },
+            itemIcon: { $0.iconName },
+            itemColor: { $0.color },
             isPresented: $showingCategoryPicker
         )
     }
@@ -409,7 +399,6 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
     
     // MARK: - Action Handlers
     private func handleViewAppear() {
-        configureNavigationBar()
         viewModel.loadInitialData()
     }
     
@@ -463,20 +452,6 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
         if !errorMessage.isEmpty {
             showingErrorAlert = true
         }
-    }
-    
-    private func configureNavigationBar() {
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor.systemBackground
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
-        appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
-        appearance.backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.label]
-        
-        UINavigationBar.appearance().standardAppearance = appearance
-        UINavigationBar.appearance().scrollEdgeAppearance = appearance
-        UINavigationBar.appearance().compactAppearance = appearance
-        UINavigationBar.appearance().tintColor = UIColor.label
     }
 }
 
@@ -591,9 +566,8 @@ struct TransactionDateSelectorField<ViewModel: TransactionFormViewModelProtocol>
     }
 }
 
-struct TransactionCategorySelectorField<CategoryType>: View where CategoryType: Hashable {
+struct TransactionCategorySelectorField<CategoryType>: View where CategoryType: CategoryProtocol {
     let selectedCategory: CategoryType
-    let categoryDisplayName: (CategoryType) -> String
     let onTap: () -> Void
     
     var body: some View {
@@ -613,7 +587,7 @@ struct TransactionCategorySelectorField<CategoryType>: View where CategoryType: 
                     
                     Spacer()
                     
-                    Text(categoryDisplayName(selectedCategory).uppercased())
+                    Text(selectedCategory.displayName.uppercased())
                         .font(.sora(14, weight: .semibold))
                         .foregroundColor(.primary)
                     
@@ -808,10 +782,7 @@ struct TransactionFormView_Previews: PreviewProvider {
                     mode: .add,
                     categories: ExpenseCategory.userSelectableCategories,
                     selectedCategory: ExpenseCategory.food,
-                    onCategorySelected: { _ in },
-                    categoryDisplayName: { $0.displayName },
-                    categoryIconName: { $0.iconName },
-                    categoryColor: { $0.color }
+                    onCategorySelected: { _ in }
                 )
             }
             .preferredColorScheme(.light)
@@ -825,10 +796,7 @@ struct TransactionFormView_Previews: PreviewProvider {
                     mode: .add,
                     categories: ExpenseCategory.userSelectableCategories,
                     selectedCategory: ExpenseCategory.food,
-                    onCategorySelected: { _ in },
-                    categoryDisplayName: { $0.displayName },
-                    categoryIconName: { $0.iconName },
-                    categoryColor: { $0.color }
+                    onCategorySelected: { _ in }
                 )
             }
             .preferredColorScheme(.dark)
@@ -847,10 +815,7 @@ struct TransactionFormView_Previews: PreviewProvider {
                     mode: .update,
                     categories: IncomeCategory.userSelectableCategories,
                     selectedCategory: IncomeCategory.salary,
-                    onCategorySelected: { _ in },
-                    categoryDisplayName: { $0.displayName },
-                    categoryIconName: { $0.iconName },
-                    categoryColor: { $0.color }
+                    onCategorySelected: { _ in }
                 )
             }
             .preferredColorScheme(.light)
@@ -869,10 +834,7 @@ struct TransactionFormView_Previews: PreviewProvider {
                     mode: .update,
                     categories: IncomeCategory.userSelectableCategories,
                     selectedCategory: IncomeCategory.salary,
-                    onCategorySelected: { _ in },
-                    categoryDisplayName: { $0.displayName },
-                    categoryIconName: { $0.iconName },
-                    categoryColor: { $0.color }
+                    onCategorySelected: { _ in }
                 )
             }
             .preferredColorScheme(.dark)

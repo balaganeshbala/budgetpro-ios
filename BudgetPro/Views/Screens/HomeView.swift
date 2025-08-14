@@ -183,20 +183,7 @@ struct HomeView: View {
                         Button(action: {
                             coordinator.navigate(to: .addExpense)
                         }) {
-                            VStack {
-                                Divider()
-                                HStack {
-                                    Spacer()
-                                    Image(systemName: "plus")
-                                        .font(.system(size: 12, weight: .semibold))
-                                        .foregroundColor(Color.secondary)
-                                    Text("Add New")
-                                        .font(.sora(14, weight: .medium))
-                                        .foregroundColor(Color.secondary)
-                                    Spacer()
-                                }
-                                .padding(16)
-                            }
+                            addNewButton
                         }
                         
                         if !viewModel.recentExpenses.isEmpty {
@@ -205,17 +192,7 @@ struct HomeView: View {
                                 Button(action: {
                                     coordinator.navigate(to: .allExpenses(expenses: viewModel.recentExpenses, month: selectedMonth, year: selectedYear))
                                 }) {
-                                    HStack {
-                                        Spacer()
-                                        Text("More Details")
-                                            .font(.sora(14, weight: .medium))
-                                            .foregroundColor(Color.secondary)
-                                        Image(systemName: "chevron.right")
-                                            .font(.system(size: 12))
-                                            .foregroundColor(Color.secondary)
-                                        Spacer()
-                                    }
-                                    .padding(16)
+                                    moreDetailsButton
                                 }
                             }
                         }
@@ -296,20 +273,7 @@ struct HomeView: View {
                         Button(action: {
                             coordinator.navigate(to: .addIncome)
                         }) {
-                            VStack {
-                                Divider()
-                                HStack {
-                                    Spacer()
-                                    Image(systemName: "plus")
-                                        .font(.system(size: 12, weight: .semibold))
-                                        .foregroundColor(Color.secondary)
-                                    Text("Add New")
-                                        .font(.sora(14, weight: .medium))
-                                        .foregroundColor(Color.secondary)
-                                    Spacer()
-                                }
-                                .padding(16)
-                            }
+                            addNewButton
                         }
                         
                         if !viewModel.recentIncomes.isEmpty {
@@ -318,17 +282,7 @@ struct HomeView: View {
                                 Button(action: {
                                     coordinator.navigate(to: .allIncomes(incomes: viewModel.recentIncomes, month: selectedMonth, year: selectedYear))
                                 }) {
-                                    HStack {
-                                        Spacer()
-                                        Text("More Details")
-                                            .font(.sora(14, weight: .medium))
-                                            .foregroundColor(Color.secondary)
-                                        Image(systemName: "chevron.right")
-                                            .font(.system(size: 12))
-                                            .foregroundColor(Color.secondary)
-                                        Spacer()
-                                    }
-                                    .padding(16)
+                                    moreDetailsButton
                                 }
                             }
                         }
@@ -336,6 +290,37 @@ struct HomeView: View {
                 }
             }
         }
+    }
+    
+    private var addNewButton: some View {
+        VStack {
+            Divider()
+            HStack {
+                Spacer()
+                Image(systemName: "plus")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(Color.secondary)
+                Text("Add New")
+                    .font(.sora(14, weight: .semibold))
+                    .foregroundColor(Color.secondary)
+                Spacer()
+            }
+            .padding(16)
+        }
+    }
+    
+    private var moreDetailsButton: some View {
+        HStack {
+            Spacer()
+            Text("More Details")
+                .font(.sora(14, weight: .semibold))
+                .foregroundColor(Color.secondary)
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12))
+                .foregroundColor(Color.secondary)
+            Spacer()
+        }
+        .padding(16)
     }
     
     // MARK: - Header View

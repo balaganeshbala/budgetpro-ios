@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum ExpenseCategory: String, CaseIterable {
+enum ExpenseCategory: String, CaseIterable, CategoryProtocol {
     case emi
     case food
     case holidayTrip

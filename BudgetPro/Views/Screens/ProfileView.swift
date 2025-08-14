@@ -28,7 +28,7 @@ struct ProfileView: View {
             .padding(.horizontal, 16)
             .padding(.top, 20)
         }
-        .background(Color.gray.opacity(0.1))
+        .background(Color.groupedBackground)
         .navigationTitle("Profile")
         .navigationBarTitleDisplayMode(.inline)
         .alert("Sign Out", isPresented: $showingSignOutAlert) {
@@ -52,65 +52,62 @@ struct ProfileView: View {
     
     // MARK: - User Info Card
     private var userInfoCard: some View {
-        VStack(spacing: 16) {
-            // Profile Avatar
-            Circle()
-                .fill(.primary.opacity(0.2))
-                .frame(width: 80, height: 80)
-                .overlay(
-                    Image(systemName: "person.fill")
-                        .font(.system(size: 40))
-                        .foregroundColor(.primary)
-                )
-            
-            VStack(spacing: 8) {
-                // User Name
-                Text(viewModel.userName)
-                    .font(.sora(20, weight: .semibold))
-                    .foregroundColor(.black)
+        CardView(padding: EdgeInsets(top: 32, leading: 16, bottom: 32, trailing: 16)) {
+            VStack(spacing: 16) {
+                // Profile Avatar
+                Circle()
+                    .fill(.primary.opacity(0.2))
+                    .frame(width: 80, height: 80)
+                    .overlay(
+                        Image(systemName: "person.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(.primary)
+                    )
                 
-                // User Email
-                Text(viewModel.userEmail)
-                    .font(.sora(14))
-                    .foregroundColor(.gray)
+                VStack(spacing: 8) {
+                    // User Name
+                    Text(viewModel.userName)
+                        .font(.sora(20, weight: .semibold))
+                        .foregroundColor(.primaryText)
+                    
+                    // User Email
+                    Text(viewModel.userEmail)
+                        .font(.sora(14))
+                        .foregroundColor(.secondaryText)
+                }
             }
+            .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 32)
-        .background(Color.white)
-        .cornerRadius(16)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     // MARK: - Settings Options Card
     private var settingsOptionsCard: some View {
-        VStack(spacing: 0) {
-            // About Button
-            SettingsRow(
-                icon: "info.circle",
-                iconColor: .blue,
-                title: "About BudgetPro",
-                showChevron: true
-            ) {
-                showingAbout = true
-            }
-            
-            Divider()
-                .padding(.horizontal, 16)
-            
-            // Sign Out Button
-            SettingsRow(
-                icon: "rectangle.portrait.and.arrow.right",
-                iconColor: .red,
-                title: "Sign Out",
-                showChevron: false
-            ) {
-                showingSignOutAlert = true
+        CardView(padding: EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)) {
+            VStack(spacing: 0) {
+                // About Button
+                SettingsRow(
+                    icon: "info.circle",
+                    iconColor: .blue,
+                    title: "About BudgetPro",
+                    showChevron: true
+                ) {
+                    showingAbout = true
+                }
+                
+                Divider()
+                    .padding(.horizontal, 16)
+                
+                // Sign Out Button
+                SettingsRow(
+                    icon: "rectangle.portrait.and.arrow.right",
+                    iconColor: .red,
+                    title: "Sign Out",
+                    showChevron: false
+                ) {
+                    showingSignOutAlert = true
+                }
             }
         }
-        .background(Color.white)
-        .cornerRadius(16)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
     }
 }
 
@@ -137,14 +134,14 @@ struct SettingsRow: View {
                 // Title
                 Text(title)
                     .font(.sora(16))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 // Chevron
                 if showChevron {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14))
-                        .foregroundColor(.gray.opacity(0.6))
+                        .foregroundColor(.secondaryText)
                 }
             }
             .padding(16)

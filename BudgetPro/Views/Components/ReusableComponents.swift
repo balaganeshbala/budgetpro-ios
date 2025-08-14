@@ -75,7 +75,7 @@ struct DatePickerDialog: View {
     
     var body: some View {
         ZStack {
-            Color.black.opacity(0.4)
+            Color.overlayBackground
                 .ignoresSafeArea()
                 .onTapGesture {
                     isPresented = false
@@ -162,7 +162,7 @@ struct DropdownPickerDialog<T: Hashable>: View {
     var body: some View {
         ZStack {
             // Background overlay
-            Color.black.opacity(0.4)
+            Color.overlayBackground
                 .ignoresSafeArea()
                 .onTapGesture {
                     isPresented = false
@@ -520,7 +520,7 @@ struct BudgetOverviewCard: View {
                     }) {
                         HStack {
                             Text("View Budget Details")
-                                .font(.sora(14, weight: .medium))
+                                .font(.sora(14, weight: .semibold))
                                 .foregroundColor(.adaptiveSecondary)
                             
                             Spacer()

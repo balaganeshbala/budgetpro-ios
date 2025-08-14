@@ -39,6 +39,10 @@ struct SavingsAnalysisScreen: View {
     
     var body: some View {
         ZStack {
+            
+            Color.groupedBackground
+                .ignoresSafeArea(.all)
+            
             if incomes.isEmpty {
                 VStack(spacing: 16) {
                     Image(systemName: "chart.line.uptrend.xyaxis")
@@ -223,7 +227,7 @@ struct ModernSummaryItem: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
-        .background(Color.appBackground)
+        .background(Color.gray.opacity(0.1))
         .cornerRadius(12)
         .shadow(color: color.opacity(0.1), radius: 2, x: 0, y: 1)
     }

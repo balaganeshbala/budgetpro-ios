@@ -25,10 +25,7 @@ struct IncomeDetailsView: View {
             selectedCategory: viewModel.selectedCategory,
             onCategorySelected: { category in
                 viewModel.selectedCategory = category
-            },
-            categoryDisplayName: { $0.displayName },
-            categoryIconName: { $0.iconName },
-            categoryColor: { $0.color }
+            }
         )
     }
 }

@@ -6,7 +6,7 @@ struct BudgetProApp: App {
         // Configure navigation bar appearance for both light and dark modes
         let navAppearance = UINavigationBarAppearance()
         navAppearance.configureWithOpaqueBackground()
-        navAppearance.backgroundColor = UIColor.systemBackground
+        navAppearance.backgroundColor = UIColor.secondarySystemGroupedBackground
         navAppearance.titleTextAttributes = [.foregroundColor: UIColor.label]
         navAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
         

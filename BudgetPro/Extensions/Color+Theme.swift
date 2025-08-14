@@ -9,9 +9,12 @@ extension Color {
     
     // Background Colors
     static let appBackground = Color(UIColor.systemBackground)
-    static let cardBackground = Color(light: .white, dark: Color(UIColor.secondarySystemBackground))
-    static let groupedBackground = Color(light: Color.gray.opacity(0.1), dark: Color(UIColor.systemGroupedBackground))
+    static let cardBackground = Color(light: .white, dark: Color(UIColor.secondarySystemGroupedBackground))
+    static let groupedBackground = Color(light: Color.gray.opacity(0.1), dark: Color(UIColor.tertiarySystemGroupedBackground))
     static let secondaryGroupedBackground = Color(UIColor.secondarySystemGroupedBackground)
+    
+    // Overlay Colors
+    static let overlayBackground = Color(light: Color.black.opacity(0.4), dark: Color.gray.opacity(0.4))
     
     // Text Colors
     static let primaryText = Color(UIColor.label)

@@ -110,7 +110,7 @@ struct MonthYearPickerDialog: View {
     
     var body: some View {
         ZStack {
-            Color.black.opacity(0.4)
+            Color.overlayBackground
                 .ignoresSafeArea()
                 .onTapGesture {
                     isPresented = false
