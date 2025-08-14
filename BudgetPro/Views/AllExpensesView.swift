@@ -49,7 +49,7 @@ struct AllExpensesView: View {
             .padding(.top, 16)
         }
         .background(Color.groupedBackground)
-        .navigationTitle(monthYearTitle)
+        .navigationTitle(monthYearTitle(month: month, year: year))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             // Set navigation bar to white/system background
@@ -87,7 +87,7 @@ struct AllExpensesView: View {
                 } label: {
                     Image(systemName: "arrow.up.arrow.down")
                         .font(.system(size: 16))
-                        .foregroundColor(.primary)
+                        .foregroundColor(.secondary)
                 }
             }
             
@@ -107,48 +107,30 @@ struct AllExpensesView: View {
     
     // MARK: - Expenses List Section
     private var expensesListSection: some View {
-        CardView(padding: EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)) {
-            if viewModel.sortedExpenses.isEmpty {
-                EmptyStateView(
-                    icon: "creditcard",
-                    title: "No expenses yet",
-                    subtitle: "Add your first expense to track spending",
-                    buttonTitle: "Add Expense",
-                    action: {
-                        // Navigate to add expense
-                    }
-                )
-            } else {
-                LazyVStack(spacing: 0) {
-                    ForEach(Array(viewModel.sortedExpenses.enumerated()), id: \.offset) { index, expense in
-                        TransactionRow<Expense, ExpenseDetailsView>(
-                            title: expense.name,
-                            amount: expense.amount,
-                            dateString: expense.dateString,
-                            categoryIcon: expense.categoryIcon,
-                            categoryColor: expense.categoryColor,
-                            iconShape: .roundedRectangle,
-                            amountColor: .primaryText,
-                            showChevron: true,
-                            destination: {
-                                ExpenseDetailsView(expense: expense)
-                            }
-                        )
-                        
-                        if index < viewModel.sortedExpenses.count - 1 {
-                            Divider()
-                                .padding(.horizontal, 16)
+        CardView(padding: EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0)) {
+            LazyVStack(spacing: 0) {
+                ForEach(Array(viewModel.sortedExpenses.enumerated()), id: \.offset) { index, expense in
+                    TransactionRow<Expense, ExpenseDetailsView>(
+                        title: expense.name,
+                        amount: expense.amount,
+                        dateString: expense.dateString,
+                        categoryIcon: expense.categoryIcon,
+                        categoryColor: expense.categoryColor,
+                        iconShape: .roundedRectangle,
+                        amountColor: .primaryText,
+                        showChevron: true,
+                        destination: {
+                            ExpenseDetailsView(expense: expense)
                         }
+                    )
+                    
+                    if index < viewModel.sortedExpenses.count - 1 {
+                        Divider()
+                            .padding(.horizontal, 16)
                     }
                 }
             }
         }
-    }
-    
-    private var monthYearTitle: String {
-        let monthNames = ["", "January", "February", "March", "April", "May", "June",
-                         "July", "August", "September", "October", "November", "December"]
-        return "\(monthNames[month]) \(year)"
     }
 }
 
@@ -303,46 +285,6 @@ struct CategoryBreakdownRow: View {
 }
 
 
-// MARK: - Empty State View
-struct EmptyStateView: View {
-    let icon: String
-    let title: String
-    let subtitle: String
-    let buttonTitle: String
-    let action: () -> Void
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: icon)
-                .font(.system(size: 48))
-                .foregroundColor(.secondaryText.opacity(0.6))
-            
-            VStack(spacing: 8) {
-                Text(title)
-                    .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.primaryText)
-                
-                Text(subtitle)
-                    .font(.sora(14))
-                    .foregroundColor(.tertiaryText)
-                    .multilineTextAlignment(.center)
-            }
-            
-            Button(action: action) {
-                Text(buttonTitle)
-                    .font(.sora(14, weight: .medium))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                    .background(Color.secondary)
-                    .cornerRadius(8)
-            }
-        }
-        .padding(.vertical, 32)
-        .padding(.horizontal, 16)
-    }
-}
-
 // MARK: - Preview
 struct AllExpensesView_Previews: PreviewProvider {
     static var sampleExpenses: [Expense] {
@@ -418,17 +360,6 @@ struct AllExpensesView_Previews: PreviewProvider {
             }
             .preferredColorScheme(.dark)
             .previewDisplayName("Dark Theme")
-            
-            // Empty State Preview
-            NavigationView {
-                AllExpensesView(
-                    expenses: [],
-                    month: 7,
-                    year: 2025
-                )
-            }
-            .preferredColorScheme(.light)
-            .previewDisplayName("Empty State")
         }
     }
 }

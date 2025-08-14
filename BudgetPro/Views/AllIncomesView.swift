@@ -40,7 +40,7 @@ struct AllIncomesView: View {
             .padding(.top, 16)
         }
         .background(Color.groupedBackground)
-        .navigationTitle(monthYearTitle)
+        .navigationTitle(monthYearTitle(month: month, year: year))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             // Set navigation bar to white/system background
@@ -78,7 +78,7 @@ struct AllIncomesView: View {
                 } label: {
                     Image(systemName: "arrow.up.arrow.down")
                         .font(.system(size: 16))
-                        .foregroundColor(.primary)
+                        .foregroundColor(.secondary)
                 }
             }
             
@@ -98,48 +98,30 @@ struct AllIncomesView: View {
     
     // MARK: - Incomes List Section
     private var incomesListSection: some View {
-        CardView(padding: EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)) {
-            if viewModel.sortedIncomes.isEmpty {
-                EmptyStateView(
-                    icon: "dollarsign.circle",
-                    title: "No incomes yet",
-                    subtitle: "Add your income sources to track earnings",
-                    buttonTitle: "Add Income",
-                    action: {
-                        // Navigate to add income
-                    }
-                )
-            } else {
-                LazyVStack(spacing: 0) {
-                    ForEach(Array(viewModel.sortedIncomes.enumerated()), id: \.offset) { index, income in
-                        TransactionRow<Income, IncomeDetailsView>(
-                            title: income.source,
-                            amount: income.amount,
-                            dateString: income.dateString,
-                            categoryIcon: income.categoryIcon,
-                            categoryColor: IncomeCategory.from(categoryName: income.category).color,
-                            iconShape: .roundedRectangle,
-                            amountColor: .primaryText,
-                            showChevron: true,
-                            destination: {
-                                IncomeDetailsView(income: income)
-                            }
-                        )
-                        
-                        if index < viewModel.sortedIncomes.count - 1 {
-                            Divider()
-                                .padding(.horizontal, 16)
+        CardView(padding: EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0)) {
+            LazyVStack(spacing: 0) {
+                ForEach(Array(viewModel.sortedIncomes.enumerated()), id: \.offset) { index, income in
+                    TransactionRow<Income, IncomeDetailsView>(
+                        title: income.source,
+                        amount: income.amount,
+                        dateString: income.dateString,
+                        categoryIcon: income.categoryIcon,
+                        categoryColor: IncomeCategory.from(categoryName: income.category).color,
+                        iconShape: .roundedRectangle,
+                        amountColor: .primaryText,
+                        showChevron: true,
+                        destination: {
+                            IncomeDetailsView(income: income)
                         }
+                    )
+                    
+                    if index < viewModel.sortedIncomes.count - 1 {
+                        Divider()
+                            .padding(.horizontal, 16)
                     }
                 }
             }
         }
-    }
-    
-    private var monthYearTitle: String {
-        let monthNames = ["", "January", "February", "March", "April", "May", "June",
-                         "July", "August", "September", "October", "November", "December"]
-        return "\(monthNames[month]) \(year)"
     }
 }
 
@@ -362,17 +344,6 @@ struct AllIncomesView_Previews: PreviewProvider {
             }
             .preferredColorScheme(.dark)
             .previewDisplayName("Dark Theme")
-            
-            // Empty State Preview
-            NavigationView {
-                AllIncomesView(
-                    incomes: [],
-                    month: 8,
-                    year: 2025
-                )
-            }
-            .preferredColorScheme(.light)
-            .previewDisplayName("Empty State")
         }
     }
 }
