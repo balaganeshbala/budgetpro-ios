@@ -56,7 +56,7 @@ struct CreateBudgetView: View {
                     }
                 }
                 .font(.sora(16, weight: .medium))
-                .foregroundColor(viewModel.canSave ? Color(red: 0.2, green: 0.6, blue: 0.5) : .gray)
+                .foregroundColor(viewModel.canSave ? .primary : .gray)
                 .disabled(!viewModel.canSave || viewModel.isLoading)
             )
         }
@@ -115,7 +115,7 @@ struct CreateBudgetView: View {
                 
                 Text("₹\(Int(viewModel.totalBudget))")
                     .font(.sora(24, weight: .bold))
-                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                    .foregroundColor(.primary)
             }
             
             if viewModel.totalBudget > 0 {
@@ -141,7 +141,7 @@ struct CreateBudgetView: View {
                                 .cornerRadius(3)
                             
                             Rectangle()
-                                .fill(Color(red: 0.2, green: 0.6, blue: 0.5))
+                                .fill(.primary)
                                 .frame(width: geometry.size.width * (Double(viewModel.categoriesWithBudget) / Double(viewModel.totalCategories)), height: 6)
                                 .cornerRadius(3)
                         }
@@ -253,7 +253,7 @@ struct BudgetCategoryInput: View {
                 .padding(.vertical, 10)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(isFocused ? Color(red: 0.2, green: 0.6, blue: 0.5) : Color.gray.opacity(0.3), lineWidth: isFocused ? 2 : 1)
+                        .stroke(isFocused ? .primary : Color.gray.opacity(0.3), lineWidth: isFocused ? 2 : 1)
                         .background(Color.white)
                 )
                 .cornerRadius(8)

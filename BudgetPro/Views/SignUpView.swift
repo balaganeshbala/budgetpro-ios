@@ -18,7 +18,7 @@ struct SignUpView: View {
                     VStack(spacing: 8) {
                         Text("Create Account")
                             .font(.sora(32, weight: .bold))
-                            .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                            .foregroundColor(.primary)
                         
                         Text("Sign up to get started")
                             .font(.sora(16))
@@ -50,7 +50,7 @@ struct SignUpView: View {
                         .background(Color.white)
                         .overlay(
                             RoundedRectangle(cornerRadius: 8)
-                                .stroke(focusedField == .fullName ? Color(red: 0.2, green: 0.6, blue: 0.5) : Color.gray.opacity(0.3), lineWidth: focusedField == .fullName ? 2 : 1)
+                                .stroke(focusedField == .fullName ? .primary : Color.gray.opacity(0.3), lineWidth: focusedField == .fullName ? 2 : 1)
                         )
                         .contentShape(Rectangle())
                         .onTapGesture {
@@ -84,7 +84,7 @@ struct SignUpView: View {
                         .background(Color.white)
                         .overlay(
                             RoundedRectangle(cornerRadius: 8)
-                                .stroke(focusedField == .email ? Color(red: 0.2, green: 0.6, blue: 0.5) : Color.gray.opacity(0.3), lineWidth: focusedField == .email ? 2 : 1)
+                                .stroke(focusedField == .email ? .primary : Color.gray.opacity(0.3), lineWidth: focusedField == .email ? 2 : 1)
                         )
                         .contentShape(Rectangle())
                         .onTapGesture {
@@ -134,7 +134,7 @@ struct SignUpView: View {
                         .background(Color.white)
                         .overlay(
                             RoundedRectangle(cornerRadius: 8)
-                                .stroke(focusedField == .password ? Color(red: 0.2, green: 0.6, blue: 0.5) : Color.gray.opacity(0.3), lineWidth: focusedField == .password ? 2 : 1)
+                                .stroke(focusedField == .password ? .primary : Color.gray.opacity(0.3), lineWidth: focusedField == .password ? 2 : 1)
                         )
                         .contentShape(Rectangle())
                         .onTapGesture {
@@ -220,7 +220,7 @@ struct SignUpView: View {
                         .background(Color.white)
                         .overlay(
                             RoundedRectangle(cornerRadius: 8)
-                                .stroke(focusedField == .confirmPassword ? Color(red: 0.2, green: 0.6, blue: 0.5) : Color.gray.opacity(0.3), lineWidth: focusedField == .confirmPassword ? 2 : 1)
+                                .stroke(focusedField == .confirmPassword ? .primary : Color.gray.opacity(0.3), lineWidth: focusedField == .confirmPassword ? 2 : 1)
                         )
                         .contentShape(Rectangle())
                         .onTapGesture {

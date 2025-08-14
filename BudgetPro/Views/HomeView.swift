@@ -114,7 +114,7 @@ struct HomeView: View {
     
     // MARK: - Expenses Section
     private var expensesSection: some View {
-        VStack(spacing: 16) {
+        CardView(padding: EdgeInsets(top: 16, leading: 0, bottom: 10, trailing: 0)) {
             if viewModel.recentExpenses.isEmpty {
                 VStack(spacing: 16) {
                     HStack {
@@ -123,6 +123,7 @@ struct HomeView: View {
                             .foregroundColor(.primaryText)
                         Spacer()
                     }
+                    .padding([.horizontal], 16)
                     
                     VStack(spacing: 16) {
                         Image(systemName: "creditcard")
@@ -154,10 +155,6 @@ struct HomeView: View {
                     }
                     .padding(.vertical, 16)
                 }
-                .padding(16)
-                .background(Color.cardBackground)
-                .cornerRadius(16)
-                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
             } else {
                 VStack(spacing: 16) {
                     HStack {
@@ -166,8 +163,7 @@ struct HomeView: View {
                             .foregroundColor(.primaryText)
                         Spacer()
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 16)
+                    .padding([.horizontal], 16)
                     
                     VStack(spacing: 0) {
                         ForEach(Array(viewModel.recentExpenses.prefix(5).enumerated()), id: \.offset) { index, expense in
@@ -225,16 +221,13 @@ struct HomeView: View {
                         }
                     }
                 }
-                .background(Color.cardBackground)
-                .cornerRadius(16)
-                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
             }
         }
     }
     
     // MARK: - Incomes Section  
     private var incomesSection: some View {
-        VStack(spacing: 16) {
+        CardView(padding: EdgeInsets(top: 16, leading: 0, bottom: 10, trailing: 0)) {
             if viewModel.recentIncomes.isEmpty {
                 VStack(spacing: 16) {
                     HStack {
@@ -243,6 +236,7 @@ struct HomeView: View {
                             .foregroundColor(.primaryText)
                         Spacer()
                     }
+                    .padding([.horizontal], 16)
                     
                     VStack(spacing: 16) {
                         Image(systemName: "dollarsign.circle")
@@ -274,10 +268,6 @@ struct HomeView: View {
                     }
                     .padding(.vertical, 16)
                 }
-                .padding(16)
-                .background(Color.cardBackground)
-                .cornerRadius(16)
-                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
             } else {
                 VStack(spacing: 16) {
                     HStack {
@@ -286,8 +276,7 @@ struct HomeView: View {
                             .foregroundColor(.primaryText)
                         Spacer()
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 16)
+                    .padding([.horizontal], 16)
                     
                     VStack(spacing: 0) {
                         ForEach(Array(viewModel.recentIncomes.prefix(5).enumerated()), id: \.offset) { index, income in
@@ -345,9 +334,6 @@ struct HomeView: View {
                         }
                     }
                 }
-                .background(Color.cardBackground)
-                .cornerRadius(16)
-                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
             }
         }
     }
@@ -404,28 +390,26 @@ struct HomeView: View {
     private var budgetOverviewCard: some View {
         if viewModel.budgetCategories.isEmpty {
             // No budget state - show custom empty state
-            VStack(spacing: 16) {
-                // Header
-                HStack {
-                    Text("Budget Overview")
-                        .font(.sora(18, weight: .semibold))
-                        .foregroundColor(.primaryText)
+            CardView {
+                VStack(spacing: 16) {
+                    // Header
+                    HStack {
+                        Text("Budget Overview")
+                            .font(.sora(18, weight: .semibold))
+                            .foregroundColor(.primaryText)
+                        
+                        Spacer()
+                    }
                     
-                    Spacer()
-                }
-                
-                if isPastMonth(month: selectedMonth, year: selectedYear) {
-                    // Past month no budget state
-                    pastMonthNoBudgetState
-                } else {
-                    // Current/future month no budget state
-                    currentMonthNoBudgetState
+                    if isPastMonth(month: selectedMonth, year: selectedYear) {
+                        // Past month no budget state
+                        pastMonthNoBudgetState
+                    } else {
+                        // Current/future month no budget state
+                        currentMonthNoBudgetState
+                    }
                 }
             }
-            .padding(16)
-            .background(Color.cardBackground)
-            .cornerRadius(16)
-            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
         } else {
             // Budget exists - use reusable component
             BudgetOverviewCard(
@@ -446,77 +430,72 @@ struct HomeView: View {
     
     // MARK: - Options Section
     private var optionsSection: some View {
-        VStack(spacing: 16) {
-            // Header
-            HStack {
-                Text("Quick Actions")
-                    .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.primaryText)
+        CardView {
+            VStack(spacing: 16) {
+                // Header
+                HStack {
+                    Text("Quick Actions")
+                        .font(.sora(18, weight: .semibold))
+                        .foregroundColor(.primaryText)
+                    
+                    Spacer()
+                }
                 
-                Spacer()
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 16)
-            
-            // Options content
-            VStack(spacing: 0) {
-                OptionRow(
-                    icon: "chart.pie",
-                    iconColor: Color.primary,
-                    title: "Savings Analysis",
-                    action: {
-                        let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                                         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-                        let monthString = monthNames[selectedMonth - 1]
-                        let yearString = String(selectedYear)
-                        
-                        coordinator.navigate(to: .savingsAnalysis(
-                            expenses: viewModel.recentExpenses,
-                            incomes: viewModel.recentIncomes,
-                            totalBudget: viewModel.totalBudget,
-                            month: monthString,
-                            year: yearString
-                        ))
-                    }
-                )
+                // Options content
+                VStack(spacing: 0) {
+                    OptionRow(
+                        icon: "chart.pie",
+                        iconColor: Color.primary,
+                        title: "Savings Analysis",
+                        action: {
+                            let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                                             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+                            let monthString = monthNames[selectedMonth - 1]
+                            let yearString = String(selectedYear)
+                            
+                            coordinator.navigate(to: .savingsAnalysis(
+                                expenses: viewModel.recentExpenses,
+                                incomes: viewModel.recentIncomes,
+                                totalBudget: viewModel.totalBudget,
+                                month: monthString,
+                                year: yearString
+                            ))
+                        }
+                    )
+                }
             }
         }
-        .background(Color.cardBackground)
-        .cornerRadius(16)
-        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     // MARK: - Skeleton Loading
     private var budgetSkeletonCard: some View {
-        VStack(spacing: 16) {
-            HStack {
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.secondarySystemFill)
-                    .frame(width: 120, height: 20)
+        CardView {
+            VStack(spacing: 16) {
+                HStack {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.secondarySystemFill)
+                        .frame(width: 120, height: 20)
+                    
+                    Spacer()
+                }
                 
-                Spacer()
-            }
-            
-            VStack(spacing: 12) {
-                ForEach(0..<3, id: \.self) { _ in
-                    HStack {
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(Color.secondarySystemFill)
-                            .frame(width: 80, height: 16)
-                        
-                        Spacer()
-                        
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(Color.secondarySystemFill)
-                            .frame(width: 60, height: 16)
+                VStack(spacing: 12) {
+                    ForEach(0..<3, id: \.self) { _ in
+                        HStack {
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color.secondarySystemFill)
+                                .frame(width: 80, height: 16)
+                            
+                            Spacer()
+                            
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color.secondarySystemFill)
+                                .frame(width: 60, height: 16)
+                        }
                     }
                 }
             }
         }
-        .padding(16)
-        .background(Color.cardBackground)
-        .cornerRadius(16)
-        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
         .redacted(reason: .placeholder)
     }
     
@@ -724,7 +703,6 @@ struct OptionRow: View {
                     .font(.system(size: 12)) 
                     .foregroundColor(.secondaryText)
             }
-            .padding(.horizontal, 16)
             .padding(.vertical, 16)
             .contentShape(Rectangle())
         }

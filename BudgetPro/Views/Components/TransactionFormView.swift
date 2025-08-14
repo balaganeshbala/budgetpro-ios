@@ -576,7 +576,7 @@ struct TransactionDateSelectorField<ViewModel: TransactionFormViewModelProtocol>
                     
                     Text(viewModel.formattedDateForDisplay)
                         .font(.sora(14, weight: .semibold))
-                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                        .foregroundColor(.primary)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 16)
@@ -615,11 +615,11 @@ struct TransactionCategorySelectorField<CategoryType>: View where CategoryType: 
                     
                     Text(categoryDisplayName(selectedCategory).uppercased())
                         .font(.sora(14, weight: .semibold))
-                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                        .foregroundColor(.primary)
                     
                     Image(systemName: "chevron.down")
                         .font(.sora(12))
-                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                        .foregroundColor(.primary)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 16)

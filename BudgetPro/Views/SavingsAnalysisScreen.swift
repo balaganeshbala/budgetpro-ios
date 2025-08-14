@@ -107,56 +107,47 @@ struct SavingsSummaryCard: View {
     let savingsRate: Double
     
     var body: some View {
-        VStack(spacing: 12) {
-            // First row: Net Savings and Savings Rate
-            HStack(spacing: 12) {
-                ModernSummaryItem(
-                    title: "Net Savings",
-                    value: CommonHelpers.formatCurrencyWithSign(savings, showSign: false),
-                    color: savings >= 0 ? Color(red: 0.259, green: 0.561, blue: 0.490) : .red,
-                    icon: savings >= 0 ? "arrow.up.circle.fill" : "arrow.down.circle.fill",
-                    isPositive: savings >= 0
-                )
+        CardView {
+            VStack(spacing: 12) {
+                // First row: Net Savings and Savings Rate
+                HStack(spacing: 12) {
+                    ModernSummaryItem(
+                        title: "Net Savings",
+                        value: CommonHelpers.formatCurrencyWithSign(savings),
+                        color: savings >= 0 ? .primary : .red,
+                        icon: savings >= 0 ? "arrow.up.circle.fill" : "arrow.down.circle.fill",
+                        isPositive: savings >= 0
+                    )
+                    
+                    ModernSummaryItem(
+                        title: "Savings Rate",
+                        value: String(format: "%.1f%%", savingsRate),
+                        color: CommonHelpers.getSavingsRateColor(savingsRate),
+                        icon: "percent",
+                        isPositive: savingsRate >= 0
+                    )
+                }
                 
-                ModernSummaryItem(
-                    title: "Savings Rate",
-                    value: String(format: "%.1f%%", savingsRate),
-                    color: CommonHelpers.getSavingsRateColor(savingsRate),
-                    icon: "percent",
-                    isPositive: savingsRate >= 0
-                )
-            }
-            
-            // Second row: Income and Expenses
-            HStack(spacing: 12) {
-                ModernSummaryItem(
-                    title: "Income",
-                    value: CommonHelpers.formatCurrency(totalIncome),
-                    color: Color(red: 0.259, green: 0.561, blue: 0.490),
-                    icon: "plus.circle.fill",
-                    isPositive: true
-                )
-                
-                ModernSummaryItem(
-                    title: "Expenses",
-                    value: CommonHelpers.formatCurrency(effectiveExpenses),
-                    color: Color(red: 1.0, green: 0.420, blue: 0.420),
-                    icon: "minus.circle.fill",
-                    isPositive: false
-                )
+                // Second row: Income and Expenses
+                HStack(spacing: 12) {
+                    ModernSummaryItem(
+                        title: "Income",
+                        value: CommonHelpers.formatCurrency(totalIncome),
+                        color: .primary,
+                        icon: "plus.circle.fill",
+                        isPositive: true
+                    )
+                    
+                    ModernSummaryItem(
+                        title: "Expenses",
+                        value: CommonHelpers.formatCurrency(effectiveExpenses),
+                        color: .secondary,
+                        icon: "minus.circle.fill",
+                        isPositive: false
+                    )
+                }
             }
         }
-        .padding(20)
-        .background(
-            LinearGradient(
-                gradient: Gradient(colors: [Color.cardBackground, Color.cardBackground.opacity(0.8)]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-        )
-        .cornerRadius(20)
-        .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
-        .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 1)
     }
 }
 
@@ -221,7 +212,7 @@ struct ModernSummaryItem: View {
             VStack(spacing: 4) {
                 Text(title)
                     .font(.sora(12, weight: .medium))
-                    .foregroundColor(.secondaryText)
+                    .foregroundColor(.primaryText)
                 
                 Text(value)
                     .font(.sora(16, weight: .bold))
@@ -232,7 +223,7 @@ struct ModernSummaryItem: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
-        .background(Color.cardBackground)
+        .background(Color.appBackground)
         .cornerRadius(12)
         .shadow(color: color.opacity(0.1), radius: 2, x: 0, y: 1)
     }
@@ -279,97 +270,95 @@ struct SavingsRateIndicator: View {
     let savingsRate: Double
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Savings Rate")
-                    .font(.sora(16, weight: .semibold))
-                    .foregroundColor(.primaryText)
-                
-                Text("Financial experts recommend saving at least 20% of your income.")
-                    .lineSpacing(4)
-                    .font(.sora(14))
-                    .foregroundColor(.secondaryText)
-            }
-            
-            VStack(spacing: 8) {
-                HStack {
-                    Spacer()
-                    Text(String(format: "%.1f%%", savingsRate))
-                        .font(.sora(13, weight: .bold))
-                        .foregroundColor(CommonHelpers.getSavingsRateColor(savingsRate))
-                }
-                
-                ZStack {
-                    // Background bar
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(height: 24)
-                        .cornerRadius(12)
+        CardView {
+            VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Savings Rate")
+                        .font(.sora(16, weight: .semibold))
+                        .foregroundColor(.primaryText)
                     
-                    // Progress bar
-                    HStack {
-                        Rectangle()
-                            .fill(CommonHelpers.getSavingsRateColor(savingsRate))
-                            .frame(width: max(getProgressWidth(savingsRate), 0), height: 24)
-                            .cornerRadius(12)
-                            .animation(.easeInOut(duration: 0.5), value: savingsRate)
-                        Spacer(minLength: 0)
-                    }
-                    
-                    // Markers overlay
-                    HStack {
-                        Spacer(minLength: 1)
-                        buildMarker(10, savingsRate)
-                        Spacer()
-                        buildMarker(20, savingsRate)
-                        Spacer()
-                        buildMarker(30, savingsRate)
-                        Spacer(minLength: 1)
-                    }
-                    .frame(height: 24)
-                }
-                
-                // Labels below progress bar
-                HStack {
-                    Text("0%")
-                        .font(.sora(12))
-                        .foregroundColor(.secondaryText)
-                    
-                    Spacer()
-                    
-                    Text("20%")
-                        .font(.sora(12))
-                        .foregroundColor(.secondaryText)
-                    
-                    Spacer()
-                    
-                    Text("40%")
-                        .font(.sora(12))
-                        .foregroundColor(.secondaryText)
-                }
-                .padding(.top, 8)
-                
-                // Savings rate message container
-                HStack(spacing: 12) {
-                    Image(systemName: CommonHelpers.getSavingsRateIcon(savingsRate))
-                        .foregroundColor(CommonHelpers.getSavingsRateColor(savingsRate))
-                        .font(.sora(16))
-                    
-                    Text(CommonHelpers.getSavingsRateMessage(savingsRate))
-                        .font(.sora(14))
-                        .foregroundColor(CommonHelpers.getSavingsRateColor(savingsRate))
+                    Text("Financial experts recommend saving at least 20% of your income.")
                         .lineSpacing(4)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .font(.sora(14))
+                        .foregroundColor(.secondaryText)
                 }
-                .padding(12)
-                .background(CommonHelpers.getSavingsRateColor(savingsRate).opacity(0.1))
-                .cornerRadius(8)
+                
+                VStack(spacing: 8) {
+                    HStack {
+                        Spacer()
+                        Text(String(format: "%.1f%%", savingsRate))
+                            .font(.sora(13, weight: .bold))
+                            .foregroundColor(CommonHelpers.getSavingsRateColor(savingsRate))
+                    }
+                    
+                    ZStack {
+                        // Background bar
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.2))
+                            .frame(height: 24)
+                            .cornerRadius(12)
+                        
+                        // Progress bar
+                        HStack {
+                            Rectangle()
+                                .fill(CommonHelpers.getSavingsRateColor(savingsRate))
+                                .frame(width: max(getProgressWidth(savingsRate), 0), height: 24)
+                                .cornerRadius(12)
+                                .animation(.easeInOut(duration: 0.5), value: savingsRate)
+                            Spacer(minLength: 0)
+                        }
+                        
+                        // Markers overlay
+                        HStack {
+                            Spacer(minLength: 1)
+                            buildMarker(10, savingsRate)
+                            Spacer()
+                            buildMarker(20, savingsRate)
+                            Spacer()
+                            buildMarker(30, savingsRate)
+                            Spacer(minLength: 1)
+                        }
+                        .frame(height: 24)
+                    }
+                    
+                    // Labels below progress bar
+                    HStack {
+                        Text("0%")
+                            .font(.sora(12))
+                            .foregroundColor(.secondaryText)
+                        
+                        Spacer()
+                        
+                        Text("20%")
+                            .font(.sora(12))
+                            .foregroundColor(.secondaryText)
+                        
+                        Spacer()
+                        
+                        Text("40%")
+                            .font(.sora(12))
+                            .foregroundColor(.secondaryText)
+                    }
+                    .padding(.top, 8)
+                    
+                    // Savings rate message container
+                    HStack(spacing: 12) {
+                        Image(systemName: CommonHelpers.getSavingsRateIcon(savingsRate))
+                            .foregroundColor(CommonHelpers.getSavingsRateColor(savingsRate))
+                            .font(.sora(16))
+                        
+                        Text(CommonHelpers.getSavingsRateMessage(savingsRate))
+                            .font(.sora(14))
+                            .foregroundColor(CommonHelpers.getSavingsRateColor(savingsRate))
+                            .lineSpacing(4)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(12)
+                    .background(CommonHelpers.getSavingsRateColor(savingsRate).opacity(0.1))
+                    .cornerRadius(8)
+                }
             }
         }
-        .padding(16)
-        .background(Color.cardBackground)
-        .cornerRadius(16)
-        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     private func getProgressWidth(_ rate: Double) -> CGFloat {
@@ -397,26 +386,24 @@ struct SavingsRecommendations: View {
     let totalBudget: Double
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Recommendations")
-                .font(.sora(16, weight: .semibold))
-                .foregroundColor(.primaryText)
-            
-            VStack(spacing: 16) {
-                ForEach(getRecommendations(), id: \.title) { recommendation in
-                    RecommendationItem(
-                        title: recommendation.title,
-                        description: recommendation.description,
-                        icon: recommendation.icon,
-                        color: recommendation.color
-                    )
+        CardView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Recommendations")
+                    .font(.sora(16, weight: .semibold))
+                    .foregroundColor(.primaryText)
+                
+                VStack(spacing: 16) {
+                    ForEach(getRecommendations(), id: \.title) { recommendation in
+                        RecommendationItem(
+                            title: recommendation.title,
+                            description: recommendation.description,
+                            icon: recommendation.icon,
+                            color: recommendation.color
+                        )
+                    }
                 }
             }
         }
-        .padding(16)
-        .background(Color.cardBackground)
-        .cornerRadius(16)
-        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     private func getRecommendations() -> [(title: String, description: String, icon: String, color: Color)] {

@@ -95,7 +95,7 @@ struct EditBudgetView: View {
                             HStack(spacing: 8) {
                                 Text("₹\(Int(viewModel.totalBudget))")
                                     .font(.sora(24, weight: .bold))
-                                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                                    .foregroundColor(.primary)
                                 
                                 Text("(Updated)")
                                     .font(.sora(12, weight: .medium))
@@ -118,7 +118,7 @@ struct EditBudgetView: View {
                         // Show normal budget when no changes
                         Text("₹\(Int(viewModel.totalBudget))")
                             .font(.sora(24, weight: .bold))
-                            .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                            .foregroundColor(.primary)
                     }
                 }
                 
@@ -289,7 +289,7 @@ struct EditBudgetCategoryInput: View {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(
                             hasChanged ? Color.orange : 
-                            (isFocused ? Color(red: 0.2, green: 0.6, blue: 0.5) : Color.gray.opacity(0.3)), 
+                            (isFocused ? .primary : Color.gray.opacity(0.3)), 
                             lineWidth: hasChanged ? 2 : (isFocused ? 2 : 1)
                         )
                         .background(Color.cardBackground)

@@ -51,7 +51,7 @@ struct MainView: View {
                     
                     Text("Welcome, \(viewModel.userDisplayName)!")
                         .font(.sora(20, weight: .medium))
-                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                        .foregroundColor(.primary)
                         .padding(.bottom, 10)
                     
                     Text("You are now signed in with Supabase")

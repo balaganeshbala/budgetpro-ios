@@ -55,12 +55,12 @@ struct ProfileView: View {
         VStack(spacing: 16) {
             // Profile Avatar
             Circle()
-                .fill(Color(red: 0.2, green: 0.6, blue: 0.5).opacity(0.2))
+                .fill(.primary.opacity(0.2))
                 .frame(width: 80, height: 80)
                 .overlay(
                     Image(systemName: "person.fill")
                         .font(.system(size: 40))
-                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                        .foregroundColor(.primary)
                 )
             
             VStack(spacing: 8) {

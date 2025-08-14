@@ -112,7 +112,7 @@ struct DatePickerDialog: View {
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)
-                            .background(Color.primary)
+                            .background(Color.secondary)
                             .cornerRadius(8)
                     }
                 }
@@ -415,11 +415,11 @@ struct BudgetOverviewCard: View {
             VStack(spacing: 20) {
                 // Remaining Amount - Highlighted at the top
                 VStack(alignment: .center, spacing: 8) {
-                    Text("Remaining Budget")
+                    Text(isOverBudget ? "Overspent": "Remaining Budget")
                         .font(.sora(18, weight: .medium))
                         .foregroundColor(.secondaryText)
                     
-                    Text("₹\(CommonHelpers.formatAmount(max(0, remainingBudget)))")
+                    Text("₹\(CommonHelpers.formatAmount(remainingBudget))")
                         .font(.sora(30, weight: .bold))
                         .foregroundColor(isOverBudget ? .overBudgetColor : .adaptivePrimary)
                 }
@@ -539,6 +539,46 @@ struct BudgetOverviewCard: View {
         .background(Color.cardBackground)
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
+    }
+}
+
+// MARK: - Reusable Card Container View
+
+struct CardView<Content: View>: View {
+    let content: Content
+    let padding: EdgeInsets
+    let cornerRadius: CGFloat
+    let shadowRadius: CGFloat
+    let shadowOpacity: Double
+    let shadowOffset: CGSize
+    
+    init(
+        padding: EdgeInsets = EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16),
+        cornerRadius: CGFloat = 16,
+        shadowRadius: CGFloat = 4,
+        shadowOpacity: Double = 0.1,
+        shadowOffset: CGSize = CGSize(width: 0, height: 1),
+        @ViewBuilder content: () -> Content
+    ) {
+        self.content = content()
+        self.padding = padding
+        self.cornerRadius = cornerRadius
+        self.shadowRadius = shadowRadius
+        self.shadowOpacity = shadowOpacity
+        self.shadowOffset = shadowOffset
+    }
+    
+    var body: some View {
+        content
+            .padding(padding)
+            .background(Color.cardBackground)
+            .cornerRadius(cornerRadius)
+            .shadow(
+                color: .black.opacity(shadowOpacity),
+                radius: shadowRadius,
+                x: shadowOffset.width,
+                y: shadowOffset.height
+            )
     }
 }
 

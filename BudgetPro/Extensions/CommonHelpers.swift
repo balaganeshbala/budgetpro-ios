@@ -57,7 +57,7 @@ struct CommonHelpers {
     /// - Returns: Color representing the savings rate quality
     static func getSavingsRateColor(_ rate: Double) -> Color {
         if rate < 0 { return .red }
-        if rate < 10 { return .red.opacity(0.7) }
+        if rate < 10 { return .secondary }
         if rate < 20 { return .orange }
         return .primary
     }
@@ -118,13 +118,13 @@ struct CommonHelpers {
     ///   - amount: The amount to format
     ///   - showSign: Whether to show + or - sign
     /// - Returns: Formatted string with currency symbol and optional sign
-    static func formatCurrencyWithSign(_ amount: Double, showSign: Bool = true) -> String {
+    static func formatCurrencyWithSign(_ amount: Double, showNegative: Bool = true) -> String {
         let formattedAmount = formatAmount(abs(amount))
-        if showSign {
+        if amount > 0 || showNegative {
             let sign = amount >= 0 ? "+" : "-"
             return "\(sign)₹\(formattedAmount)"
         }
-        return "₹\(formattedAmount)"
+        return "₹0"
     }
 }
 

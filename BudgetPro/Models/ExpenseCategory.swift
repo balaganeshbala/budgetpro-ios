@@ -76,7 +76,7 @@ enum ExpenseCategory: String, CaseIterable {
         case .healthBeauty: return .red
         case .entertainment: return .indigo
         case .charityGift: return .teal
-        case .education: return Color(red: 0.2, green: 0.6, blue: 0.5)
+        case .education: return .indigo
         case .vehicle: return .gray
         case .unknown: return .secondary
         }

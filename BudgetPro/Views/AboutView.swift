@@ -41,7 +41,7 @@ struct AboutView: View {
                     presentationMode.wrappedValue.dismiss()
                 }
                 .font(.sora(16, weight: .medium))
-                .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                .foregroundColor(.secondary)
             )
         }
         .onAppear {
@@ -128,7 +128,7 @@ struct AboutView: View {
                 
                 FeatureRow(
                     icon: "plus.circle",
-                    iconColor: Color(red: 0.2, green: 0.6, blue: 0.5),
+                    iconColor: .primary,
                     title: "Income Management",
                     description: "Track multiple income sources and earnings"
                 )

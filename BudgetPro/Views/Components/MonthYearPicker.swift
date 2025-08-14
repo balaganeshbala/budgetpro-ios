@@ -172,7 +172,7 @@ struct MonthYearPickerDialog: View {
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)
-                            .background(Color.primary)
+                            .background(Color.secondary)
                             .cornerRadius(8)
                     }
                 }

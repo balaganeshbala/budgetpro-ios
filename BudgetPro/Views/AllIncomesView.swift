@@ -78,7 +78,7 @@ struct AllIncomesView: View {
                 } label: {
                     Image(systemName: "arrow.up.arrow.down")
                         .font(.system(size: 16))
-                        .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                        .foregroundColor(.primary)
                 }
             }
             
@@ -89,7 +89,7 @@ struct AllIncomesView: View {
                 
                 Text(viewModel.currentSortType.rawValue)
                     .font(.sora(14, weight: .medium))
-                    .foregroundColor(Color(red: 0.2, green: 0.6, blue: 0.5))
+                    .foregroundColor(.primary)
                 
                 Spacer()
             }
@@ -98,7 +98,7 @@ struct AllIncomesView: View {
     
     // MARK: - Incomes List Section
     private var incomesListSection: some View {
-        VStack(spacing: 0) {
+        CardView(padding: EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)) {
             if viewModel.sortedIncomes.isEmpty {
                 EmptyStateView(
                     icon: "dollarsign.circle",
@@ -132,9 +132,6 @@ struct AllIncomesView: View {
                         }
                     }
                 }
-                .background(Color.cardBackground)
-                .cornerRadius(12)
-                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
             }
         }
     }
@@ -201,49 +198,47 @@ struct IncomeSummaryView: View {
     }
     
     var body: some View {
-        VStack(spacing: 16) {
-            // Total Income Section
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("Total Income")
-                        .font(.sora(16, weight: .medium))
-                        .foregroundColor(.secondaryText)
-                    Spacer()
-                }
-                
-                HStack {
-                    Text("₹\(formatAmount(totalIncome))")
-                        .font(.sora(24, weight: .bold))
-                        .foregroundColor(.primaryText)
-                    Spacer()
-                }
-            }
-            
-            if !sortedCategories.isEmpty {
-                Divider()
-                
-                // Category Breakdown Section
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Income by Category")
-                        .font(.sora(16, weight: .medium))
-                        .foregroundColor(.secondaryText)
+        CardView {
+            VStack(spacing: 16) {
+                // Total Income Section
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Total Income")
+                            .font(.sora(16, weight: .medium))
+                            .foregroundColor(.secondaryText)
+                        Spacer()
+                    }
                     
-                    LazyVStack(spacing: 12) {
-                        ForEach(sortedCategories.prefix(5), id: \.category) { categoryData in
-                            IncomeCategoryBreakdownRow(
-                                category: categoryData.category,
-                                amount: categoryData.amount,
-                                percentage: totalIncome > 0 ? (categoryData.amount / totalIncome) * 100 : 0
-                            )
+                    HStack {
+                        Text("₹\(formatAmount(totalIncome))")
+                            .font(.sora(24, weight: .bold))
+                            .foregroundColor(.primaryText)
+                        Spacer()
+                    }
+                }
+                
+                if !sortedCategories.isEmpty {
+                    Divider()
+                    
+                    // Category Breakdown Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Income by Category")
+                            .font(.sora(16, weight: .medium))
+                            .foregroundColor(.secondaryText)
+                        
+                        LazyVStack(spacing: 12) {
+                            ForEach(sortedCategories.prefix(5), id: \.category) { categoryData in
+                                IncomeCategoryBreakdownRow(
+                                    category: categoryData.category,
+                                    amount: categoryData.amount,
+                                    percentage: totalIncome > 0 ? (categoryData.amount / totalIncome) * 100 : 0
+                                )
+                            }
                         }
                     }
                 }
             }
         }
-        .padding(20)
-        .background(Color.cardBackground)
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     private func formatAmount(_ amount: Double) -> String {

@@ -40,7 +40,7 @@ struct BudgetCategoriesView: View {
     
     // MARK: - Header Section
     private var headerSection: some View {
-        VStack(spacing: 12) {
+        CardView {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Total Budget")
@@ -55,10 +55,6 @@ struct BudgetCategoriesView: View {
                 Spacer()
             }
         }
-        .padding(16)
-        .background(Color.cardBackground)
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     // MARK: - Categories Section
@@ -86,9 +82,14 @@ struct BudgetCategoriesView: View {
     }
     
     private var sortedCategories: [BudgetCategory] {
-        let unplannedCategories = budgetCategories.filter { $0.budget == 0 && $0.spent > 0 }
-        let noBudgetCategories = budgetCategories.filter { $0.budget == 0 && $0.spent == 0 }
-        let plannedCategories = budgetCategories.filter { $0.budget > 0 }
+        // Filter out unknown categories
+        let validCategories = budgetCategories.filter { category in
+            ExpenseCategory.from(categoryName: category.name) != .unknown
+        }
+        
+        let unplannedCategories = validCategories.filter { $0.budget == 0 && $0.spent > 0 }
+        let noBudgetCategories = validCategories.filter { $0.budget == 0 && $0.spent == 0 }
+        let plannedCategories = validCategories.filter { $0.budget > 0 }
         
         let sortedPlanned = plannedCategories.sorted { first, second in
             let firstPercentage = first.spent / first.budget
@@ -132,102 +133,88 @@ struct BudgetCategoryCard: View {
     }
     
     var body: some View {
-        VStack(spacing: 12) {
-            // Header row
-            HStack {
-                // Category icon and name
-                HStack(spacing: 12) {
-                    Circle()
-                        .fill(categoryColor.opacity(0.2))
-                        .frame(width: 40, height: 40)
-                        .overlay(
-                            Image(systemName: categoryIcon)
-                                .font(.system(size: 16))
-                                .foregroundColor(categoryColor)
-                        )
-                    
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(category.name)
-                            .font(.sora(16, weight: .medium))
-                            .foregroundColor(.primaryText)
+        CardView {
+            VStack(spacing: 12) {
+                // Header row
+                HStack {
+                    // Category icon and name
+                    HStack(spacing: 12) {
+                        Circle()
+                            .fill(categoryColor.opacity(0.2))
+                            .frame(width: 40, height: 40)
+                            .overlay(
+                                Image(systemName: categoryIcon)
+                                    .font(.system(size: 16))
+                                    .foregroundColor(categoryColor)
+                            )
                         
-                        Text("\(Int(percentOfTotal))% of total budget")
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(category.name)
+                                .font(.sora(16, weight: .medium))
+                                .foregroundColor(.primaryText)
+                            
+                            Text("\(String(format: percentOfTotal < 1 && percentOfTotal > 0 ? "%.2f" : "%.0f", percentOfTotal))% of total budget")
+                                .font(.sora(12))
+                                .foregroundColor(.secondaryText)
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    // Status badge
+                    Text(statusInfo.text)
+                        .font(.sora(11, weight: .medium))
+                        .foregroundColor(statusInfo.color)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(statusInfo.color.opacity(0.1))
+                        .cornerRadius(12)
+                }
+                
+                // Budget amounts
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Budget")
                             .font(.sora(12))
                             .foregroundColor(.secondaryText)
-                    }
-                }
-                
-                Spacer()
-                
-                // Status badge
-                Text(statusInfo.text)
-                    .font(.sora(11, weight: .medium))
-                    .foregroundColor(statusInfo.color)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(statusInfo.color.opacity(0.1))
-                    .cornerRadius(12)
-            }
-            
-            // Budget amounts
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Budget")
-                        .font(.sora(12))
-                        .foregroundColor(.secondaryText)
-                    
-                    Text("₹\(Int(category.budget))")
-                        .font(.sora(16, weight: .semibold))
-                        .foregroundColor(.primaryText)
-                }
-                
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text("Spent")
-                        .font(.sora(12))
-                        .foregroundColor(.secondaryText)
-                    
-                    Text("₹\(Int(category.spent))")
-                        .font(.sora(16, weight: .semibold))
-                        .foregroundColor(percentageSpent > 1 ? .overBudgetColor : .primaryText)
-                }
-                
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text("Remaining")
-                        .font(.sora(12))
-                        .foregroundColor(.secondaryText)
-                    
-                    Text("₹\(Int(max(0, category.budget - category.spent)))")
-                        .font(.sora(16, weight: .semibold))
-                        .foregroundColor(Color.budgetProgressColor)
-                }
-            }
-            
-            // Progress bar
-            if category.budget > 0 {
-                GeometryReader { geometry in
-                    ZStack(alignment: .leading) {
-                        Rectangle()
-                            .fill(Color.secondarySystemFill)
-                            .frame(height: 6)
-                            .cornerRadius(3)
                         
-                        Rectangle()
-                            .fill(percentageSpent > 1 ? Color.overBudgetColor : Color.budgetProgressColor)
-                            .frame(width: min(geometry.size.width, geometry.size.width * percentageSpent), height: 6)
-                            .cornerRadius(3)
+                        Text("₹\(Int(category.budget))")
+                            .font(.sora(16, weight: .semibold))
+                            .foregroundColor(.primaryText)
+                    }
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text("Spent")
+                            .font(.sora(12))
+                            .foregroundColor(.secondaryText)
+                        
+                        Text("₹\(Int(category.spent))")
+                            .font(.sora(16, weight: .semibold))
+                            .foregroundColor(percentageSpent > 1 ? .overBudgetColor : .primaryText)
                     }
                 }
-                .frame(height: 6)
+                
+                // Progress bar
+                if category.budget > 0 {
+                    GeometryReader { geometry in
+                        ZStack(alignment: .leading) {
+                            Rectangle()
+                                .fill(Color.secondarySystemFill)
+                                .frame(height: 6)
+                                .cornerRadius(3)
+                            
+                            Rectangle()
+                                .fill(percentageSpent > 1 ? Color.overBudgetColor : Color.budgetProgressColor)
+                                .frame(width: min(geometry.size.width, geometry.size.width * percentageSpent), height: 6)
+                                .cornerRadius(3)
+                        }
+                    }
+                    .frame(height: 6)
+                }
             }
         }
-        .padding(16)
-        .background(Color.cardBackground)
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     // Helper computed properties for category styling
