@@ -18,7 +18,7 @@ struct CategoryDetailView: View {
     // Filter expenses for this category
     private var categoryExpenses: [Expense] {
         expenses.filter { expense in
-            ExpenseCategory.from(categoryName: expense.category).displayName == category.name
+            expense.category.displayName == category.name
         }
     }
     
@@ -199,46 +199,36 @@ struct CategoryDetailView_Previews: PreviewProvider {
                         id: 1,
                         name: "Grocery Shopping",
                         amount: 2500,
-                        category: "Food",
-                        date: Date().addingTimeInterval(-86400 * 2), // 2 days ago
-                        categoryIcon: ExpenseCategory.food.iconName,
-                        categoryColor: ExpenseCategory.food.color
+                        category: .food,
+                        date: Date().addingTimeInterval(-86400 * 2) // 2 days ago
                     ),
                     Expense(
                         id: 2,
                         name: "Restaurant Dinner",
                         amount: 1800,
-                        category: "Food",
-                        date: Date().addingTimeInterval(-86400 * 5), // 5 days ago
-                        categoryIcon: ExpenseCategory.food.iconName,
-                        categoryColor: ExpenseCategory.food.color
+                        category: .food,
+                        date: Date().addingTimeInterval(-86400 * 5) // 5 days ago
                     ),
                     Expense(
                         id: 3,
                         name: "Coffee Shop",
                         amount: 450,
-                        category: "Food",
-                        date: Date().addingTimeInterval(-86400 * 1), // 1 day ago
-                        categoryIcon: ExpenseCategory.food.iconName,
-                        categoryColor: ExpenseCategory.food.color
+                        category: .food,
+                        date: Date().addingTimeInterval(-86400 * 1) // 1 day ago
                     ),
                     Expense(
                         id: 4,
                         name: "Lunch Delivery",
                         amount: 650,
-                        category: "Food",
-                        date: Date().addingTimeInterval(-86400 * 3), // 3 days ago
-                        categoryIcon: ExpenseCategory.food.iconName,
-                        categoryColor: ExpenseCategory.food.color
+                        category: .food,
+                        date: Date().addingTimeInterval(-86400 * 3) // 3 days ago
                     ),
                     Expense(
                         id: 5,
                         name: "Snacks & Beverages",
                         amount: 320,
-                        category: "Food",
-                        date: Date().addingTimeInterval(-86400 * 7), // 1 week ago
-                        categoryIcon: ExpenseCategory.food.iconName,
-                        categoryColor: ExpenseCategory.food.color
+                        category: .food,
+                        date: Date().addingTimeInterval(-86400 * 7) // 1 week ago
                     )
                 ],
                 month: 7,

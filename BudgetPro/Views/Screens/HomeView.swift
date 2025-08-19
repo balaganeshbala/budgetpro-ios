@@ -571,11 +571,11 @@ struct ExpenseRowView: View {
     var body: some View {
         HStack(spacing: 10) {
             RoundedRectangle(cornerRadius: 10, style: .circular)
-                .fill(expense.categoryColor.opacity(0.2))
+                .fill(expense.category.color.opacity(0.2))
                 .frame(width: 40, height: 40)
                 .overlay(
-                    Image(systemName: expense.categoryIcon)
-                        .foregroundColor(expense.categoryColor)
+                    Image(systemName: expense.category.iconName)
+                        .foregroundColor(expense.category.color)
                         .font(.system(size: 16))
                 )
             
@@ -618,11 +618,11 @@ struct IncomeRowView: View {
     var body: some View {
         HStack(spacing: 10) {
             RoundedRectangle(cornerRadius: 10, style: .circular)
-                .fill(IncomeCategory.from(categoryName: income.category).color.opacity(0.2))
+                .fill(income.category.color.opacity(0.2))
                 .frame(width: 40, height: 40)
                 .overlay(
-                    Image(systemName: income.categoryIcon)
-                        .foregroundColor(IncomeCategory.from(categoryName: income.category).color)
+                    Image(systemName: income.category.iconName)
+                        .foregroundColor(income.category.color)
                         .font(.system(size: 16))
                 )
             

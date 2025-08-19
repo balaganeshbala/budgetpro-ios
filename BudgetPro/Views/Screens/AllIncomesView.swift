@@ -97,8 +97,8 @@ struct AllIncomesView: View {
                         title: income.source,
                         amount: income.amount,
                         dateString: income.dateString,
-                        categoryIcon: income.categoryIcon,
-                        categoryColor: IncomeCategory.from(categoryName: income.category).color,
+                        categoryIcon: income.category.iconName,
+                        categoryColor: income.category.color,
                         iconShape: .roundedRectangle,
                         amountColor: .primaryText,
                         showChevron: true,
@@ -161,7 +161,7 @@ struct IncomeSummaryView: View {
     private var categoryTotals: [String: Double] {
         var totals: [String: Double] = [:]
         for income in incomes {
-            totals[income.category, default: 0] += income.amount
+            totals[income.category.displayName, default: 0] += income.amount
         }
         return totals
     }
@@ -274,41 +274,36 @@ struct AllIncomesView_Previews: PreviewProvider {
                 id: 1,
                 source: "Monthly Salary",
                 amount: 50000,
-                category: "salary",
-                date: Date(),
-                categoryIcon: "briefcase.fill"
+                category: .salary,
+                date: Date()
             ),
             Income(
                 id: 2,
                 source: "Freelance Project",
                 amount: 15000,
-                category: "sideHustle",
-                date: Calendar.current.date(byAdding: .day, value: -5, to: Date()) ?? Date(),
-                categoryIcon: "laptopcomputer"
+                category: .sideHustle,
+                date: Calendar.current.date(byAdding: .day, value: -5, to: Date()) ?? Date()
             ),
             Income(
                 id: 3,
                 source: "Investment Returns",
                 amount: 5000,
-                category: "investment",
-                date: Calendar.current.date(byAdding: .day, value: -10, to: Date()) ?? Date(),
-                categoryIcon: "chart.line.uptrend.xyaxis"
+                category: .investment,
+                date: Calendar.current.date(byAdding: .day, value: -10, to: Date()) ?? Date()
             ),
             Income(
                 id: 4,
                 source: "Rental Income",
                 amount: 12000,
-                category: "investment",
-                date: Calendar.current.date(byAdding: .day, value: -15, to: Date()) ?? Date(),
-                categoryIcon: "house.fill"
+                category: .investment,
+                date: Calendar.current.date(byAdding: .day, value: -15, to: Date()) ?? Date()
             ),
             Income(
                 id: 5,
                 source: "Bonus",
                 amount: 8000,
-                category: "salary",
-                date: Calendar.current.date(byAdding: .day, value: -20, to: Date()) ?? Date(),
-                categoryIcon: "gift.fill"
+                category: .salary,
+                date: Calendar.current.date(byAdding: .day, value: -20, to: Date()) ?? Date()
             )
         ]
     }

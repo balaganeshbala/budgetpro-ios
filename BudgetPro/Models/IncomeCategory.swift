@@ -59,8 +59,8 @@ enum IncomeCategory: String, CaseIterable, CategoryProtocol {
         case .service: return "wrench.and.screwdriver.fill"
         case .gift: return "gift.fill"
         case .pension: return "person.fill.checkmark"
-        case .interest: return "banknote.fill"
-        case .dividend: return "percent"
+        case .interest: return "percent"
+        case .dividend: return "dollarsign.circle.fill"
         case .royalties: return "music.note"
         case .refund: return "arrow.counterclockwise.circle.fill"
         case .benefits: return "shield.checkered"
@@ -79,13 +79,13 @@ enum IncomeCategory: String, CaseIterable, CategoryProtocol {
         case .service: return Color(.systemTeal)
         case .gift: return .pink
         case .pension: return .indigo
-        case .interest: return .brown
+        case .interest: return .yellow
         case .dividend: return .cyan
         case .royalties: return Color(.systemPurple)
         case .refund: return Color(.systemGreen)
-        case .benefits: return Color(.systemGray)
+        case .benefits: return .mint
         case .rewards: return Color(.systemYellow)
-        case .other: return .secondary
+        case .other: return .gray
         }
     }
     

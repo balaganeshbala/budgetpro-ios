@@ -32,10 +32,8 @@ struct ExpenseDetailsView_Previews: PreviewProvider {
                 id: 1,
                 name: "Lunch",
                 amount: 250.0,
-                category: "Food",
-                date: Date(),
-                categoryIcon: "fork.knife",
-                categoryColor: .orange
+                category: .food,
+                date: Date()
             )
         )
     }

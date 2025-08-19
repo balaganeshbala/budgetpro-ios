@@ -37,9 +37,8 @@ struct IncomeDetailsView_Previews: PreviewProvider {
                 id: 1,
                 source: "Salary",
                 amount: 50000.0,
-                category: "salary",
-                date: Date(),
-                categoryIcon: "briefcase.fill"
+                category: .salary,
+                date: Date()
             )
         )
     }

@@ -74,8 +74,6 @@ class AddIncomeViewModel: ObservableObject, TransactionFormViewModelProtocol {
     func resetForm() {
         incomeName = ""
         amountText = ""
-        selectedCategory = categories.first ?? .salary
-        selectedDate = Date()
         isSuccess = false
         errorMessage = ""
         validateForm()

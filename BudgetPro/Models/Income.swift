@@ -4,9 +4,8 @@ struct Income: Identifiable, Hashable {
     let id: Int
     let source: String
     let amount: Double
-    let category: String
+    let category: IncomeCategory
     let date: Date
-    let categoryIcon: String
     
     var dateString: String {
         let formatter = DateFormatter()

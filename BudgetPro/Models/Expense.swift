@@ -5,10 +5,8 @@ struct Expense: Identifiable, Hashable {
     let id: Int
     let name: String
     let amount: Double
-    let category: String
+    let category: ExpenseCategory
     let date: Date
-    let categoryIcon: String
-    let categoryColor: Color
     
     var dateString: String {
         let formatter = DateFormatter()
@@ -21,8 +19,6 @@ struct Expense: Identifiable, Hashable {
         hasher.combine(name)
         hasher.combine(amount)
         hasher.combine(category)
-        hasher.combine(date)
-        hasher.combine(categoryIcon)
     }
     
     static func == (lhs: Expense, rhs: Expense) -> Bool {
@@ -30,7 +26,6 @@ struct Expense: Identifiable, Hashable {
                lhs.name == rhs.name &&
                lhs.amount == rhs.amount &&
                lhs.category == rhs.category &&
-               lhs.date == rhs.date &&
-               lhs.categoryIcon == rhs.categoryIcon
+               lhs.date == rhs.date
     }
 }

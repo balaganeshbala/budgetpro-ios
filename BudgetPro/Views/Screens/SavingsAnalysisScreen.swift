@@ -491,28 +491,22 @@ struct SavingsAnalysisScreen_Previews: PreviewProvider {
             id: 1,
             name: "Groceries",
             amount: 5000,
-            category: "groceries",
-            date: Date(),
-            categoryIcon: "cart.fill",
-            categoryColor: .mint
+            category: .groceries,
+            date: Date()
         ),
         Expense(
             id: 2,
             name: "Fuel",
             amount: 4000,
-            category: "travel",
-            date: Date(),
-            categoryIcon: "car.fill",
-            categoryColor: .blue
+            category: .travel,
+            date: Date()
         ),
         Expense(
             id: 3,
             name: "Movie Tickets",
             amount: 50000,
-            category: "entertainment",
-            date: Date(),
-            categoryIcon: "tv",
-            categoryColor: .indigo
+            category: .entertainment,
+            date: Date()
         )
     ]
     
@@ -521,17 +515,15 @@ struct SavingsAnalysisScreen_Previews: PreviewProvider {
             id: 1,
             source: "Salary",
             amount: 60000,
-            category: "salary",
-            date: Date(),
-            categoryIcon: "briefcase.fill"
+            category: .salary,
+            date: Date()
         ),
         Income(
             id: 2,
             source: "Freelance",
             amount: 15000,
-            category: "sideHustle",
-            date: Date(),
-            categoryIcon: "laptopcomputer"
+            category: .sideHustle,
+            date: Date()
         )
     ]
 }

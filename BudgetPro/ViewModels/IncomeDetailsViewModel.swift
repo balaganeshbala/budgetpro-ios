@@ -38,9 +38,7 @@ class IncomeDetailsViewModel: ObservableObject, TransactionFormViewModelProtocol
         self.originalSource = income.source
         self.originalAmount = income.amount
         self.originalDate = income.date
-        
-        // Find the matching category using the from method
-        self.originalCategory = IncomeCategory.from(categoryName: income.category)
+        self.originalCategory = income.category
     }
     
     var hasChanges: Bool {

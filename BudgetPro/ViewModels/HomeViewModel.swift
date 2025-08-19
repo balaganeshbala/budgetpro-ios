@@ -111,7 +111,7 @@ class HomeViewModel: ObservableObject {
             
             // Group expenses by category, normalized by ExpenseCategory
             let expensesByCategory = Dictionary(grouping: expenses) { expense in
-                ExpenseCategory.from(categoryName: expense.category).displayName
+                expense.category.displayName
             }
             
             // Create dictionaries of budget amounts and IDs by category
@@ -180,6 +180,7 @@ class HomeViewModel: ObservableObject {
                 .gte("date", value: getMonthStartDate(month: month, year: year))
                 .lt("date", value: getMonthEndDate(month: month, year: year))
                 .order("date", ascending: false)
+                .order("id", ascending: false)
                 .execute()
                 .value
             
@@ -189,10 +190,8 @@ class HomeViewModel: ObservableObject {
                     id: expenseResponse.id,
                     name: expenseResponse.name,
                     amount: expenseResponse.amount,
-                    category: expenseResponse.category,
+                    category: categoryEnum,
                     date: parseDate(expenseResponse.date),
-                    categoryIcon: categoryEnum.iconName,
-                    categoryColor: categoryEnum.color
                 )
             }
         } catch {
@@ -213,6 +212,7 @@ class HomeViewModel: ObservableObject {
                 .gte("date", value: getMonthStartDate(month: month, year: year))
                 .lt("date", value: getMonthEndDate(month: month, year: year))
                 .order("date", ascending: false)
+                .order("id", ascending: false)
                 .execute()
                 .value
             
@@ -222,9 +222,8 @@ class HomeViewModel: ObservableObject {
                     id: incomeResponse.id,
                     source: incomeResponse.source,
                     amount: incomeResponse.amount,
-                    category: incomeResponse.category,
-                    date: parseDate(incomeResponse.date),
-                    categoryIcon: categoryEnum.iconName
+                    category: categoryEnum,
+                    date: parseDate(incomeResponse.date)
                 )
             }
         } catch {

@@ -72,8 +72,6 @@ class AddExpenseViewModel: ObservableObject, TransactionFormViewModelProtocol {
     func resetForm() {
         expenseName = ""
         amountText = ""
-        selectedCategory = categories.first ?? .food
-        selectedDate = Date()
         isSuccess = false
         errorMessage = ""
         validateForm()

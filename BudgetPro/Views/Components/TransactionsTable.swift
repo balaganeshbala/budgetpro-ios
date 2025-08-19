@@ -252,28 +252,22 @@ struct TransactionsTable_Previews: PreviewProvider {
                         id: 1,
                         name: "Grocery Shopping",
                         amount: 2500,
-                        category: "Food",
-                        date: Date(),
-                        categoryIcon: "cart.fill",
-                        categoryColor: .green
+                        category: .food,
+                        date: Date()
                     ),
                     Expense(
                         id: 2,
                         name: "Uber Ride",
                         amount: 350,
-                        category: "Transport",
-                        date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date(),
-                        categoryIcon: "car.fill",
-                        categoryColor: .blue
+                        category: .travel,
+                        date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date()
                     ),
                     Expense(
                         id: 3,
                         name: "Movie Tickets",
                         amount: 800,
-                        category: "Entertainment",
-                        date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date(),
-                        categoryIcon: "tv.fill",
-                        categoryColor: .purple
+                        category: .entertainment,
+                        date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date()
                     )
                 ])
                 
@@ -289,28 +283,22 @@ struct TransactionsTable_Previews: PreviewProvider {
                         id: 1,
                         name: "Grocery Shopping",
                         amount: 2500,
-                        category: "Food",
-                        date: Date(),
-                        categoryIcon: "cart.fill",
-                        categoryColor: .green
+                        category: .food,
+                        date: Date()
                     ),
                     Expense(
                         id: 2,
                         name: "Uber Ride",
                         amount: 350,
-                        category: "Transport",
-                        date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date(),
-                        categoryIcon: "car.fill",
-                        categoryColor: .blue
+                        category: .travel,
+                        date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date()
                     ),
                     Expense(
                         id: 3,
                         name: "Movie Tickets",
                         amount: 800,
-                        category: "Entertainment",
-                        date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date(),
-                        categoryIcon: "tv.fill",
-                        categoryColor: .purple
+                        category: .entertainment,
+                        date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date()
                     )
                 ])
                 

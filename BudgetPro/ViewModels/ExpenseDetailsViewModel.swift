@@ -41,7 +41,7 @@ class ExpenseDetailsViewModel: ObservableObject, TransactionFormViewModelProtoco
         self.originalDate = expense.date
         
         // Find the matching category using the from method
-        self.originalCategory = ExpenseCategory.from(categoryName: expense.category)
+        self.originalCategory = expense.category
     }
     
     var hasChanges: Bool {

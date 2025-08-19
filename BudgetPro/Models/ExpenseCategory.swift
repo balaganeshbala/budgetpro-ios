@@ -49,7 +49,7 @@ enum ExpenseCategory: String, CaseIterable, CategoryProtocol {
         case .holidayTrip: return "airplane"
         case .housing: return "house.fill"
         case .shopping: return "bag.fill"
-        case .travel: return "car.fill"
+        case .travel: return "bus.fill"
         case .family: return "person.3.fill"
         case .chargesFees: return "dollarsign.circle"
         case .groceries: return "cart.fill"
@@ -64,21 +64,21 @@ enum ExpenseCategory: String, CaseIterable, CategoryProtocol {
     
     var color: Color {
         switch self {
-        case .emi: return .purple
+        case .emi: return .red
         case .food: return .orange
-        case .holidayTrip: return .cyan
-        case .housing: return .brown
-        case .shopping: return .pink
-        case .travel: return .blue
-        case .family: return .green
-        case .chargesFees: return .yellow
-        case .groceries: return .mint
-        case .healthBeauty: return .red
-        case .entertainment: return .indigo
-        case .charityGift: return .teal
-        case .education: return .indigo
-        case .vehicle: return .gray
-        case .unknown: return .secondary
+        case .holidayTrip: return .yellow
+        case .housing: return .green
+        case .shopping: return .mint
+        case .travel: return .cyan
+        case .family: return .blue
+        case .chargesFees: return .indigo
+        case .groceries: return .purple
+        case .healthBeauty: return .pink
+        case .entertainment: return .teal
+        case .charityGift: return Color(.systemPink)
+        case .education: return Color(.systemPurple)
+        case .vehicle: return Color(.systemOrange)
+        case .unknown: return Color(.systemGray)
         }
     }
     
@@ -99,6 +99,7 @@ enum ExpenseCategory: String, CaseIterable, CategoryProtocol {
         case "shopping": return .shopping
         case "travel", "transport": return .travel
         case "family": return .family
+        case "home": return .family
         case "charges/fees", "charges", "fees", "utilities": return .chargesFees
         case "groceries": return .groceries
         case "health/beauty", "health", "beauty", "personal care": return .healthBeauty

@@ -106,8 +106,8 @@ struct AllExpensesView: View {
                         title: expense.name,
                         amount: expense.amount,
                         dateString: expense.dateString,
-                        categoryIcon: expense.categoryIcon,
-                        categoryColor: expense.categoryColor,
+                        categoryIcon: expense.category.iconName,
+                        categoryColor: expense.category.color,
                         iconShape: .roundedRectangle,
                         amountColor: .primaryText,
                         showChevron: true,
@@ -171,7 +171,7 @@ struct ExpenseSummaryView: View {
     private var categoryTotals: [String: Double] {
         var totals: [String: Double] = [:]
         for expense in expenses {
-            totals[expense.category, default: 0] += expense.amount
+            totals[expense.category.displayName, default: 0] += expense.amount
         }
         return totals
     }
@@ -211,7 +211,7 @@ struct ExpenseSummaryView: View {
                             .foregroundColor(.secondaryText)
                         
                         LazyVStack(spacing: 12) {
-                            ForEach(sortedCategories.prefix(5), id: \.category) { categoryData in
+                            ForEach(sortedCategories, id: \.category) { categoryData in
                                 CategoryBreakdownRow(
                                     category: categoryData.category,
                                     amount: categoryData.amount,
@@ -285,46 +285,36 @@ struct AllExpensesView_Previews: PreviewProvider {
                 id: 1,
                 name: "Lunch at Restaurant",
                 amount: 850,
-                category: "Food",
-                date: Date(),
-                categoryIcon: "fork.knife",
-                categoryColor: .orange
+                category: .food,
+                date: Date()
             ),
             Expense(
                 id: 2,
                 name: "Metro Card Recharge",
                 amount: 500,
-                category: "Transport",
-                date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date(),
-                categoryIcon: "car.fill",
-                categoryColor: .blue
+                category: .travel,
+                date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date()
             ),
             Expense(
                 id: 3,
                 name: "Movie Tickets",
                 amount: 600,
-                category: "Entertainment",
-                date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date(),
-                categoryIcon: "tv",
-                categoryColor: .purple
+                category: .entertainment,
+                date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date()
             ),
             Expense(
                 id: 4,
                 name: "Grocery Shopping",
                 amount: 2500,
-                category: "Food",
-                date: Calendar.current.date(byAdding: .day, value: -3, to: Date()) ?? Date(),
-                categoryIcon: "cart.fill",
-                categoryColor: .green
+                category: .food,
+                date: Calendar.current.date(byAdding: .day, value: -3, to: Date()) ?? Date()
             ),
             Expense(
                 id: 5,
                 name: "Coffee",
                 amount: 150,
-                category: "Food",
-                date: Calendar.current.date(byAdding: .day, value: -4, to: Date()) ?? Date(),
-                categoryIcon: "cup.and.saucer.fill",
-                categoryColor: .brown
+                category: .food,
+                date: Calendar.current.date(byAdding: .day, value: -4, to: Date()) ?? Date()
             )
         ]
     }
