@@ -419,7 +419,7 @@ struct BudgetOverviewCard: View {
                         .font(.sora(18, weight: .medium))
                         .foregroundColor(.secondaryText)
                     
-                    Text("₹\(CommonHelpers.formatAmount(remainingBudget))")
+                    Text("₹\(CommonHelpers.formatAmount(abs(remainingBudget)))")
                         .font(.sora(30, weight: .bold))
                         .foregroundColor(isOverBudget ? .overBudgetColor : .adaptivePrimary)
                 }

@@ -71,6 +71,14 @@ struct SavingsAnalysisScreen: View {
                             savingsRate: savingsRate
                         )
                         
+                        // Pie Chart Section
+                        CardView {
+                            ExpenseIncomePieChart(
+                                expenses: expenses,
+                                incomes: incomes
+                            )
+                        }
+                        
                         SavingsRateIndicator(savingsRate: savingsRate)
                         
                         SavingsRecommendations(

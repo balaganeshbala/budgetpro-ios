@@ -406,7 +406,7 @@ struct HomeView: View {
                     coordinator.navigate(to: .editBudget(budgetCategories: viewModel.budgetCategories, month: selectedMonth, year: selectedYear))
                 },
                 onDetailsTapped: {
-                    coordinator.navigate(to: .budgetCategories(budgetCategories: viewModel.budgetCategories, totalBudget: viewModel.totalBudget, expenses: viewModel.recentExpenses, month: selectedMonth, year: selectedYear))
+                    coordinator.navigate(to: .budgetCategories(budgetCategories: viewModel.budgetCategories, totalBudget: viewModel.totalBudget, totalSpent: viewModel.totalSpent, expenses: viewModel.recentExpenses, month: selectedMonth, year: selectedYear))
                 }
             )
         }

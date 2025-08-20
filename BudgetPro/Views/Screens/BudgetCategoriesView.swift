@@ -11,6 +11,7 @@ import SwiftUI
 struct BudgetCategoriesView: View {
     let budgetCategories: [BudgetCategory]
     let totalBudget: Double
+    let totalSpent: Double
     let expenses: [Expense]
     let month: Int
     let year: Int
@@ -21,8 +22,15 @@ struct BudgetCategoriesView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
+                
                 // Header info
-                headerSection
+                BudgetOverviewCard(
+                    title: "Overall Budget",
+                    totalBudget: totalBudget,
+                    totalSpent: totalSpent,
+                    showEditButton: false,
+                    showDetailsButton: false
+                )
                 
                 // Budget categories list
                 categoriesSection
@@ -36,25 +44,6 @@ struct BudgetCategoriesView: View {
         .navigationTitle("\(monthName)")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(false)
-    }
-    
-    // MARK: - Header Section
-    private var headerSection: some View {
-        CardView {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Total Budget")
-                        .font(.sora(14))
-                        .foregroundColor(.secondaryText)
-                    
-                    Text("₹\(Int(totalBudget))")
-                        .font(.sora(24, weight: .bold))
-                        .foregroundColor(.primaryText)
-                }
-                
-                Spacer()
-            }
-        }
     }
     
     // MARK: - Categories Section
@@ -186,11 +175,11 @@ struct BudgetCategoryCard: View {
                     Spacer()
                     
                     VStack(alignment: .trailing, spacing: 4) {
-                        Text("Spent")
+                        Text("Remaining")
                             .font(.sora(12))
                             .foregroundColor(.secondaryText)
                         
-                        Text("₹\(Int(category.spent))")
+                        Text("₹\(Int(category.budget - category.spent))")
                             .font(.sora(16, weight: .semibold))
                             .foregroundColor(percentageSpent > 1 ? .overBudgetColor : .primaryText)
                     }
@@ -239,6 +228,7 @@ struct BudgetCategoriesView_Previews: PreviewProvider {
                         BudgetCategory(id: "3", name: "Entertainment", budget: 5000, spent: 3200)
                     ],
                     totalBudget: 28000,
+                    totalSpent: 0,
                     expenses: [],
                     month: 7,
                     year: 2025
@@ -256,6 +246,7 @@ struct BudgetCategoriesView_Previews: PreviewProvider {
                         BudgetCategory(id: "3", name: "Entertainment", budget: 5000, spent: 3200)
                     ],
                     totalBudget: 28000,
+                    totalSpent: 24700,
                     expenses: [],
                     month: 7,
                     year: 2025
