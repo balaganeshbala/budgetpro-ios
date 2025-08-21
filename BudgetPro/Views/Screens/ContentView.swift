@@ -36,30 +36,20 @@ struct ContentView: View {
 struct SplashView: View {
     var body: some View {
         ZStack {
-            Color.white
+            Color.cardBackground
                 .ignoresSafeArea()
-            
-            VStack(spacing: 20) {
-                // App Icon
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.secondary)
-                    .frame(width: 80, height: 80)
-                    .overlay(
-                        Image(systemName: "chart.pie.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(.white)
-                    )
+
+            // Loading Indicator
+            VStack(spacing: 30) {
                 
-                // App Name
-                Text("BudgetPro")
-                    .font(.sora(28, weight: .bold))
-                    .foregroundColor(.black)
-                
-                // Loading Indicator
                 ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: Color.secondary))
-                    .scaleEffect(1.2)
+                    .progressViewStyle(CircularProgressViewStyle(tint: Color.adaptiveSecondary))
+                    .scaleEffect(2.0)
                     .padding(.top, 20)
+                
+                Text("Loading...")
+                    .font(.sora(16, weight: .medium))
+                    .foregroundStyle(Color.secondaryText)
             }
         }
     }
@@ -67,6 +57,7 @@ struct SplashView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        SplashView()
+            .preferredColorScheme(.light)
     }
 }

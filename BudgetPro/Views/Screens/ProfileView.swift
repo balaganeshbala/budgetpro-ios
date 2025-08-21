@@ -56,7 +56,7 @@ struct ProfileView: View {
             VStack(spacing: 16) {
                 // Profile Avatar
                 Circle()
-                    .fill(.primary.opacity(0.2))
+                    .fill(.gray.opacity(0.2))
                     .frame(width: 80, height: 80)
                     .overlay(
                         Image(systemName: "person.fill")
@@ -88,7 +88,7 @@ struct ProfileView: View {
                 SettingsRow(
                     icon: "info.circle",
                     iconColor: .blue,
-                    title: "About BudgetPro",
+                    title: "About Budget Pro",
                     showChevron: true
                 ) {
                     showingAbout = true

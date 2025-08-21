@@ -34,7 +34,7 @@ struct AboutView: View {
                 .padding(.top, 20)
             }
             .background(Color.groupedBackground)
-            .navigationTitle("About BudgetPro")
+            .navigationTitle("About Budget Pro")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(
                 trailing: Button("Done") {
@@ -53,26 +53,23 @@ struct AboutView: View {
     private var appInfoSection: some View {
         CardView(padding: EdgeInsets(top: 32, leading: 16, bottom: 32, trailing: 16)) {
             VStack(spacing: 16) {
-                // App Icon
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.secondary)
-                    .frame(width: 80, height: 80)
-                    .overlay(
-                        Image(systemName: "chart.pie.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(.white)
-                    )
                 
-                // App Name and Version
-                VStack(spacing: 8) {
-                    Text("BudgetPro")
-                        .font(.sora(24, weight: .bold))
-                        .foregroundColor(.primaryText)
-                    
-                    Text("Version \(appVersion)")
-                        .font(.sora(14))
-                        .foregroundColor(.secondaryText)
-                }
+                Image("IconRounded")
+                    .resizable()
+                    .frame(width: 80, height: 80)
+                
+                // App Name
+                Text("Budget")
+                    .font(.sora(24, weight: .bold))
+                    .foregroundColor(.primary)
+                +
+                Text(" Pro")
+                    .font(.sora(24, weight: .bold))
+                    .foregroundColor(.secondary)
+                
+                Text("Version \(appVersion)")
+                    .font(.sora(14))
+                    .foregroundColor(.secondaryText)
             }
             .frame(maxWidth: .infinity)
         }
@@ -86,7 +83,7 @@ struct AboutView: View {
                     .font(.sora(18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
-                Text("BudgetPro is a comprehensive personal finance application designed to help you manage budgets, track expenses & incomes, and achieve your financial goals.")
+                Text("Budget Pro is a comprehensive personal finance application designed to help you manage budgets, track expenses & incomes, and achieve your financial goals.")
                     .font(.sora(14))
                     .foregroundColor(.secondaryText)
                     .lineSpacing(4)
@@ -103,12 +100,12 @@ struct AboutView: View {
     // MARK: - Features Section
     private var featuresSection: some View {
         CardView(padding: EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20)) {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 20) {
                 Text("Key Features")
                     .font(.sora(18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
-                VStack(spacing: 12) {
+                VStack(spacing: 20) {
                     FeatureRow(
                         icon: "chart.pie",
                         iconColor: Color.secondary,
@@ -184,7 +181,7 @@ struct FeatureRow: View {
     let description: String
     
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(alignment: .top, spacing: 16) {
             Circle()
                 .fill(iconColor.opacity(0.2))
                 .frame(width: 40, height: 40)
@@ -198,14 +195,15 @@ struct FeatureRow: View {
                 Text(title)
                     .font(.sora(14, weight: .medium))
                     .foregroundColor(.primaryText)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 
                 Text(description)
                     .font(.sora(12))
                     .foregroundColor(.secondaryText)
-                    .lineSpacing(2)
+                    .lineSpacing(4)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
-            
-            Spacer()
+            .frame(maxWidth: .infinity)
         }
     }
 }
