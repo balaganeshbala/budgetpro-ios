@@ -31,8 +31,8 @@ struct AllIncomesView: View {
                 // Sort Section
                 sortSection
                 
-                // Incomes List
-                incomesListSection
+                // All Incomes List
+                allIncomesListSection
                 
                 Spacer(minLength: 20)
             }
@@ -88,32 +88,43 @@ struct AllIncomesView: View {
         }
     }
     
-    // MARK: - Incomes List Section
-    private var incomesListSection: some View {
-        CardView(padding: EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0)) {
-            LazyVStack(spacing: 0) {
-                ForEach(Array(viewModel.sortedIncomes.enumerated()), id: \.offset) { index, income in
-                    TransactionRow<Income, IncomeDetailsView>(
-                        title: income.source,
-                        amount: income.amount,
-                        dateString: income.dateString,
-                        categoryIcon: income.category.iconName,
-                        categoryColor: income.category.color,
-                        iconShape: .roundedRectangle,
-                        amountColor: .primaryText,
-                        showChevron: true,
-                        destination: {
-                            IncomeDetailsView(income: income)
+    // MARK: - All Incomes List Section
+    private var allIncomesListSection: some View {
+        VStack(spacing: 12) {
+            // All Incomes List
+            CardView(padding: EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0)) {
+                LazyVStack(spacing: 0) {
+                    ForEach(Array(viewModel.sortedIncomes.enumerated()), id: \.offset) { index, income in
+                        TransactionRow<Income, IncomeDetailsView>(
+                            title: income.source,
+                            amount: income.amount,
+                            dateString: income.dateString,
+                            categoryIcon: income.category.iconName,
+                            categoryColor: income.category.color,
+                            iconShape: .roundedRectangle,
+                            amountColor: .primaryText,
+                            showChevron: true,
+                            destination: {
+                                IncomeDetailsView(income: income)
+                            }
+                        )
+                        
+                        if index < viewModel.sortedIncomes.count - 1 {
+                            Divider()
+                                .padding(.horizontal, 16)
                         }
-                    )
-                    
-                    if index < viewModel.sortedIncomes.count - 1 {
-                        Divider()
-                            .padding(.horizontal, 16)
                     }
                 }
             }
         }
+    }
+    
+    // MARK: - Helper Methods
+    private func formatAmount(_ amount: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
 }
 
@@ -171,6 +182,37 @@ struct IncomeSummaryView: View {
             .sorted { $0.amount > $1.amount }
     }
     
+    // MARK: - Income Type Summary Section
+    private var incomeTypeSummarySection: some View {
+        let primaryIncomes = incomes.filter { $0.category == .salary }
+        let secondaryIncomes = incomes.filter { $0.category != .salary }
+        let totalPrimary = primaryIncomes.reduce(0) { $0 + $1.amount }
+        let totalSecondary = secondaryIncomes.reduce(0) { $0 + $1.amount }
+        
+        return VStack(spacing: 16) {
+            
+            Divider()
+            
+            HStack(spacing: 12) {
+                ModernSummaryItem(
+                    title: "Primary",
+                    value: CommonHelpers.formatCurrency(totalPrimary),
+                    color: .green,
+                    icon: "plus.circle.fill",
+                    isPositive: true
+                )
+                
+                ModernSummaryItem(
+                    title: "Secondary",
+                    value: CommonHelpers.formatCurrency(totalSecondary),
+                    color: .orange,
+                    icon: "star.circle.fill",
+                    isPositive: false
+                )
+            }
+        }
+    }
+    
     var body: some View {
         CardView {
             VStack(spacing: 16) {
@@ -190,6 +232,8 @@ struct IncomeSummaryView: View {
                         Spacer()
                     }
                 }
+                
+                incomeTypeSummarySection
                 
                 if !sortedCategories.isEmpty {
                     Divider()
