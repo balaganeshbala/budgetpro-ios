@@ -73,8 +73,8 @@ struct SavingsAnalysisScreen: View {
                         
                         CardView {
                             ExpenseIncomeBarChart(
-                                expenses: expenses,
-                                incomes: incomes
+                                totalExpenses: effectiveExpenses,
+                                totalIncome: totalIncome
                             )
                         }
                         

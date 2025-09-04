@@ -214,16 +214,8 @@ struct BarChartView: View {
 
 // MARK: - Expense & Income Bar Chart
 struct ExpenseIncomeBarChart: View {
-    let expenses: [Expense]
-    let incomes: [Income]
-    
-    private var totalExpenses: Double {
-        expenses.reduce(0) { $0 + $1.amount }
-    }
-    
-    private var totalIncome: Double {
-        incomes.reduce(0) { $0 + $1.amount }
-    }
+    let totalExpenses: Double
+    let totalIncome: Double
     
     private var barChartData: [BarChartData] {
         var data: [BarChartData] = []
@@ -298,8 +290,8 @@ struct BarChartView_Previews: PreviewProvider {
                 VStack(spacing: 30) {
                     CardView {
                         ExpenseIncomeBarChart(
-                            expenses: sampleExpenses,
-                            incomes: sampleIncomes
+                            totalExpenses: 45643,
+                            totalIncome: 85600
                         )
                     }
                     
@@ -317,8 +309,8 @@ struct BarChartView_Previews: PreviewProvider {
                 VStack(spacing: 30) {
                     CardView {
                         ExpenseIncomeBarChart(
-                            expenses: sampleExpenses,
-                            incomes: sampleIncomes
+                            totalExpenses: 45643,
+                            totalIncome: 85600
                         )
                     }
                     
