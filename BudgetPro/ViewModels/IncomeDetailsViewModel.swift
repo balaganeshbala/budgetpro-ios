@@ -16,7 +16,11 @@ class IncomeDetailsViewModel: ObservableObject, TransactionFormViewModelProtocol
     }
     @Published var amountText: String = ""
     @Published var selectedCategory: IncomeCategory = .salary
-    @Published var selectedDate: Date = Date()
+    @Published var selectedDate: Date = Date() {
+        didSet {
+            validateForm()
+        }
+    }
     
     @Published var isLoading = false
     @Published var errorMessage = ""

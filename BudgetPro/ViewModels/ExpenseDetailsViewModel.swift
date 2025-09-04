@@ -17,7 +17,11 @@ class ExpenseDetailsViewModel: ObservableObject, TransactionFormViewModelProtoco
     }
     @Published var amountText: String = ""
     @Published var selectedCategory: ExpenseCategory = .food
-    @Published var selectedDate: Date = Date()
+    @Published var selectedDate: Date = Date() {
+        didSet {
+            validateForm()
+        }
+    }
     
     @Published var isLoading = false
     @Published var errorMessage = ""
