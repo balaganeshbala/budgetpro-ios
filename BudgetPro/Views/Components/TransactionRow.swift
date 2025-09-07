@@ -20,23 +20,43 @@ struct TransactionRow<T, Destination: View>: View {
     var body: some View {
         NavigationLink(destination: destination()) {
             HStack(spacing: 10) {
-                // Category icon with dynamic shape
+                // Category icon with dynamic shape and gradient
                 Group {
                     switch iconShape {
                     case .circle:
                         Circle()
-                            .fill((categoryColor ?? Color.primary).opacity(0.2))
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        (categoryColor ?? Color.primary).opacity(0.3),
+                                        (categoryColor ?? Color.primary).opacity(0.1)
+                                    ]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
                             .frame(width: 40, height: 40)
                     case .roundedRectangle:
                         RoundedRectangle(cornerRadius: 10, style: .circular)
-                            .fill((categoryColor ?? Color.primary).opacity(0.2))
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        (categoryColor ?? Color.primary).opacity(0.3),
+                                        (categoryColor ?? Color.primary).opacity(0.1)
+                                    ]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
                             .frame(width: 40, height: 40)
                     }
                 }
                 .overlay(
                     Image(systemName: categoryIcon)
-                        .foregroundColor(categoryColor ?? Color.primary)
-                        .font(.system(size: 16))
+                        .foregroundStyle(
+                            .linearGradient(colors: [categoryColor ?? Color.primary, (categoryColor ?? Color.primary).opacity(0.5)], startPoint: .top, endPoint: .bottomTrailing)
+                        )
+                        .font(.system(size: 16, weight: .bold))
                 )
                 
                 VStack(alignment: .leading, spacing: 4) {

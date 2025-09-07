@@ -167,12 +167,9 @@ struct HomeView: View {
                     
                     VStack(spacing: 0) {
                         ForEach(Array(viewModel.recentExpenses.prefix(5).enumerated()), id: \.offset) { index, expense in
-                            Button(action: {
-                                coordinator.navigate(to: .expenseDetails(expense: expense))
-                            }) {
-                                ExpenseRowView(expense: expense)
+                            TransactionRow<Expense, ExpenseDetailsView>(title: expense.name, amount: expense.amount, dateString: expense.dateString, categoryIcon: expense.category.iconName, categoryColor: expense.category.color, iconShape: .roundedRectangle, amountColor: Color.primaryText, showChevron: true) {
+                                ExpenseDetailsView(expense: expense)
                             }
-                            .buttonStyle(PlainButtonStyle())
                             
                             if index < min(viewModel.recentExpenses.count - 1, 4) {
                                 Divider()
@@ -257,12 +254,10 @@ struct HomeView: View {
                     
                     VStack(spacing: 0) {
                         ForEach(Array(viewModel.recentIncomes.prefix(5).enumerated()), id: \.offset) { index, income in
-                            Button(action: {
-                                coordinator.navigate(to: .incomeDetails(income: income))
-                            }) {
-                                IncomeRowView(income: income)
+                            
+                            TransactionRow<Income, IncomeDetailsView>(title: income.source, amount: income.amount, dateString: income.dateString, categoryIcon: income.category.iconName, categoryColor: income.category.color, iconShape: .roundedRectangle, amountColor: Color.primaryText, showChevron: true) {
+                                IncomeDetailsView(income: income)
                             }
-                            .buttonStyle(PlainButtonStyle())
                             
                             if index < min(viewModel.recentIncomes.count - 1, 4) {
                                 Divider()
@@ -485,14 +480,6 @@ struct HomeView: View {
     }
     
     // MARK: - Helper Functions
-    private func formatAmount(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.minimumFractionDigits = 0
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "0"
-    }
-    
     private func isPastMonth(month: Int, year: Int) -> Bool {
         let currentDate = Date()
         let calendar = Calendar.current
@@ -560,102 +547,6 @@ struct HomeView: View {
             }
         }
         .padding(.vertical, 20)
-    }
-}
-
-
-// MARK: - Row Views
-struct ExpenseRowView: View {
-    let expense: Expense
-    
-    var body: some View {
-        HStack(spacing: 10) {
-            RoundedRectangle(cornerRadius: 10, style: .circular)
-                .fill(expense.category.color.opacity(0.2))
-                .frame(width: 40, height: 40)
-                .overlay(
-                    Image(systemName: expense.category.iconName)
-                        .foregroundColor(expense.category.color)
-                        .font(.system(size: 16))
-                )
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(expense.name)
-                    .font(.sora(14, weight: .medium))
-                    .foregroundColor(.primaryText)
-                
-                Text(expense.dateString)
-                    .font(.sora(12))
-                    .foregroundColor(.secondaryText)
-            }
-            
-            Spacer()
-            
-            Text("₹\(formatAmount(expense.amount))")
-                .font(.sora(14, weight: .semibold))
-                .foregroundColor(.primaryText)
-            
-            Image(systemName: "chevron.right")
-                .font(.sora(14, weight: .semibold))
-                .foregroundStyle(Color.secondaryText)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .contentShape(Rectangle())
-    }
-    
-    private func formatAmount(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "0"
-    }
-}
-
-struct IncomeRowView: View {
-    let income: Income
-    
-    var body: some View {
-        HStack(spacing: 10) {
-            RoundedRectangle(cornerRadius: 10, style: .circular)
-                .fill(income.category.color.opacity(0.2))
-                .frame(width: 40, height: 40)
-                .overlay(
-                    Image(systemName: income.category.iconName)
-                        .foregroundColor(income.category.color)
-                        .font(.system(size: 16))
-                )
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(income.source)
-                    .font(.sora(14, weight: .medium))
-                    .foregroundColor(.primaryText)
-                
-                Text(income.dateString)
-                    .font(.sora(12))
-                    .foregroundColor(.secondaryText)
-            }
-            
-            Spacer()
-            
-            Text("₹\(formatAmount(income.amount))")
-                .font(.sora(14, weight: .semibold))
-                .foregroundColor(.primaryText)
-            
-            Image(systemName: "chevron.right")
-                .font(.sora(14, weight: .semibold))
-                .foregroundStyle(Color.secondaryText)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .contentShape(Rectangle())
-    }
-    
-    private func formatAmount(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
 }
 
