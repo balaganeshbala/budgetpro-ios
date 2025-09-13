@@ -115,7 +115,7 @@ class AddIncomeViewModel: ObservableObject, TransactionFormViewModelProtocol {
             dateFormatter.dateFormat = "MM/dd/yyyy"
             
             let incomeData = IncomeInsertData(
-                source: incomeName,
+                source: incomeName.trimmingCharacters(in: .whitespacesAndNewlines),
                 amount: amount,
                 category: selectedCategory.rawValue,
                 date: dateFormatter.string(from: selectedDate),

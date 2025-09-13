@@ -112,7 +112,7 @@ class AddExpenseViewModel: ObservableObject, TransactionFormViewModelProtocol {
             dateFormatter.dateFormat = "MM/dd/yyyy"
             
             let expenseData = ExpenseInsertData(
-                name: expenseName,
+                name: expenseName.trimmingCharacters(in: .whitespacesAndNewlines),
                 amount: amount,
                 category: selectedCategory.rawValue,
                 date: dateFormatter.string(from: selectedDate),
