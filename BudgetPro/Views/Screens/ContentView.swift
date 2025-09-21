@@ -11,6 +11,8 @@ struct ContentView: View {
                 SplashView()
             } else {
                 switch appCoordinator.currentFlow {
+                case .loading:
+                    SplashView()
                 case .authentication:
                     CoordinatedNavigationView {
                         LoginView()

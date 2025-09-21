@@ -630,20 +630,25 @@ struct TransactionSaveButton<ViewModel: TransactionFormViewModelProtocol>: View 
                 } else {
                     Text(transactionType.saveButtonText)
                         .font(.sora(16, weight: .semibold))
-                        .foregroundColor(.white)
                 }
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 55)
-            .background(
-                viewModel.isFormValid && !viewModel.isLoading
-                    ? Color.secondary
-                    : Color.gray.opacity(0.6)
-            )
-            .cornerRadius(12)
+            .frame(height: 40)
         }
+        .modify {
+            if #available(iOS 26.0, *) {
+                $0.liquidGlassProminent()
+            } else {
+                $0.buttonStyle(.borderedProminent)
+            }
+        }
+        .tint(
+            viewModel.isFormValid && !viewModel.isLoading
+                ? Color.secondary
+                : Color.gray.opacity(0.6)
+        )
         .disabled(!viewModel.isFormValid || viewModel.isLoading)
-        .padding(.top, 24)
+        .padding(.top, 10)
     }
 }
 
@@ -668,20 +673,25 @@ struct TransactionUpdateButton<ViewModel: TransactionFormViewModelProtocol>: Vie
                 } else {
                     Text(transactionType.updateButtonText)
                         .font(.sora(16, weight: .semibold))
-                        .foregroundColor(.white)
                 }
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 55)
-            .background(
-                viewModel.isFormValid && viewModel.hasChanges && !viewModel.isLoading
-                    ? Color.secondary
-                    : Color.gray.opacity(0.6)
-            )
-            .cornerRadius(12)
+            .frame(height: 40)
         }
+        .modify {
+            if #available(iOS 26.0, *) {
+                $0.liquidGlassProminent()
+            } else {
+                $0.buttonStyle(.borderedProminent)
+            }
+        }
+        .tint(
+            viewModel.isFormValid && !viewModel.isLoading
+                ? Color.secondary
+                : Color.gray.opacity(0.6)
+        )
         .disabled(!viewModel.isFormValid || !viewModel.hasChanges || viewModel.isLoading)
-        .padding(.top, 24)
+        .padding(.top, 10)
     }
 }
 

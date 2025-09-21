@@ -8,6 +8,16 @@
 
 import SwiftUI
 
+struct BorderOverlayModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.secondary.opacity(0.8), lineWidth: 1)
+            )
+    }
+}
+
 struct MonthYearPicker: View {
     @Binding var selectedMonth: Int
     @Binding var selectedYear: Int
@@ -53,10 +63,16 @@ struct MonthYearPicker: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
         }
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.secondary.opacity(0.8), lineWidth: 1)
-        )
+        .modify {
+            if #available(iOS 26.0, *) {
+                $0.liquidGlass()
+            } else {
+                $0.overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.secondary.opacity(0.8), lineWidth: 1)
+                )
+            }
+        }
         .onChange(of: showingPicker) { isShowing in
             if isShowing {
                 tempMonth = selectedMonth
@@ -162,19 +178,31 @@ struct MonthYearPickerDialog: View {
                             .foregroundColor(.secondaryText)
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)
-                            .background(Color.secondarySystemFill)
-                            .cornerRadius(8)
                     }
+                    .modify {
+                        if #available(iOS 26.0, *) {
+                            $0.liquidGlassProminent()
+                        } else {
+                            $0.buttonStyle(.borderedProminent)
+                        }
+                    }
+                    .tint(Color.secondarySystemFill)
+                    
                     
                     Button(action: onDone) {
                         Text("Done")
                             .font(.sora(_: 16, weight: .semibold))
-                            .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)
-                            .background(Color.secondary)
-                            .cornerRadius(8)
                     }
+                    .modify {
+                        if #available(iOS 26.0, *) {
+                            $0.liquidGlassProminent()
+                        } else {
+                            $0.buttonStyle(.borderedProminent)
+                        }
+                    }
+                    .tint(Color.secondary)
                 }
             }
             .padding(24)

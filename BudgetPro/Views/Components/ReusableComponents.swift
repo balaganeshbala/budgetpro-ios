@@ -100,21 +100,32 @@ struct DatePickerDialog: View {
                             .foregroundColor(.secondaryText)
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)
-                            .background(Color.secondarySystemFill)
-                            .cornerRadius(8)
                     }
+                    .modify {
+                        if #available(iOS 26.0, *) {
+                            $0.liquidGlassProminent()
+                        } else {
+                            $0.buttonStyle(.borderedProminent)
+                        }
+                    }
+                    .tint(Color.secondarySystemFill)
                     
                     Button(action: {
                         isPresented = false
                     }) {
                         Text("Done")
                             .font(.sora(_: 16, weight: .semibold))
-                            .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)
-                            .background(Color.secondary)
-                            .cornerRadius(8)
                     }
+                    .modify {
+                        if #available(iOS 26.0, *) {
+                            $0.liquidGlassProminent()
+                        } else {
+                            $0.buttonStyle(.borderedProminent)
+                        }
+                    }
+                    .tint(Color.secondary)
                 }
             }
             .padding(24)
@@ -125,6 +136,14 @@ struct DatePickerDialog: View {
         }
         .animation(.easeInOut(duration: 0.2), value: isPresented)
     }
+}
+
+#Preview {
+    
+    @State var isPresented: Bool = true
+    @State var selectedDate: Date = Date()
+    
+    DatePickerDialog(selectedDate: $selectedDate, isPresented: $isPresented)
 }
 
 // MARK: - Generic Dropdown Picker Dialog

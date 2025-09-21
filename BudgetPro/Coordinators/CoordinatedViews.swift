@@ -41,6 +41,13 @@ struct CoordinatedTabView: View {
             }
             .tag(MainCoordinator.Tab.profile)
         }
+        .modify {
+            if #available(iOS 26.0, *) {
+                $0.tabBarMinimizeBehavior(.onScrollUp)
+            } else {
+                $0
+            }
+        }
         .sheet(item: $coordinator.presentedSheet) { sheet in
             coordinator.sheet(for: sheet)
         }

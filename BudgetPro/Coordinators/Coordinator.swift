@@ -16,11 +16,12 @@ protocol Coordinator: ObservableObject {
 @MainActor
 class AppCoordinator: ObservableObject {
     @Published var isAuthenticated = false
-    @Published var currentFlow: AppFlow = .authentication
+    @Published var currentFlow: AppFlow = .loading
     
     private var cancellables = Set<AnyCancellable>()
     
     enum AppFlow {
+        case loading
         case authentication
         case main
     }

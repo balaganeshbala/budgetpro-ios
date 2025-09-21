@@ -326,15 +326,21 @@ struct HomeView: View {
                 Button(action: {
                     coordinator.navigate(to: .profile)
                 }) {
-                    Circle()
-                        .fill(Color.secondary.opacity(0.2))
-                        .frame(width: 46, height: 46)
-                        .overlay(
-                            Image(systemName: "person.fill")
-                                .foregroundColor(Color.secondary)
-                                .font(.system(size: 20))
-                        )
+                    Image(systemName: "person.fill")
+                        .foregroundColor(Color.secondary)
+                        .font(.system(size: 20))
+                        .frame(width: 40, height: 40)
+                        
                 }
+                .modify {
+                    if #available(iOS 26.0, *) {
+                        $0.liquidGlassProminent()
+                    } else {
+                        $0.buttonStyle(.borderedProminent)
+                            .clipShape(Circle())
+                    }
+                }
+                .tint(Color.secondary.opacity(0.2))
                 
                 Spacer()
                 
