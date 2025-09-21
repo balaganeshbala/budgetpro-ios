@@ -10,6 +10,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
+    @EnvironmentObject private var coordinator: MainCoordinator
     @Environment(\.presentationMode) var presentationMode
     @State private var showingSignOutAlert = false
     @State private var showingAbout = false
@@ -84,6 +85,19 @@ struct ProfileView: View {
     private var settingsOptionsCard: some View {
         CardView(padding: EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)) {
             VStack(spacing: 0) {
+                // Major Expenses Button
+                SettingsRow(
+                    icon: "creditcard.trianglebadge.exclamationmark",
+                    iconColor: .orange,
+                    title: "Major Expenses",
+                    showChevron: true
+                ) {
+                    coordinator.navigate(to: .allMajorExpenses)
+                }
+                
+                Divider()
+                    .padding(.horizontal, 16)
+                
                 // About Button
                 SettingsRow(
                     icon: "info.circle",

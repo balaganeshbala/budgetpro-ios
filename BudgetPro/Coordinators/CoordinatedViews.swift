@@ -20,7 +20,7 @@ struct CoordinatedTabView: View {
     
     var body: some View {
         TabView(selection: $coordinator.selectedTab) {
-            NavigationStack(path: $coordinator.navigationPath) {
+            NavigationStack(path: $coordinator.homeNavigationPath) {
                 coordinator.view(for: .home)
                     .navigationDestination(for: MainCoordinator.Route.self) { route in
                         coordinator.view(for: route)
@@ -32,8 +32,11 @@ struct CoordinatedTabView: View {
             }
             .tag(MainCoordinator.Tab.home)
             
-            NavigationStack {
+            NavigationStack(path: $coordinator.profileNavigationPath) {
                 coordinator.view(for: .profile)
+                    .navigationDestination(for: MainCoordinator.Route.self) { route in
+                        coordinator.view(for: route)
+                    }
             }
             .tabItem {
                 Image(systemName: MainCoordinator.Tab.profile.icon)

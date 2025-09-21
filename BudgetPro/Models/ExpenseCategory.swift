@@ -111,3 +111,124 @@ enum ExpenseCategory: String, CaseIterable, CategoryProtocol {
         }
     }
 }
+
+enum MajorExpenseCategory: String, CaseIterable, CategoryProtocol {
+    case vehicle
+    case homeRenovation
+    case medical
+    case education
+    case appliances
+    case electronics
+    case furniture
+    case event
+    case travel
+    case legal
+    case disasterRecovery
+    case relocation
+    case family
+    case gift
+    case taxes
+    case debtSettlement
+    case donation
+    case other
+    
+    var displayName: String {
+        switch self {
+        case .vehicle: return "Vehicle"
+        case .homeRenovation: return "Home Renovation"
+        case .medical: return "Medical"
+        case .education: return "Education"
+        case .appliances: return "Appliances"
+        case .electronics: return "Electronics"
+        case .furniture: return "Furniture"
+        case .event: return "Event"
+        case .travel: return "Travel"
+        case .legal: return "Legal"
+        case .disasterRecovery: return "Disaster Recovery"
+        case .relocation: return "Relocation"
+        case .family: return "Family"
+        case .gift: return "Gift"
+        case .taxes: return "Taxes"
+        case .debtSettlement: return "Debt Settlement"
+        case .donation: return "Donation"
+        case .other: return "Other"
+        }
+    }
+    
+    var iconName: String {
+        switch self {
+        case .vehicle: return "car.fill"
+        case .homeRenovation: return "hammer.fill"
+        case .medical: return "cross.fill"
+        case .education: return "graduationcap.fill"
+        case .appliances: return "washer.fill"
+        case .electronics: return "tv.fill"
+        case .furniture: return "bed.double.fill"
+        case .event: return "party.popper.fill"
+        case .travel: return "airplane.departure"
+        case .legal: return "scale.3d"
+        case .disasterRecovery: return "exclamationmark.triangle.fill"
+        case .relocation: return "house.and.flag.fill"
+        case .family: return "person.3.fill"
+        case .gift: return "gift.fill"
+        case .taxes: return "doc.text.fill"
+        case .debtSettlement: return "creditcard.trianglebadge.exclamationmark"
+        case .donation: return "heart.circle.fill"
+        case .other: return "ellipsis.circle.fill"
+        }
+    }
+    
+    var color: Color {
+        switch self {
+        case .vehicle: return Color(.systemOrange)
+        case .homeRenovation: return Color(.systemBrown)
+        case .medical: return .red
+        case .education: return Color(.systemPurple)
+        case .appliances: return .gray
+        case .electronics: return .blue
+        case .furniture: return Color(.systemBrown)
+        case .event: return .pink
+        case .travel: return .cyan
+        case .legal: return Color(.systemIndigo)
+        case .disasterRecovery: return Color(.systemRed)
+        case .relocation: return .green
+        case .family: return Color(.systemBlue)
+        case .gift: return Color(.systemPink)
+        case .taxes: return Color(.systemYellow)
+        case .debtSettlement: return Color(.systemRed)
+        case .donation: return Color(.systemGreen)
+        case .other: return Color(.systemGray)
+        }
+    }
+    
+    static func from(categoryName: String) -> MajorExpenseCategory {
+        // First try to match exact rawValue
+        if let category = MajorExpenseCategory(rawValue: categoryName) {
+            return category
+        }
+        
+        // Fall back to displayName matching (for backward compatibility)
+        let lowercased = categoryName.lowercased()
+        
+        switch lowercased {
+        case "vehicle", "car", "auto": return .vehicle
+        case "home renovation", "renovation", "home improvement": return .homeRenovation
+        case "medical", "health", "healthcare": return .medical
+        case "education", "school", "college", "university": return .education
+        case "appliances", "appliance": return .appliances
+        case "electronics", "electronic", "gadgets": return .electronics
+        case "furniture": return .furniture
+        case "event", "party", "celebration": return .event
+        case "travel", "trip", "vacation": return .travel
+        case "legal", "lawyer", "attorney": return .legal
+        case "disaster recovery", "disaster", "emergency": return .disasterRecovery
+        case "relocation", "moving", "move": return .relocation
+        case "family": return .family
+        case "gift", "present": return .gift
+        case "taxes", "tax": return .taxes
+        case "debt settlement", "debt": return .debtSettlement
+        case "donation", "charity": return .donation
+        default: return .other
+        }
+    }
+}

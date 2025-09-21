@@ -3,6 +3,8 @@ import SwiftUI
 @MainActor
 class MainCoordinator: Coordinator {
     @Published var navigationPath = NavigationPath()
+    @Published var homeNavigationPath = NavigationPath()
+    @Published var profileNavigationPath = NavigationPath()
     @Published var selectedTab: Tab = .home
     @Published var presentedSheet: Sheet?
     
@@ -36,6 +38,9 @@ class MainCoordinator: Coordinator {
         case incomeDetails(income: Income)
         case allExpenses(expenses: [Expense], month: Int, year: Int)
         case allIncomes(incomes: [Income], month: Int, year: Int)
+        case allMajorExpenses
+        case addMajorExpense
+        case majorExpenseDetails(majorExpense: MajorExpense)
         case budgetCategories(budgetCategories: [BudgetCategory], totalBudget: Double, totalSpent: Double, expenses: [Expense], month: Int, year: Int)
         case categoryDetail(category: BudgetCategory, expenses: [Expense], month: Int, year: Int)
         case savingsAnalysis(expenses: [Expense], incomes: [Income], totalBudget: Double, month: String, year: String)
@@ -56,25 +61,43 @@ class MainCoordinator: Coordinator {
         switch route {
         case .home:
             selectedTab = .home
-            navigationPath.removeLast(navigationPath.count)
+            homeNavigationPath.removeLast(homeNavigationPath.count)
+            profileNavigationPath.removeLast(profileNavigationPath.count)
         case .profile:
             presentedSheet = .profile
-        case .addExpense:
-            navigationPath.append(route)
-        case .addIncome:
-            navigationPath.append(route)
+        case .addExpense, .addIncome:
+            homeNavigationPath.append(route)
+        case .allMajorExpenses:
+            selectedTab = .profile
+            profileNavigationPath.append(route)
+        case .addMajorExpense, .majorExpenseDetails:
+            profileNavigationPath.append(route)
         default:
-            navigationPath.append(route)
+            // Use the appropriate navigation path based on current tab
+            if selectedTab == .profile {
+                profileNavigationPath.append(route)
+            } else {
+                homeNavigationPath.append(route)
+            }
         }
     }
     
     func pop() {
-        guard !navigationPath.isEmpty else { return }
-        navigationPath.removeLast()
+        if selectedTab == .profile {
+            guard !profileNavigationPath.isEmpty else { return }
+            profileNavigationPath.removeLast()
+        } else {
+            guard !homeNavigationPath.isEmpty else { return }
+            homeNavigationPath.removeLast()
+        }
     }
     
     func popToRoot() {
-        navigationPath.removeLast(navigationPath.count)
+        if selectedTab == .profile {
+            profileNavigationPath.removeLast(profileNavigationPath.count)
+        } else {
+            homeNavigationPath.removeLast(homeNavigationPath.count)
+        }
     }
     
     func dismiss() {
@@ -87,7 +110,8 @@ class MainCoordinator: Coordinator {
     
     func selectTab(_ tab: Tab) {
         selectedTab = tab
-        navigationPath.removeLast(navigationPath.count)
+        // Don't clear navigation paths when switching tabs
+        // This allows each tab to maintain its own navigation state
     }
     
     @ViewBuilder
@@ -122,6 +146,15 @@ class MainCoordinator: Coordinator {
                 .environmentObject(self)
         case .allIncomes(let incomes, let month, let year):
             AllIncomesView(incomes: incomes, month: month, year: year)
+                .environmentObject(self)
+        case .allMajorExpenses:
+            AllMajorExpensesView()
+                .environmentObject(self)
+        case .addMajorExpense:
+            AddMajorExpenseView()
+                .environmentObject(self)
+        case .majorExpenseDetails(let majorExpense):
+            MajorExpenseDetailsView(majorExpense: majorExpense)
                 .environmentObject(self)
         case .budgetCategories(let budgetCategories, let totalBudget, let totalSpent, let expenses, let month, let year):
             BudgetCategoriesView(budgetCategories: budgetCategories, totalBudget: totalBudget, totalSpent: totalSpent, expenses: expenses, month: month, year: year)

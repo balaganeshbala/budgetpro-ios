@@ -324,7 +324,7 @@ struct HomeView: View {
             HStack {
                 // Profile Button
                 Button(action: {
-                    coordinator.navigate(to: .profile)
+                    coordinator.selectTab(.profile)
                 }) {
                     Image(systemName: "person.fill")
                         .foregroundColor(Color.secondary)

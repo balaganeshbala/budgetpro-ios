@@ -11,11 +11,13 @@ import SwiftUI
 enum TransactionType {
     case expense
     case income
+    case majorExpense
     
     var title: String {
         switch self {
         case .expense: return "Expense Details"
         case .income: return "Income Details"
+        case .majorExpense: return "Major Expense Details"
         }
     }
     
@@ -23,6 +25,7 @@ enum TransactionType {
         switch self {
         case .expense: return "Add Expense"
         case .income: return "Add Income"
+        case .majorExpense: return "Add Major Expense"
         }
     }
     
@@ -30,6 +33,7 @@ enum TransactionType {
         switch self {
         case .expense: return "Update Expense"
         case .income: return "Update Income"
+        case .majorExpense: return "Update Major Expense"
         }
     }
     
@@ -37,6 +41,7 @@ enum TransactionType {
         switch self {
         case .expense: return "Expense Name"
         case .income: return "Income Source"
+        case .majorExpense: return "Major Expense Name"
         }
     }
     
@@ -44,6 +49,7 @@ enum TransactionType {
         switch self {
         case .expense: return "bag"
         case .income: return "dollarsign.circle"
+        case .majorExpense: return "creditcard.trianglebadge.exclamationmark"
         }
     }
     
@@ -51,6 +57,7 @@ enum TransactionType {
         switch self {
         case .expense: return "Save Expense"
         case .income: return "Save Income"
+        case .majorExpense: return "Save Major Expense"
         }
     }
     
@@ -58,6 +65,7 @@ enum TransactionType {
         switch self {
         case .expense: return "Update Expense"
         case .income: return "Update Income"
+        case .majorExpense: return "Update Major Expense"
         }
     }
     
@@ -65,6 +73,7 @@ enum TransactionType {
         switch self {
         case .expense: return "Adding expense..."
         case .income: return "Adding income..."
+        case .majorExpense: return "Adding major expense..."
         }
     }
     
@@ -72,6 +81,7 @@ enum TransactionType {
         switch self {
         case .expense: return "Updating expense..."
         case .income: return "Updating income..."
+        case .majorExpense: return "Updating major expense..."
         }
     }
 }
@@ -109,10 +119,17 @@ protocol TransactionFormViewModelProtocol: ObservableObject {
     func clearError()
 }
 
+// MARK: - Extended Protocol for Major Expenses
+@MainActor
+protocol MajorExpenseFormViewModelProtocol: TransactionFormViewModelProtocol {
+    var notes: String { get set }
+}
+
 // MARK: - Transaction Field Enum
 enum TransactionField {
     case name
     case amount
+    case notes
 }
 
 // MARK: - Generic Transaction Form View
@@ -231,6 +248,14 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
                 viewModel: viewModel,
                 showingDatePicker: $showingDatePicker
             )
+            
+            // Notes field for major expenses only
+            if transactionType == .majorExpense {
+                TransactionNotesInputFieldWrapper(
+                    viewModel: viewModel,
+                    focusedField: $focusedField
+                )
+            }
         }
     }
     
@@ -563,6 +588,51 @@ struct TransactionDateSelectorField<ViewModel: TransactionFormViewModelProtocol>
                 )
             }
         }
+    }
+}
+
+struct TransactionNotesInputFieldWrapper<ViewModel: TransactionFormViewModelProtocol>: View {
+    @ObservedObject var viewModel: ViewModel
+    var focusedField: FocusState<TransactionField?>.Binding
+    
+    var body: some View {
+        Group {
+            if let addMajorExpenseViewModel = viewModel as? AddMajorExpenseViewModel {
+                TransactionNotesInputField(
+                    viewModel: addMajorExpenseViewModel,
+                    focusedField: focusedField
+                )
+            } else if let majorExpenseDetailsViewModel = viewModel as? MajorExpenseDetailsViewModel {
+                TransactionNotesInputField(
+                    viewModel: majorExpenseDetailsViewModel,
+                    focusedField: focusedField
+                )
+            }
+        }
+    }
+}
+
+struct TransactionNotesInputField<ViewModel: MajorExpenseFormViewModelProtocol>: View {
+    @ObservedObject var viewModel: ViewModel
+    var focusedField: FocusState<TransactionField?>.Binding
+    
+    var body: some View {
+        CustomTextField(
+            hint: "Notes (Optional)",
+            iconName: "note.text",
+            text: $viewModel.notes,
+            keyboardType: .default,
+            submitLabel: .done,
+            textCapitalization: .sentences,
+            onSubmit: {
+                focusedField.wrappedValue = nil
+            },
+            onChange: { _ in
+                viewModel.validateForm()
+            },
+            isFocused: focusedField.wrappedValue == .notes
+        )
+        .focused(focusedField, equals: .notes)
     }
 }
 
