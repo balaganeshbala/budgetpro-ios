@@ -19,6 +19,10 @@ struct BudgetCategoriesView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject private var coordinator: MainCoordinator
     
+    // Filter state
+    @State private var selectedCategoryNames: Set<String> = []
+    @State private var showingFilterSheet = false
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -26,8 +30,8 @@ struct BudgetCategoriesView: View {
                 // Header info
                 BudgetOverviewCard(
                     title: "Overall Budget",
-                    totalBudget: totalBudget,
-                    totalSpent: totalSpent,
+                    totalBudget: filteredTotalBudget,
+                    totalSpent: filteredTotalSpent,
                     showEditButton: false,
                     showDetailsButton: false
                 )
@@ -45,6 +49,25 @@ struct BudgetCategoriesView: View {
         .navigationTitle("\(monthName)")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(false)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    showingFilterSheet = true
+                }) {
+                    Image(systemName: "line.3.horizontal.decrease.circle")
+                        .foregroundColor(.accentColor)
+                }
+            }
+        }
+        .sheet(isPresented: $showingFilterSheet) {
+            CategoryFilterView(
+                availableCategories: availableCategoryNames,
+                selectedCategories: $selectedCategoryNames
+            )
+        }
+        .onAppear {
+            initializeSelectedCategories()
+        }
     }
     
     // MARK: - Categories Section
@@ -77,9 +100,14 @@ struct BudgetCategoriesView: View {
             ExpenseCategory.from(categoryName: category.name) != .unknown
         }
         
-        let unplannedCategories = validCategories.filter { $0.budget == 0 && $0.spent > 0 }
-        let noBudgetCategories = validCategories.filter { $0.budget == 0 && $0.spent == 0 }
-        let plannedCategories = validCategories.filter { $0.budget > 0 }
+        // Apply category filter
+        let filteredCategories = validCategories.filter { category in
+            selectedCategoryNames.contains(category.name)
+        }
+        
+        let unplannedCategories = filteredCategories.filter { $0.budget == 0 && $0.spent > 0 }
+        let noBudgetCategories = filteredCategories.filter { $0.budget == 0 && $0.spent == 0 }
+        let plannedCategories = filteredCategories.filter { $0.budget > 0 }
         
         let sortedPlanned = plannedCategories.sorted { first, second in
             let firstPercentage = first.spent / first.budget
@@ -88,6 +116,37 @@ struct BudgetCategoriesView: View {
         }
         
         return unplannedCategories + sortedPlanned + noBudgetCategories
+    }
+    
+    // MARK: - Filter Helper Properties
+    private var availableCategoryNames: [String] {
+        let validCategories = budgetCategories.filter { category in
+            ExpenseCategory.from(categoryName: category.name) != .unknown
+        }
+        return validCategories.map { $0.name }.sorted()
+    }
+    
+    private var filteredTotalBudget: Double {
+        let filteredCategories = budgetCategories.filter { category in
+            selectedCategoryNames.contains(category.name) && 
+            ExpenseCategory.from(categoryName: category.name) != .unknown
+        }
+        return filteredCategories.reduce(0) { $0 + $1.budget }
+    }
+    
+    private var filteredTotalSpent: Double {
+        let filteredCategories = budgetCategories.filter { category in
+            selectedCategoryNames.contains(category.name) && 
+            ExpenseCategory.from(categoryName: category.name) != .unknown
+        }
+        return filteredCategories.reduce(0) { $0 + $1.spent }
+    }
+    
+    // MARK: - Filter Helper Methods
+    private func initializeSelectedCategories() {
+        if selectedCategoryNames.isEmpty {
+            selectedCategoryNames = Set(availableCategoryNames)
+        }
     }
     
     private var monthName: String {
