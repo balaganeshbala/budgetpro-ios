@@ -128,25 +128,31 @@ struct LoginView: View {
                     viewModel.signIn()
                 }) {
                     HStack {
-                        Spacer()
                         if viewModel.isLoading {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                 .scaleEffect(0.8)
                         } else {
                             Text("Sign In")
-                                .font(.sora(16, weight: .medium))
-                                .foregroundColor(.white)
+                                .font(.sora(16, weight: .semibold))
                         }
-                        Spacer()
                     }
-                    .frame(height: 50)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 40)
                 }
-                .frame(maxWidth: .infinity)
-                .background(viewModel.isFormValid ? Color.secondary : Color.secondarySystemFill)
-                .cornerRadius(8)
+                .modify {
+                    if #available(iOS 26.0, *) {
+                        $0.liquidGlassProminent()
+                    } else {
+                        $0.buttonStyle(.borderedProminent)
+                    }
+                }
+                .tint(
+                    viewModel.isFormValid && !viewModel.isLoading
+                        ? Color.secondary
+                        : Color.gray.opacity(0.6)
+                )
                 .disabled(!viewModel.isFormValid || viewModel.isLoading)
-                .contentShape(Rectangle())
                 .padding(.horizontal, 20)
                 .padding(.bottom, 32)
                 

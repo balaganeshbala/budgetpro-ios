@@ -38,6 +38,7 @@ struct EditBudgetView: View {
                         .padding(.horizontal, 16)
                         .padding(.vertical, 20)
                 }
+                .disableScrollViewBounce()
                 .scrollDismissesKeyboard(.interactively)
             }
         }

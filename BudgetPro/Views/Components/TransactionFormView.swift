@@ -197,6 +197,7 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
             .padding(.top, 20)
             .padding(.bottom, 20)
         }
+        .disableScrollViewBounce()
         .onTapGesture {
             focusedField = nil
         }

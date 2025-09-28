@@ -29,6 +29,7 @@ struct ProfileView: View {
             .padding(.horizontal, 16)
             .padding(.top, 20)
         }
+        .disableScrollViewBounce()
         .background(Color.groupedBackground)
         .navigationTitle("Profile")
         .navigationBarTitleDisplayMode(.inline)

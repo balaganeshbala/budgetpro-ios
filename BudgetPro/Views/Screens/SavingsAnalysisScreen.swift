@@ -88,6 +88,7 @@ struct SavingsAnalysisScreen: View {
                     }
                     .padding(16)
                 }
+                .disableScrollViewBounce()
             }
         }
         .navigationTitle("\(month) \(year)")
@@ -373,7 +374,7 @@ struct SavingsRateIndicator: View {
     }
     
     private func getProgressWidth(_ rate: Double) -> CGFloat {
-        let screenWidth = UIScreen.main.bounds.width - 64 // Account for padding
+        let screenWidth = UIScreen.main.bounds.width - 56 // Account for padding
         let maxRate: Double = 40 // Cap at 40% for visual purposes
         let clampedRate = min(rate, maxRate)
         return CGFloat(clampedRate / maxRate) * screenWidth

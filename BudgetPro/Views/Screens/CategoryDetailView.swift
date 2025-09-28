@@ -40,6 +40,7 @@ struct CategoryDetailView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 20)
             }
+            .disableScrollViewBounce()
         }
         .background(Color.groupedBackground)
         .navigationTitle(category.name)

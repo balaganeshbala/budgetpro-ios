@@ -40,6 +40,7 @@ struct CreateBudgetView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 20)
             }
+            .disableScrollViewBounce()
             .background(Color.gray.opacity(0.1))
             .navigationTitle("Create Budget")
             .navigationBarTitleDisplayMode(.inline)

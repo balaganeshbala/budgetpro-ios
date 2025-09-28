@@ -48,6 +48,7 @@ struct AllExpensesView: View {
             .padding(.horizontal, 16)
             .padding(.top, 16)
         }
+        .disableScrollViewBounce()
         .background(Color.groupedBackground)
         .navigationTitle(monthYearTitle(month: month, year: year))
         .navigationBarTitleDisplayMode(.inline)
