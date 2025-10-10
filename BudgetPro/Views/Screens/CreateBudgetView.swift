@@ -10,6 +10,7 @@ import SwiftUI
 struct CreateBudgetView: View {
     @StateObject private var viewModel: CreateBudgetViewModel
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
     @State private var showingSuccessAlert = false
     
     let month: Int
@@ -22,50 +23,52 @@ struct CreateBudgetView: View {
     }
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                Color.groupedBackground
-                    .ignoresSafeArea(.all)
+        ZStack {
+            Color.groupedBackground
+                .ignoresSafeArea(.all)
 
-                ScrollView {
-                    VStack(spacing: 20) {
-                        // Header info
-                        headerSection
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Header info
+                    headerSection
 
-                        // Total Budget Summary
-                        totalBudgetCard
+                    // Total Budget Summary
+                    totalBudgetCard
 
-                        // Budget Categories
-                        budgetCategoriesSection
+                    // Budget Categories
+                    budgetCategoriesSection
 
-                        Spacer(minLength: 100)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 20)
+                    Spacer(minLength: 100)
                 }
-                .disableScrollViewBounce()
+                .padding(.horizontal, 16)
+                .padding(.top, 20)
             }
-            .navigationTitle("Create Budget")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        presentationMode.wrappedValue.dismiss()
-                    }
-                    .font(.sora(16))
-                    .foregroundColor(.secondaryText)
+            .disableScrollViewBounce()
+        }
+        .navigationTitle("Create Budget")
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.secondary)
+                        .font(.title3)
                 }
-
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        Task {
-                            await viewModel.saveBudget()
-                        }
+            }
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                Button("Save") {
+                    Task {
+                        await viewModel.saveBudget()
                     }
-                    .font(.sora(16, weight: .medium))
-                    .foregroundColor(viewModel.canSave ? .adaptiveSecondary : .secondaryText)
-                    .disabled(!viewModel.canSave || viewModel.isLoading)
                 }
+                .font(.sora(16, weight: .medium))
+                .foregroundColor(viewModel.canSave ? .adaptiveSecondary : .secondaryText)
+                .disabled(!viewModel.canSave || viewModel.isLoading)
             }
         }
         .alert("Success", isPresented: $showingSuccessAlert) {

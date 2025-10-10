@@ -535,7 +535,7 @@ struct HomeView: View {
                 .font(.sora(16, weight: .medium))
                 .foregroundColor(.secondaryText)
             
-            Text("Create your first budget to track your expenses")
+            Text("Create your budget to track your expenses")
                 .font(.sora(14))
                 .foregroundColor(.tertiaryText)
                 .multilineTextAlignment(.center)
