@@ -26,89 +26,59 @@ struct LoginView: View {
                 .padding(.top, 60)
                 
                 // Email input
-                VStack(spacing: 0) {
-                    HStack {
-                        Image(systemName: "envelope")
-                            .foregroundColor(.secondaryText)
-                            .frame(width: 20, height: 20)
-                        
-                        TextField("Email", text: $viewModel.email)
-                            .font(.sora(16))
-                            .foregroundColor(.primaryText)
-                            .textFieldStyle(PlainTextFieldStyle())
-                            .autocapitalization(.none)
-                            .keyboardType(.emailAddress)
-                            .disableAutocorrection(true)
-                            .focused($focusField, equals: .email)
-                            .onChange(of: viewModel.email) { _ in
-                                viewModel.validateEmail()
-                            }
-                        
-                        Spacer()
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 16)
-                    .background(Color.inputBackground)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(focusField == .email ? Color.focusedInputBorder : Color.inputBorder, lineWidth: focusField == .email ? 2 : 1)
-                    )
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        focusField = .email
-                    }
+                CustomTextField(
+                    hint: "Email",
+                    iconName: "envelope",
+                    text: $viewModel.email,
+                    keyboardType: .emailAddress,
+                    submitLabel: .next,
+                    textCapitalization: .never,
+                    onSubmit: {
+                        focusField = .password
+                    },
+                    onChange: { _ in
+                        viewModel.validateEmail()
+                    },
+                    isFocused: focusField == .email
+                )
+                .focused($focusField, equals: .email)
+                .onTapGesture {
+                    focusField = .email
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 16)
                 
-                // Password input
-                VStack(spacing: 0) {
-                    HStack {
-                        Image(systemName: "lock")
+                // Password input (with show/hide)
+                CustomTextField(
+                    hint: "Password",
+                    iconName: "lock",
+                    text: $viewModel.password,
+                    keyboardType: .default,
+                    submitLabel: .done,
+                    textCapitalization: .never,
+                    onSubmit: {
+                        focusField = nil
+                        viewModel.signIn()
+                    },
+                    onChange: { _ in
+                        viewModel.validatePassword()
+                    },
+                    isFocused: focusField == .password,
+                    isSecure: !viewModel.isPasswordVisible
+                ) {
+                    Button(action: {
+                        viewModel.togglePasswordVisibility()
+                    }) {
+                        Image(systemName: viewModel.isPasswordVisible ? "eye.slash" : "eye")
                             .foregroundColor(.secondaryText)
-                            .frame(width: 20, height: 20)
-                        
-                        if viewModel.isPasswordVisible {
-                            TextField("Password", text: $viewModel.password)
-                                .font(.sora(16))
-                                .foregroundColor(.primaryText)
-                                .textFieldStyle(PlainTextFieldStyle())
-                                .focused($focusField, equals: .password)
-                                .onChange(of: viewModel.password) { _ in
-                                    viewModel.validatePassword()
-                                }
-                        } else {
-                            SecureField("Password", text: $viewModel.password)
-                                .font(.sora(16))
-                                .foregroundColor(.primaryText)
-                                .textFieldStyle(PlainTextFieldStyle())
-                                .focused($focusField, equals: .password)
-                                .onChange(of: viewModel.password) { _ in
-                                    viewModel.validatePassword()
-                                }
-                        }
-                        
-                        Button(action: {
-                            viewModel.togglePasswordVisibility()
-                        }) {
-                            Image(systemName: viewModel.isPasswordVisible ? "eye.slash" : "eye")
-                                .foregroundColor(.secondaryText)
-                                .padding(.horizontal, 4)
-                                .padding(.vertical, 4)
-                        }
-                        .contentShape(Rectangle())
+                            .padding(.trailing, 4)
+                            .frame(height: 55)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 16)
-                    .background(Color.inputBackground)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(focusField == .password ? Color.focusedInputBorder : Color.inputBorder, lineWidth: focusField == .password ? 2 : 1)
-                    )
                     .contentShape(Rectangle())
-                    .onTapGesture {
-                        focusField = .password
-                    }
+                }
+                .focused($focusField, equals: .password)
+                .onTapGesture {
+                    focusField = .password
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 32)
@@ -130,7 +100,7 @@ struct LoginView: View {
                     HStack {
                         if viewModel.isLoading {
                             ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .progressViewStyle(CircularProgressViewStyle(tint: .primaryText))
                                 .scaleEffect(0.8)
                         } else {
                             Text("Sign In")
@@ -196,12 +166,20 @@ struct LoginView: View {
                 Spacer()
             }
         }
-        .background(Color.appBackground)
+        .background(Color.appBackground.ignoresSafeArea())
     }
 }
 
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginView()
+        Group {
+            LoginView()
+                .preferredColorScheme(.light)
+                .previewDisplayName("Login - Light")
+            
+            LoginView()
+                .preferredColorScheme(.dark)
+                .previewDisplayName("Login - Dark")
+        }
     }
 }

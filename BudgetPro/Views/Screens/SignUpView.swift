@@ -29,32 +29,31 @@ struct SignUpView: View {
                     
                     // Full Name input
                     VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Image(systemName: "person")
-                                .foregroundColor(.gray)
-                                .frame(width: 20, height: 20)
-                            
-                            TextField("Full Name", text: $viewModel.fullName)
-                                .font(.sora(16))
-                                .textFieldStyle(PlainTextFieldStyle())
-                                .autocapitalization(.words)
-                                .focused($focusedField, equals: .fullName)
-                                .onChange(of: viewModel.fullName) { _ in
-                                    viewModel.validateFullName()
-                                }
-                            
-                            Spacer()
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 16)
-                        .background(Color.white)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(focusedField == .fullName ? .primary : Color.gray.opacity(0.3), lineWidth: focusedField == .fullName ? 2 : 1)
+                        CustomTextField(
+                            hint: "Full Name",
+                            iconName: "person",
+                            text: $viewModel.fullName,
+                            keyboardType: .default,
+                            submitLabel: .next,
+                            textCapitalization: .words,
+                            onSubmit: {
+                                focusedField = .email
+                            },
+                            onChange: { _ in
+                                viewModel.validateFullName()
+                            },
+                            isFocused: focusedField == .fullName
                         )
-                        .contentShape(Rectangle())
+                        .focused($focusedField, equals: .fullName)
                         .onTapGesture {
                             focusedField = .fullName
+                        }
+                        
+                        if !viewModel.fullNameError.isEmpty {
+                            Text(viewModel.fullNameError)
+                                .font(.sora(12))
+                                .foregroundColor(.red)
+                                .padding(.leading, 8)
                         }
                     }
                     .padding(.horizontal, 20)
@@ -62,33 +61,31 @@ struct SignUpView: View {
                     
                     // Email input
                     VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Image(systemName: "envelope")
-                                .foregroundColor(.gray)
-                                .frame(width: 20, height: 20)
-                            
-                            TextField("Email", text: $viewModel.email)
-                                .font(.sora(16))
-                                .textFieldStyle(PlainTextFieldStyle())
-                                .autocapitalization(.none)
-                                .keyboardType(.emailAddress)
-                                .focused($focusedField, equals: .email)
-                                .onChange(of: viewModel.email) { _ in
-                                    viewModel.validateEmail()
-                                }
-                            
-                            Spacer()
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 16)
-                        .background(Color.white)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(focusedField == .email ? .primary : Color.gray.opacity(0.3), lineWidth: focusedField == .email ? 2 : 1)
+                        CustomTextField(
+                            hint: "Email",
+                            iconName: "envelope",
+                            text: $viewModel.email,
+                            keyboardType: .emailAddress,
+                            submitLabel: .next,
+                            textCapitalization: .never,
+                            onSubmit: {
+                                focusedField = .password
+                            },
+                            onChange: { _ in
+                                viewModel.validateEmail()
+                            },
+                            isFocused: focusedField == .email
                         )
-                        .contentShape(Rectangle())
+                        .focused($focusedField, equals: .email)
                         .onTapGesture {
                             focusedField = .email
+                        }
+                        
+                        if !viewModel.emailError.isEmpty {
+                            Text(viewModel.emailError)
+                                .font(.sora(12))
+                                .foregroundColor(.red)
+                                .padding(.leading, 8)
                         }
                     }
                     .padding(.horizontal, 20)
@@ -96,29 +93,22 @@ struct SignUpView: View {
                     
                     // Password input
                     VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Image(systemName: "lock")
-                                .foregroundColor(.gray)
-                                .frame(width: 20, height: 20)
-                            
-                            if viewModel.isPasswordVisible {
-                                TextField("Password", text: $viewModel.password)
-                                    .font(.sora(16))
-                                        .textFieldStyle(PlainTextFieldStyle())
-                                    .focused($focusedField, equals: .password)
-                                    .onChange(of: viewModel.password) { _ in
-                                        viewModel.validatePassword()
-                                    }
-                            } else {
-                                SecureField("Password", text: $viewModel.password)
-                                    .font(.sora(16))
-                                        .textFieldStyle(PlainTextFieldStyle())
-                                    .focused($focusedField, equals: .password)
-                                    .onChange(of: viewModel.password) { _ in
-                                        viewModel.validatePassword()
-                                    }
-                            }
-                            
+                        CustomTextField(
+                            hint: "Password",
+                            iconName: "lock",
+                            text: $viewModel.password,
+                            keyboardType: .default,
+                            submitLabel: .next,
+                            textCapitalization: .never,
+                            onSubmit: {
+                                focusedField = .confirmPassword
+                            },
+                            onChange: { _ in
+                                viewModel.validatePassword()
+                            },
+                            isFocused: focusedField == .password,
+                            isSecure: !viewModel.isPasswordVisible
+                        ) {
                             Button(action: {
                                 viewModel.togglePasswordVisibility()
                             }) {
@@ -129,16 +119,16 @@ struct SignUpView: View {
                             }
                             .contentShape(Rectangle())
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 16)
-                        .background(Color.white)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(focusedField == .password ? .primary : Color.gray.opacity(0.3), lineWidth: focusedField == .password ? 2 : 1)
-                        )
-                        .contentShape(Rectangle())
+                        .focused($focusedField, equals: .password)
                         .onTapGesture {
                             focusedField = .password
+                        }
+                        
+                        if !viewModel.passwordError.isEmpty {
+                            Text(viewModel.passwordError)
+                                .font(.sora(12))
+                                .foregroundColor(.red)
+                                .padding(.leading, 8)
                         }
                     }
                     .padding(.horizontal, 20)
@@ -182,29 +172,23 @@ struct SignUpView: View {
                     
                     // Confirm Password input
                     VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Image(systemName: "lock.fill")
-                                .foregroundColor(.gray)
-                                .frame(width: 20, height: 20)
-                            
-                            if viewModel.isConfirmPasswordVisible {
-                                TextField("Confirm Password", text: $viewModel.confirmPassword)
-                                    .font(.sora(16))
-                                        .textFieldStyle(PlainTextFieldStyle())
-                                    .focused($focusedField, equals: .confirmPassword)
-                                    .onChange(of: viewModel.confirmPassword) { _ in
-                                        viewModel.validateConfirmPassword()
-                                    }
-                            } else {
-                                SecureField("Confirm Password", text: $viewModel.confirmPassword)
-                                    .font(.sora(16))
-                                        .textFieldStyle(PlainTextFieldStyle())
-                                    .focused($focusedField, equals: .confirmPassword)
-                                    .onChange(of: viewModel.confirmPassword) { _ in
-                                        viewModel.validateConfirmPassword()
-                                    }
-                            }
-                            
+                        CustomTextField(
+                            hint: "Confirm Password",
+                            iconName: "lock.fill",
+                            text: $viewModel.confirmPassword,
+                            keyboardType: .default,
+                            submitLabel: .done,
+                            textCapitalization: .never,
+                            onSubmit: {
+                                focusedField = nil
+                                signUp()
+                            },
+                            onChange: { _ in
+                                viewModel.validateConfirmPassword()
+                            },
+                            isFocused: focusedField == .confirmPassword,
+                            isSecure: !viewModel.isConfirmPasswordVisible
+                        ) {
                             Button(action: {
                                 viewModel.toggleConfirmPasswordVisibility()
                             }) {
@@ -215,16 +199,16 @@ struct SignUpView: View {
                             }
                             .contentShape(Rectangle())
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 16)
-                        .background(Color.white)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(focusedField == .confirmPassword ? .primary : Color.gray.opacity(0.3), lineWidth: focusedField == .confirmPassword ? 2 : 1)
-                        )
-                        .contentShape(Rectangle())
+                        .focused($focusedField, equals: .confirmPassword)
                         .onTapGesture {
                             focusedField = .confirmPassword
+                        }
+                        
+                        if !viewModel.confirmPasswordError.isEmpty {
+                            Text(viewModel.confirmPasswordError)
+                                .font(.sora(12))
+                                .foregroundColor(.red)
+                                .padding(.leading, 8)
                         }
                     }
                     .padding(.horizontal, 20)
@@ -321,8 +305,16 @@ struct SignUpView: View {
     }
 }
 
-struct SignUpView_Previews: PreviewProvider {
+struct SignUpViewLight_Previews: PreviewProvider {
     static var previews: some View {
         SignUpView()
+            .preferredColorScheme(.light)
+    }
+}
+
+struct SignUpViewDark_Previews: PreviewProvider {
+    static var previews: some View {
+        SignUpView()
+            .preferredColorScheme(.dark)
     }
 }
