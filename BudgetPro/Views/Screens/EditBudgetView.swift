@@ -194,13 +194,6 @@ struct EditBudgetView: View {
         }
         .disabled(!viewModel.canUpdate || !viewModel.hasChanges || viewModel.isLoading)
     }
-    
-    private var monthName: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM"
-        let date = Calendar.current.date(from: DateComponents(year: year, month: month, day: 1)) ?? Date()
-        return formatter.string(from: date)
-    }
 }
 
 struct EditBudgetCategoryInput: View {

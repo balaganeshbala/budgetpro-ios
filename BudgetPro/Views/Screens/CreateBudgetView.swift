@@ -5,7 +5,6 @@
 //  Created by Balaganesh S on 14/07/25.
 //
 
-
 import SwiftUI
 
 struct CreateBudgetView: View {
@@ -24,42 +23,50 @@ struct CreateBudgetView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: 20) {
-                    // Header info
-                    headerSection
-                    
-                    // Total Budget Summary
-                    totalBudgetCard
-                    
-                    // Budget Categories
-                    budgetCategoriesSection
-                    
-                    Spacer(minLength: 100)
+            ZStack {
+                Color.groupedBackground
+                    .ignoresSafeArea(.all)
+
+                ScrollView {
+                    VStack(spacing: 20) {
+                        // Header info
+                        headerSection
+
+                        // Total Budget Summary
+                        totalBudgetCard
+
+                        // Budget Categories
+                        budgetCategoriesSection
+
+                        Spacer(minLength: 100)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 20)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 20)
+                .disableScrollViewBounce()
             }
-            .disableScrollViewBounce()
-            .background(Color.gray.opacity(0.1))
             .navigationTitle("Create Budget")
             .navigationBarTitleDisplayMode(.inline)
-            .navigationBarItems(
-                leading: Button("Cancel") {
-                    presentationMode.wrappedValue.dismiss()
-                }
-                .font(.sora(16))
-                .foregroundColor(Color.secondary),
-                
-                trailing: Button("Save") {
-                    Task {
-                        await viewModel.saveBudget()
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
                     }
+                    .font(.sora(16))
+                    .foregroundColor(.secondaryText)
                 }
-                .font(.sora(16, weight: .medium))
-                .foregroundColor(viewModel.canSave ? .primary : .gray)
-                .disabled(!viewModel.canSave || viewModel.isLoading)
-            )
+
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        Task {
+                            await viewModel.saveBudget()
+                        }
+                    }
+                    .font(.sora(16, weight: .medium))
+                    .foregroundColor(viewModel.canSave ? .adaptiveSecondary : .secondaryText)
+                    .disabled(!viewModel.canSave || viewModel.isLoading)
+                }
+            }
         }
         .alert("Success", isPresented: $showingSuccessAlert) {
             Button("OK") {
@@ -88,20 +95,20 @@ struct CreateBudgetView: View {
     // MARK: - Header Section
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Set your budget for \(monthName) \(year)")
+            Text("Set your budget for \(monthName) \(String(year))")
                 .font(.sora(16))
-                .foregroundColor(.gray)
+                .foregroundColor(.secondaryText)
             
             Text("Enter budget amounts for each category to track your spending throughout the month.")
                 .font(.sora(14))
-                .foregroundColor(.gray.opacity(0.8))
+                .foregroundColor(.secondaryText.opacity(0.8))
                 .lineSpacing(2)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(12)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     // MARK: - Total Budget Card
@@ -110,7 +117,7 @@ struct CreateBudgetView: View {
             HStack {
                 Text("Total Budget")
                     .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Spacer()
                 
@@ -118,43 +125,11 @@ struct CreateBudgetView: View {
                     .font(.sora(24, weight: .bold))
                     .foregroundColor(.primary)
             }
-            
-            if viewModel.totalBudget > 0 {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("Budget Distribution")
-                            .font(.sora(14, weight: .medium))
-                            .foregroundColor(.black)
-                        
-                        Spacer()
-                        
-                        Text("\(viewModel.categoriesWithBudget) of \(viewModel.totalCategories) categories")
-                            .font(.sora(12))
-                            .foregroundColor(.gray)
-                    }
-                    
-                    // Progress bar showing how many categories have budgets
-                    GeometryReader { geometry in
-                        ZStack(alignment: .leading) {
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.2))
-                                .frame(height: 6)
-                                .cornerRadius(3)
-                            
-                            Rectangle()
-                                .fill(.primary)
-                                .frame(width: geometry.size.width * (Double(viewModel.categoriesWithBudget) / Double(viewModel.totalCategories)), height: 6)
-                                .cornerRadius(3)
-                        }
-                    }
-                    .frame(height: 6)
-                }
-            }
         }
         .padding(16)
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(12)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
     // MARK: - Budget Categories Section
@@ -163,7 +138,7 @@ struct CreateBudgetView: View {
             HStack {
                 Text("Budget Categories")
                     .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 Spacer()
                 
@@ -196,6 +171,7 @@ struct CreateBudgetView: View {
     }
 }
 
+// MARK: - Budget Category Input Field
 struct BudgetCategoryInput: View {
     let category: ExpenseCategory
     let amount: Double
@@ -220,16 +196,16 @@ struct BudgetCategoryInput: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(category.displayName)
                     .font(.sora(16, weight: .medium))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primaryText)
                 
                 if amount > 0 {
                     Text("₹\(Int(amount))")
                         .font(.sora(12))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                 } else {
                     Text("No budget set")
                         .font(.sora(12))
-                        .foregroundColor(.gray.opacity(0.6))
+                        .foregroundColor(.secondaryText.opacity(0.6))
                 }
             }
             
@@ -240,11 +216,11 @@ struct BudgetCategoryInput: View {
                 HStack {
                     Text("₹")
                         .font(.sora(16))
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     
                     TextField("0", text: $textAmount)
                         .font(.sora(16, weight: .medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.primaryText)
                         .keyboardType(.decimalPad)
                         .focused($isFocused)
                         .multilineTextAlignment(.trailing)
@@ -254,17 +230,17 @@ struct BudgetCategoryInput: View {
                 .padding(.vertical, 10)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(isFocused ? .primary : Color.gray.opacity(0.3), lineWidth: isFocused ? 2 : 1)
-                        .background(Color.white)
+                        .stroke(isFocused ? Color.adaptiveSecondary : Color.inputBorder, lineWidth: isFocused ? 2 : 1)
+                        .background(Color.inputBackground)
                 )
                 .cornerRadius(8)
             }
             .frame(width: 100)
         }
         .padding(16)
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(12)
-        .shadow(color: .gray.opacity(0.1), radius: 4, x: 0, y: 1)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
         .onAppear {
             textAmount = amount > 0 ? String(Int(amount)) : ""
         }
@@ -285,9 +261,16 @@ struct BudgetCategoryInput: View {
     }
 }
 
-
 struct CreateBudgetView_Previews: PreviewProvider {
     static var previews: some View {
-        CreateBudgetView(month: 7, year: 2025)
+        Group {
+            CreateBudgetView(month: 7, year: 2025)
+                .preferredColorScheme(.light)
+                .previewDisplayName("Light Mode")
+
+            CreateBudgetView(month: 7, year: 2025)
+                .preferredColorScheme(.dark)
+                .previewDisplayName("Dark Mode")
+        }
     }
 }
