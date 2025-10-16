@@ -8,7 +8,7 @@
 import Foundation
 
 @MainActor
-class MajorExpenseDetailsViewModel: ObservableObject, MajorExpenseFormViewModelProtocol {
+class MajorExpenseDetailsViewModel: ObservableObject, TransactionFormStateProtocol, EditTransactionActions {
     @Published var expenseName: String = ""
     var transactionName: String {
         get { expenseName }
@@ -69,9 +69,7 @@ class MajorExpenseDetailsViewModel: ObservableObject, MajorExpenseFormViewModelP
         return formatter.string(from: selectedDate)
     }
     
-    func saveTransaction() async {
-        // Not applicable for update mode
-    }
+    // MARK: - Capabilities
     
     func updateTransaction() async {
         await updateMajorExpense()
@@ -80,6 +78,8 @@ class MajorExpenseDetailsViewModel: ObservableObject, MajorExpenseFormViewModelP
     func deleteTransaction() async {
         await deleteMajorExpense()
     }
+    
+    // MARK: - State lifecycle
     
     func loadInitialData() {
         loadMajorExpenseData()
@@ -105,7 +105,7 @@ class MajorExpenseDetailsViewModel: ObservableObject, MajorExpenseFormViewModelP
                       hasChanges
     }
     
-    func updateMajorExpense() async {
+    private func updateMajorExpense() async {
         guard isFormValid else {
             errorMessage = "Please fill all required fields"
             return
@@ -123,7 +123,6 @@ class MajorExpenseDetailsViewModel: ObservableObject, MajorExpenseFormViewModelP
             let dateString = formatDateForDatabase(selectedDate)
             let notesValue = notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : notes.trimmingCharacters(in: .whitespacesAndNewlines)
             
-            // Update the major expense in database
             try await supabaseManager.client
                 .from("major_expenses")
                 .update([
@@ -140,7 +139,6 @@ class MajorExpenseDetailsViewModel: ObservableObject, MajorExpenseFormViewModelP
             successMessage = "Major expense updated successfully!"
             isSuccess = true
             
-            // Notify that major expense data has changed
             NotificationCenter.default.post(name: .majorExpenseDataChanged, object: nil)
             
         } catch {
@@ -151,7 +149,7 @@ class MajorExpenseDetailsViewModel: ObservableObject, MajorExpenseFormViewModelP
         isLoading = false
     }
     
-    func deleteMajorExpense() async {
+    private func deleteMajorExpense() async {
         isLoading = true
         errorMessage = ""
         
@@ -160,7 +158,6 @@ class MajorExpenseDetailsViewModel: ObservableObject, MajorExpenseFormViewModelP
                 throw MajorExpenseDetailsError.userNotFound
             }
             
-            // Delete the major expense from database
             try await supabaseManager.client
                 .from("major_expenses")
                 .delete()
@@ -171,7 +168,6 @@ class MajorExpenseDetailsViewModel: ObservableObject, MajorExpenseFormViewModelP
             successMessage = "Major expense deleted successfully!"
             isSuccess = true
             
-            // Notify that major expense data has changed
             NotificationCenter.default.post(name: .majorExpenseDataChanged, object: nil)
             
         } catch {
@@ -216,3 +212,4 @@ enum MajorExpenseDetailsError: LocalizedError {
         }
     }
 }
+

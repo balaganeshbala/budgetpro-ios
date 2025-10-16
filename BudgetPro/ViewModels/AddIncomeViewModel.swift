@@ -14,11 +14,12 @@ extension Notification.Name {
 
 // MARK: - Add Income View Model
 @MainActor
-class AddIncomeViewModel: ObservableObject, TransactionFormViewModelProtocol {
+class AddIncomeViewModel: ObservableObject, TransactionFormStateProtocol, AddTransactionActions {
     @Published var incomeName: String = ""
     @Published var amountText: String = ""
     @Published var selectedCategory: IncomeCategory = .salary
     @Published var selectedDate: Date = Date()
+    @Published var notes: String = ""
     
     @Published var isLoading = false
     @Published var errorMessage = ""
@@ -83,20 +84,12 @@ class AddIncomeViewModel: ObservableObject, TransactionFormViewModelProtocol {
         errorMessage = ""
     }
     
-    // Protocol methods
+    // MARK: - Capability: AddTransactionActions
     func saveTransaction() async {
         await addIncome()
     }
     
-    func updateTransaction() async {
-        // Not applicable for add mode
-    }
-    
-    func deleteTransaction() async {
-        // Not applicable for add mode
-    }
-    
-    func addIncome() async {
+    private func addIncome() async {
         guard isFormValid else {
             errorMessage = "Please fill all required fields"
             return
@@ -122,7 +115,6 @@ class AddIncomeViewModel: ObservableObject, TransactionFormViewModelProtocol {
                 userId: userId.uuidString
             )
             
-            // Note: You would need to create an "income" table in your database
             try await supabaseManager.client
                 .from("incomes")
                 .insert(incomeData)
@@ -175,3 +167,4 @@ enum AddIncomeError: LocalizedError {
         }
     }
 }
+

@@ -14,7 +14,7 @@ extension Notification.Name {
 
 // MARK: - Add Major Expense View Model
 @MainActor
-class AddMajorExpenseViewModel: ObservableObject, MajorExpenseFormViewModelProtocol {
+class AddMajorExpenseViewModel: ObservableObject, TransactionFormStateProtocol, AddTransactionActions {
     @Published var expenseName: String = ""
     var transactionName: String {
         get { expenseName }
@@ -79,23 +79,16 @@ class AddMajorExpenseViewModel: ObservableObject, MajorExpenseFormViewModelProto
         validateForm()
     }
     
-    func saveTransaction() async {
-        await addMajorExpense()
-    }
-    
-    func updateTransaction() async {
-        // Not applicable for add mode
-    }
-    
-    func deleteTransaction() async {
-        // Not applicable for add mode
-    }
-    
     func clearError() {
         errorMessage = ""
     }
     
-    func addMajorExpense() async {
+    // MARK: - Capability: AddTransactionActions
+    func saveTransaction() async {
+        await addMajorExpense()
+    }
+    
+    private func addMajorExpense() async {
         guard isFormValid else {
             errorMessage = "Please fill all required fields"
             return
@@ -176,3 +169,4 @@ enum AddMajorExpenseError: LocalizedError {
         }
     }
 }
+

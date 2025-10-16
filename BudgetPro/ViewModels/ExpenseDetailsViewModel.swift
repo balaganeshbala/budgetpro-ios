@@ -9,7 +9,7 @@
 import Foundation
 
 @MainActor
-class ExpenseDetailsViewModel: ObservableObject, TransactionFormViewModelProtocol {
+class ExpenseDetailsViewModel: ObservableObject, TransactionFormStateProtocol, EditTransactionActions {
     @Published var expenseName: String = ""
     var transactionName: String {
         get { expenseName }
@@ -22,6 +22,7 @@ class ExpenseDetailsViewModel: ObservableObject, TransactionFormViewModelProtoco
             validateForm()
         }
     }
+    @Published var notes: String = ""
     
     @Published var isLoading = false
     @Published var errorMessage = ""
@@ -43,8 +44,6 @@ class ExpenseDetailsViewModel: ObservableObject, TransactionFormViewModelProtoco
         self.originalName = expense.name
         self.originalAmount = expense.amount
         self.originalDate = expense.date
-        
-        // Find the matching category using the from method
         self.originalCategory = expense.category
     }
     
@@ -68,9 +67,7 @@ class ExpenseDetailsViewModel: ObservableObject, TransactionFormViewModelProtoco
         return formatter.string(from: selectedDate)
     }
     
-    func saveTransaction() async {
-        // Not applicable for update mode
-    }
+    // MARK: - Capabilities
     
     func updateTransaction() async {
         await updateExpense()
@@ -79,6 +76,8 @@ class ExpenseDetailsViewModel: ObservableObject, TransactionFormViewModelProtoco
     func deleteTransaction() async {
         await deleteExpense()
     }
+    
+    // MARK: - State lifecycle
     
     func loadInitialData() {
         loadExpenseData()
@@ -103,7 +102,7 @@ class ExpenseDetailsViewModel: ObservableObject, TransactionFormViewModelProtoco
                       hasChanges
     }
     
-    func updateExpense() async {
+    private func updateExpense() async {
         guard isFormValid else {
             errorMessage = "Please fill all required fields"
             return
@@ -120,7 +119,6 @@ class ExpenseDetailsViewModel: ObservableObject, TransactionFormViewModelProtoco
             let amount = Double(amountText) ?? 0
             let dateString = formatDateForDatabase(selectedDate)
             
-            // Update the expense in database
             try await supabaseManager.client
                 .from("expenses")
                 .update([
@@ -136,7 +134,6 @@ class ExpenseDetailsViewModel: ObservableObject, TransactionFormViewModelProtoco
             successMessage = "Expense updated successfully!"
             isSuccess = true
             
-            // Notify that expense data has changed
             NotificationCenter.default.post(name: .expenseDataChanged, object: nil)
             
         } catch {
@@ -147,7 +144,7 @@ class ExpenseDetailsViewModel: ObservableObject, TransactionFormViewModelProtoco
         isLoading = false
     }
     
-    func deleteExpense() async {
+    private func deleteExpense() async {
         isLoading = true
         errorMessage = ""
         
@@ -156,7 +153,6 @@ class ExpenseDetailsViewModel: ObservableObject, TransactionFormViewModelProtoco
                 throw ExpenseDetailsError.userNotFound
             }
             
-            // Delete the expense from database
             try await supabaseManager.client
                 .from("expenses")
                 .delete()
@@ -167,7 +163,6 @@ class ExpenseDetailsViewModel: ObservableObject, TransactionFormViewModelProtoco
             successMessage = "Expense deleted successfully!"
             isSuccess = true
             
-            // Notify that expense data has changed
             NotificationCenter.default.post(name: .expenseDataChanged, object: nil)
             
         } catch {
@@ -212,3 +207,4 @@ enum ExpenseDetailsError: LocalizedError {
         }
     }
 }
+

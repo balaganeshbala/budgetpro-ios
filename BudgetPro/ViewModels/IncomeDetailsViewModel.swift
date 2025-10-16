@@ -8,7 +8,7 @@
 import Foundation
 
 @MainActor
-class IncomeDetailsViewModel: ObservableObject, TransactionFormViewModelProtocol {
+class IncomeDetailsViewModel: ObservableObject, TransactionFormStateProtocol, EditTransactionActions {
     @Published var incomeName: String = ""
     var transactionName: String {
         get { incomeName }
@@ -21,6 +21,7 @@ class IncomeDetailsViewModel: ObservableObject, TransactionFormViewModelProtocol
             validateForm()
         }
     }
+    @Published var notes: String = ""
     
     @Published var isLoading = false
     @Published var errorMessage = ""
@@ -65,9 +66,7 @@ class IncomeDetailsViewModel: ObservableObject, TransactionFormViewModelProtocol
         return formatter.string(from: selectedDate)
     }
     
-    func saveTransaction() async {
-        // Not applicable for update mode
-    }
+    // MARK: - Capabilities
     
     func updateTransaction() async {
         await updateIncome()
@@ -76,6 +75,8 @@ class IncomeDetailsViewModel: ObservableObject, TransactionFormViewModelProtocol
     func deleteTransaction() async {
         await deleteIncome()
     }
+    
+    // MARK: - State lifecycle
     
     func loadInitialData() {
         loadIncomeData()
@@ -100,7 +101,7 @@ class IncomeDetailsViewModel: ObservableObject, TransactionFormViewModelProtocol
                       hasChanges
     }
     
-    func updateIncome() async {
+    private func updateIncome() async {
         guard isFormValid else {
             errorMessage = "Please fill all required fields"
             return
@@ -117,7 +118,6 @@ class IncomeDetailsViewModel: ObservableObject, TransactionFormViewModelProtocol
             let amount = Double(amountText) ?? 0
             let dateString = formatDateForDatabase(selectedDate)
             
-            // Update the income in database
             try await supabaseManager.client
                 .from("incomes")
                 .update([
@@ -133,7 +133,6 @@ class IncomeDetailsViewModel: ObservableObject, TransactionFormViewModelProtocol
             successMessage = "Income updated successfully!"
             isSuccess = true
             
-            // Notify that income data has changed
             NotificationCenter.default.post(name: .incomeDataChanged, object: nil)
             
         } catch {
@@ -144,7 +143,7 @@ class IncomeDetailsViewModel: ObservableObject, TransactionFormViewModelProtocol
         isLoading = false
     }
     
-    func deleteIncome() async {
+    private func deleteIncome() async {
         isLoading = true
         errorMessage = ""
         
@@ -153,7 +152,6 @@ class IncomeDetailsViewModel: ObservableObject, TransactionFormViewModelProtocol
                 throw IncomeDetailsError.userNotFound
             }
             
-            // Delete the income from database
             try await supabaseManager.client
                 .from("incomes")
                 .delete()
@@ -164,7 +162,6 @@ class IncomeDetailsViewModel: ObservableObject, TransactionFormViewModelProtocol
             successMessage = "Income deleted successfully!"
             isSuccess = true
             
-            // Notify that income data has changed
             NotificationCenter.default.post(name: .incomeDataChanged, object: nil)
             
         } catch {
@@ -209,3 +206,4 @@ enum IncomeDetailsError: LocalizedError {
         }
     }
 }
+

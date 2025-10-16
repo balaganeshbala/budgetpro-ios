@@ -14,7 +14,7 @@ extension Notification.Name {
 
 // MARK: - Add Expense View Model
 @MainActor
-class AddExpenseViewModel: ObservableObject, TransactionFormViewModelProtocol {
+class AddExpenseViewModel: ObservableObject, TransactionFormStateProtocol, AddTransactionActions {
     @Published var expenseName: String = ""
     var transactionName: String {
         get { expenseName }
@@ -23,6 +23,7 @@ class AddExpenseViewModel: ObservableObject, TransactionFormViewModelProtocol {
     @Published var amountText: String = ""
     @Published var selectedCategory: ExpenseCategory = .food
     @Published var selectedDate: Date = Date()
+    @Published var notes: String = ""
     
     @Published var isLoading = false
     @Published var errorMessage = ""
@@ -77,23 +78,16 @@ class AddExpenseViewModel: ObservableObject, TransactionFormViewModelProtocol {
         validateForm()
     }
     
-    func saveTransaction() async {
-        await addExpense()
-    }
-    
-    func updateTransaction() async {
-        // Not applicable for add mode
-    }
-    
-    func deleteTransaction() async {
-        // Not applicable for add mode
-    }
-    
     func clearError() {
         errorMessage = ""
     }
     
-    func addExpense() async {
+    // MARK: - Capability: AddTransactionActions
+    func saveTransaction() async {
+        await addExpense()
+    }
+    
+    private func addExpense() async {
         guard isFormValid else {
             errorMessage = "Please fill all required fields"
             return
@@ -171,3 +165,4 @@ enum AddExpenseError: LocalizedError {
         }
     }
 }
+

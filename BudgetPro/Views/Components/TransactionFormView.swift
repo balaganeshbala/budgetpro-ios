@@ -96,12 +96,15 @@ enum TransactionFormMode {
     }
 }
 
-// MARK: - Transaction Form View Model Protocol
+// MARK: - Segregated Protocols (ISP/LSP)
+
+// Core state shared by all transaction forms
 @MainActor
-protocol TransactionFormViewModelProtocol: ObservableObject {
+protocol TransactionFormStateProtocol: ObservableObject {
     var transactionName: String { get set }
     var amountText: String { get set }
     var selectedDate: Date { get set }
+    var notes: String { get set }
     var isLoading: Bool { get }
     var errorMessage: String { get }
     var isSuccess: Bool { get }
@@ -113,16 +116,19 @@ protocol TransactionFormViewModelProtocol: ObservableObject {
     func loadInitialData()
     func validateForm()
     func resetForm()
-    func saveTransaction() async
-    func updateTransaction() async
-    func deleteTransaction() async
     func clearError()
 }
 
-// MARK: - Extended Protocol for Major Expenses
+// Capability protocols
 @MainActor
-protocol MajorExpenseFormViewModelProtocol: TransactionFormViewModelProtocol {
-    var notes: String { get set }
+protocol AddTransactionActions {
+    func saveTransaction() async
+}
+
+@MainActor
+protocol EditTransactionActions {
+    func updateTransaction() async
+    func deleteTransaction() async
 }
 
 // MARK: - Transaction Field Enum
@@ -133,8 +139,8 @@ enum TransactionField {
 }
 
 // MARK: - Generic Transaction Form View
-struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, CategoryType: CategoryProtocol>: View {
-    @StateObject private var viewModel: ViewModel
+struct TransactionFormView<ViewState: TransactionFormStateProtocol, CategoryType: CategoryProtocol>: View {
+    @StateObject private var viewModel: ViewState
     @State private var showingDatePicker = false
     @State private var showingCategoryPicker = false
     @State private var showingSuccessAlert = false
@@ -151,7 +157,7 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
     let onCategorySelected: (CategoryType) -> Void
     
     init(
-        viewModel: @autoclosure @escaping () -> ViewModel,
+        viewModel: @autoclosure @escaping () -> ViewState,
         transactionType: TransactionType,
         mode: TransactionFormMode,
         categories: [CategoryType],
@@ -170,7 +176,6 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
     private var navigationTitle: String {
         mode.isUpdate ? transactionType.updateNavigationTitle : transactionType.navigationTitle
     }
-    
     
     private var mainContent: some View {
         ZStack {
@@ -251,8 +256,8 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
             )
             
             // Notes field for major expenses only
-            if transactionType == .majorExpense {
-                TransactionNotesInputFieldWrapper(
+            if (transactionType == .majorExpense) {
+                TransactionNotesInputField(
                     viewModel: viewModel,
                     focusedField: $focusedField
                 )
@@ -262,18 +267,22 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
     
     @ViewBuilder
     private var actionButton: some View {
-        if mode.isUpdate {
-            TransactionUpdateButton(
-                viewModel: viewModel,
-                transactionType: transactionType,
-                showingUpdateAlert: $showingUpdateAlert
-            )
-        } else {
-            TransactionSaveButton(
-                viewModel: viewModel,
-                transactionType: transactionType,
-                dismiss: dismiss
-            )
+        switch mode {
+        case .add:
+            if let addCapable = viewModel as? any AddTransactionActions {
+                TransactionSaveButton(
+                    viewModel: AnyAddAction(addCapable, state: viewModel),
+                    transactionType: transactionType
+                )
+            }
+        case .update:
+            if let updateCapable = viewModel as? any EditTransactionActions {
+                TransactionUpdateButton(
+                    viewModel: AnyUpdateAction(updateCapable, state: viewModel),
+                    transactionType: transactionType,
+                    showingUpdateAlert: $showingUpdateAlert
+                )
+            }
         }
     }
     
@@ -295,7 +304,7 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
             }
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    if mode.isUpdate {
+                    if mode.isUpdate, let _ = viewModel as? any EditTransactionActions {
                         Button(action: {
                             showingDeleteAlert = true
                         }) {
@@ -396,9 +405,11 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
     @ViewBuilder
     private func deleteAlertActions() -> some View {
         Button("Cancel", role: .cancel) { }
-        Button("Delete", role: .destructive) {
-            Task {
-                await viewModel.deleteTransaction()
+        if let deleteCapable = viewModel as? any EditTransactionActions {
+            Button("Delete", role: .destructive) {
+                Task {
+                    await deleteCapable.deleteTransaction()
+                }
             }
         }
     }
@@ -411,9 +422,11 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
     @ViewBuilder
     private func updateAlertActions() -> some View {
         Button("Cancel", role: .cancel) { }
-        Button("Update") {
-            Task {
-                await viewModel.updateTransaction()
+        if let updateCapable = viewModel as? any EditTransactionActions {
+            Button("Update") {
+                Task {
+                    await updateCapable.updateTransaction()
+                }
             }
         }
     }
@@ -440,7 +453,6 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
            let window = windowScene.windows.first,
            let rootViewController = window.rootViewController {
             
-            // Find the navigation controller in the hierarchy
             func findNavigationController(from viewController: UIViewController) -> UINavigationController? {
                 if let navController = viewController as? UINavigationController {
                     return navController
@@ -481,9 +493,32 @@ struct TransactionFormView<ViewModel: TransactionFormViewModelProtocol, Category
     }
 }
 
+// MARK: - Type-erased wrappers for action buttons
+
+// These are simple holders; they do not need ObservableObject.
+final class AnyAddAction<State: TransactionFormStateProtocol> {
+    let action: AddTransactionActions
+    let state: State
+    
+    init(_ action: AddTransactionActions, state: State) {
+        self.action = action
+        self.state = state
+    }
+}
+
+final class AnyUpdateAction<State: TransactionFormStateProtocol> {
+    let action: EditTransactionActions
+    let state: State
+    
+    init(_ action: EditTransactionActions, state: State) {
+        self.action = action
+        self.state = state
+    }
+}
+
 // MARK: - Input Fields
 
-struct TransactionNameInputField<ViewModel: TransactionFormViewModelProtocol>: View {
+struct TransactionNameInputField<ViewModel: TransactionFormStateProtocol>: View {
     @ObservedObject var viewModel: ViewModel
     var focusedField: FocusState<TransactionField?>.Binding
     let transactionType: TransactionType
@@ -521,7 +556,7 @@ struct TransactionNameInputField<ViewModel: TransactionFormViewModelProtocol>: V
     }
 }
 
-struct TransactionAmountInputField<ViewModel: TransactionFormViewModelProtocol>: View {
+struct TransactionAmountInputField<ViewModel: TransactionFormStateProtocol>: View {
     @ObservedObject var viewModel: ViewModel
     var focusedField: FocusState<TransactionField?>.Binding
     
@@ -554,7 +589,7 @@ struct TransactionAmountInputField<ViewModel: TransactionFormViewModelProtocol>:
     }
 }
 
-struct TransactionDateSelectorField<ViewModel: TransactionFormViewModelProtocol>: View {
+struct TransactionDateSelectorField<ViewModel: TransactionFormStateProtocol>: View {
     @ObservedObject var viewModel: ViewModel
     @Binding var showingDatePicker: Bool
     
@@ -592,28 +627,8 @@ struct TransactionDateSelectorField<ViewModel: TransactionFormViewModelProtocol>
     }
 }
 
-struct TransactionNotesInputFieldWrapper<ViewModel: TransactionFormViewModelProtocol>: View {
-    @ObservedObject var viewModel: ViewModel
-    var focusedField: FocusState<TransactionField?>.Binding
-    
-    var body: some View {
-        Group {
-            if let addMajorExpenseViewModel = viewModel as? AddMajorExpenseViewModel {
-                TransactionNotesInputField(
-                    viewModel: addMajorExpenseViewModel,
-                    focusedField: focusedField
-                )
-            } else if let majorExpenseDetailsViewModel = viewModel as? MajorExpenseDetailsViewModel {
-                TransactionNotesInputField(
-                    viewModel: majorExpenseDetailsViewModel,
-                    focusedField: focusedField
-                )
-            }
-        }
-    }
-}
-
-struct TransactionNotesInputField<ViewModel: MajorExpenseFormViewModelProtocol>: View {
+// Notes field for major expenses using protocol conformance instead of concrete types
+struct TransactionNotesInputField<ViewModel: TransactionFormStateProtocol>: View {
     @ObservedObject var viewModel: ViewModel
     var focusedField: FocusState<TransactionField?>.Binding
     
@@ -682,19 +697,19 @@ struct TransactionCategorySelectorField<CategoryType>: View where CategoryType: 
 
 // MARK: - Action Buttons
 
-struct TransactionSaveButton<ViewModel: TransactionFormViewModelProtocol>: View {
-    @ObservedObject var viewModel: ViewModel
+// Save button that reads state and calls save on the action object
+struct TransactionSaveButton<State: TransactionFormStateProtocol>: View {
+    let viewModel: AnyAddAction<State>
     let transactionType: TransactionType
-    let dismiss: DismissAction
     
     var body: some View {
         Button(action: {
             Task {
-                await viewModel.saveTransaction()
+                await viewModel.action.saveTransaction()
             }
         }) {
             HStack {
-                if viewModel.isLoading {
+                if viewModel.state.isLoading {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .scaleEffect(0.8)
@@ -714,30 +729,30 @@ struct TransactionSaveButton<ViewModel: TransactionFormViewModelProtocol>: View 
             }
         }
         .tint(
-            viewModel.isFormValid && !viewModel.isLoading
+            viewModel.state.isFormValid && !viewModel.state.isLoading
                 ? Color.secondary
                 : Color.gray.opacity(0.6)
         )
-        .disabled(!viewModel.isFormValid || viewModel.isLoading)
+        .disabled(!viewModel.state.isFormValid || viewModel.state.isLoading)
         .padding(.top, 10)
     }
 }
 
-struct TransactionUpdateButton<ViewModel: TransactionFormViewModelProtocol>: View {
-    @ObservedObject var viewModel: ViewModel
+struct TransactionUpdateButton<State: TransactionFormStateProtocol>: View {
+    let viewModel: AnyUpdateAction<State>
     let transactionType: TransactionType
     @Binding var showingUpdateAlert: Bool
     
     var body: some View {
         Button(action: {
-            if viewModel.hasChanges {
+            if viewModel.state.hasChanges {
                 showingUpdateAlert = true
             } else {
-                // Handle no changes case - you might want to show an error
+                // Optional: show a feedback for no changes
             }
         }) {
             HStack {
-                if viewModel.isLoading {
+                if viewModel.state.isLoading {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .scaleEffect(0.8)
@@ -757,11 +772,11 @@ struct TransactionUpdateButton<ViewModel: TransactionFormViewModelProtocol>: Vie
             }
         }
         .tint(
-            viewModel.isFormValid && !viewModel.isLoading
+            viewModel.state.isFormValid && !viewModel.state.isLoading
                 ? Color.secondary
                 : Color.gray.opacity(0.6)
         )
-        .disabled(!viewModel.isFormValid || !viewModel.hasChanges || viewModel.isLoading)
+        .disabled(!viewModel.state.isFormValid || !viewModel.state.hasChanges || viewModel.state.isLoading)
         .padding(.top, 10)
     }
 }
@@ -795,11 +810,11 @@ struct TransactionLoadingOverlay: View {
 
 // MARK: - Preview Support
 
-// Mock View Model for Previews
-class MockTransactionFormViewModel: TransactionFormViewModelProtocol {
+class MockTransactionFormState: TransactionFormStateProtocol, AddTransactionActions, EditTransactionActions {
     @Published var transactionName: String = ""
     @Published var amountText: String = ""
     @Published var selectedDate: Date = Date()
+    @Published var notes: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String = ""
     @Published var isSuccess: Bool = false
@@ -819,35 +834,18 @@ class MockTransactionFormViewModel: TransactionFormViewModelProtocol {
         "Transaction updated successfully!"
     }
     
-    func loadInitialData() {
-        // Mock implementation
-    }
-    
-    func validateForm() {
-        // Mock implementation
-    }
-    
+    func loadInitialData() { }
+    func validateForm() { }
     func resetForm() {
         transactionName = ""
         amountText = ""
         selectedDate = Date()
     }
+    func clearError() { errorMessage = "" }
     
-    func saveTransaction() async {
-        // Mock implementation
-    }
-    
-    func updateTransaction() async {
-        // Mock implementation
-    }
-    
-    func deleteTransaction() async {
-        // Mock implementation
-    }
-    
-    func clearError() {
-        errorMessage = ""
-    }
+    func saveTransaction() async { }
+    func updateTransaction() async { }
+    func deleteTransaction() async { }
 }
 
 // MARK: - Previews
@@ -858,7 +856,7 @@ struct TransactionFormView_Previews: PreviewProvider {
             // Add Expense Form - Light Mode
             NavigationView {
                 TransactionFormView(
-                    viewModel: MockTransactionFormViewModel(),
+                    viewModel: MockTransactionFormState(),
                     transactionType: .expense,
                     mode: .add,
                     categories: ExpenseCategory.userSelectableCategories,
@@ -872,7 +870,7 @@ struct TransactionFormView_Previews: PreviewProvider {
             // Add Expense Form - Dark Mode
             NavigationView {
                 TransactionFormView(
-                    viewModel: MockTransactionFormViewModel(),
+                    viewModel: MockTransactionFormState(),
                     transactionType: .expense,
                     mode: .add,
                     categories: ExpenseCategory.userSelectableCategories,
@@ -887,7 +885,7 @@ struct TransactionFormView_Previews: PreviewProvider {
             NavigationView {
                 TransactionFormView(
                     viewModel: {
-                        let vm = MockTransactionFormViewModel()
+                        let vm = MockTransactionFormState()
                         vm.transactionName = "Salary"
                         vm.amountText = "50000"
                         return vm
@@ -906,7 +904,7 @@ struct TransactionFormView_Previews: PreviewProvider {
             NavigationView {
                 TransactionFormView(
                     viewModel: {
-                        let vm = MockTransactionFormViewModel()
+                        let vm = MockTransactionFormState()
                         vm.transactionName = "Salary"
                         vm.amountText = "50000"
                         return vm
@@ -923,3 +921,4 @@ struct TransactionFormView_Previews: PreviewProvider {
         }
     }
 }
+
