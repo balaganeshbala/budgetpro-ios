@@ -22,12 +22,6 @@ struct ContentView: View {
                 }
             }
         }
-        .onAppear {
-            // Check authentication status
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                isLoading = false
-            }
-        }
         .onChange(of: appCoordinator.isAuthenticated) { _ in
             isLoading = false
         }
