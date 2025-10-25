@@ -11,11 +11,9 @@ struct MajorExpenseDetailsView: View {
     @StateObject private var viewModel: MajorExpenseDetailsViewModel
     let majorExpense: MajorExpense
     
-    init(majorExpense: MajorExpense) {
+    init(majorExpense: MajorExpense, repoService: TransactionRepoService) {
         self.majorExpense = majorExpense
-        // For now, construct the service here. You can move this to a DI container later.
-        let service = SupabaseTransactionRepoService(transactionType: .majorExpense)
-        self._viewModel = StateObject(wrappedValue: MajorExpenseDetailsViewModel(majorExpense: majorExpense, repoService: service))
+        self._viewModel = StateObject(wrappedValue: MajorExpenseDetailsViewModel(majorExpense: majorExpense, repoService: repoService))
     }
     
     var body: some View {
@@ -44,7 +42,8 @@ struct MajorExpenseDetailsView_Previews: PreviewProvider {
                     date: Date(),
                     amount: 15000.0,
                     notes: "Engine repair and maintenance"
-                )
+                ),
+                repoService: SupabaseTransactionRepoService(transactionType: .majorExpense)
             )
         }
     }

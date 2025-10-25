@@ -164,7 +164,7 @@ class MainCoordinator: Coordinator {
             AddMajorExpenseView(repoService: majorExpenseRepo)
                 .environmentObject(self)
         case .majorExpenseDetails(let majorExpense):
-            MajorExpenseDetailsView(majorExpense: majorExpense)
+            MajorExpenseDetailsView(majorExpense: majorExpense, repoService: majorExpenseRepo)
                 .environmentObject(self)
         case .budgetCategories(let budgetCategories, let totalBudget, let totalSpent, let expenses, let month, let year):
             BudgetCategoriesView(budgetCategories: budgetCategories, totalBudget: totalBudget, totalSpent: totalSpent, expenses: expenses, month: month, year: year)

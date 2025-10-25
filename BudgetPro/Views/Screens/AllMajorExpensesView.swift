@@ -172,7 +172,7 @@ struct AllMajorExpensesView: View {
                         amountColor: .primaryText,
                         showChevron: true,
                         destination: {
-                            MajorExpenseDetailsView(majorExpense: majorExpense)
+                            MajorExpenseDetailsView(majorExpense: majorExpense, repoService: coordinator.majorExpenseRepo)
                         }
                     )
                     
