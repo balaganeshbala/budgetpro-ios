@@ -18,6 +18,9 @@ enum SortType: String, CaseIterable {
 
 // MARK: - All Expenses View
 struct AllExpensesView: View {
+    
+    @EnvironmentObject private var coordinator: MainCoordinator
+    
     @StateObject private var viewModel: AllExpensesViewModel
     
     let expenses: [Expense]
@@ -113,7 +116,7 @@ struct AllExpensesView: View {
                         amountColor: .primaryText,
                         showChevron: true,
                         destination: {
-                            ExpenseDetailsView(expense: expense)
+                            ExpenseDetailsView(expense: expense, repoService: coordinator.expenseRepo)
                         }
                     )
                     

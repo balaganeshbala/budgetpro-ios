@@ -9,7 +9,12 @@ import SwiftUI
 
 // MARK: - Add Expense View
 struct AddExpenseView: View {
-    @StateObject private var viewModel = AddExpenseViewModel()
+    
+    @StateObject private var viewModel: AddExpenseViewModel
+    
+    init(repoService: TransactionRepoService) {
+        _viewModel = StateObject(wrappedValue: AddExpenseViewModel(repoService: repoService))
+    }
     
     var body: some View {
         TransactionFormView(
@@ -27,6 +32,6 @@ struct AddExpenseView: View {
 
 struct AddExpenseView_Previews: PreviewProvider {
     static var previews: some View {
-        AddExpenseView()
+        AddExpenseView(repoService: SupabaseTransactionRepoService(transactionType: .expense))
     }
 }

@@ -11,9 +11,9 @@ struct IncomeDetailsView: View {
     @StateObject private var viewModel: IncomeDetailsViewModel
     let income: Income
     
-    init(income: Income) {
+    init(income: Income, repoSerice: TransactionRepoService) {
         self.income = income
-        self._viewModel = StateObject(wrappedValue: IncomeDetailsViewModel(income: income))
+        self._viewModel = StateObject(wrappedValue: IncomeDetailsViewModel(income: income, repoService: repoSerice))
     }
     
     var body: some View {
@@ -39,7 +39,8 @@ struct IncomeDetailsView_Previews: PreviewProvider {
                 amount: 50000.0,
                 category: .salary,
                 date: Date()
-            )
+            ),
+            repoSerice: SupabaseTransactionRepoService(transactionType: .income)
         )
     }
 }

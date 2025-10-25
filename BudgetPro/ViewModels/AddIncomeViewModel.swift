@@ -28,7 +28,7 @@ class AddIncomeViewModel: ObservableObject, TransactionFormStateProtocol, AddTra
     
     @Published var categories: [IncomeCategory] = []
     
-    private let supabaseManager = SupabaseManager.shared
+    private let repoService: TransactionRepoService
     
     // Protocol conformance
     var transactionName: String {
@@ -44,14 +44,9 @@ class AddIncomeViewModel: ObservableObject, TransactionFormStateProtocol, AddTra
         return "Income added successfully!"
     }
     
-    init() {
+    init(repoService: TransactionRepoService) {
+        self.repoService = repoService
         validateForm()
-    }
-    
-    var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM dd, yyyy"
-        return formatter.string(from: selectedDate)
     }
     
     var formattedDateForDisplay: String {
@@ -99,26 +94,16 @@ class AddIncomeViewModel: ObservableObject, TransactionFormStateProtocol, AddTra
         errorMessage = ""
         
         do {
-            // Ensure user is authenticated before proceeding
-            let session = try await supabaseManager.client.auth.session
-            let userId = session.user.id
-            
             let amount = Double(amountText) ?? 0
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "MM/dd/yyyy"
+            let trimmedName = incomeName.trimmingCharacters(in: .whitespacesAndNewlines)
             
-            let incomeData = IncomeInsertData(
-                source: incomeName.trimmingCharacters(in: .whitespacesAndNewlines),
+            try await repoService.create(
+                name: trimmedName,
                 amount: amount,
-                category: selectedCategory.rawValue,
-                date: dateFormatter.string(from: selectedDate),
-                userId: userId.uuidString
+                categoryRaw: selectedCategory.rawValue,
+                date: selectedDate,
+                notes: nil // Income does not use notes
             )
-            
-            try await supabaseManager.client
-                .from("incomes")
-                .insert(incomeData)
-                .execute()
             
             isSuccess = true
             
@@ -167,4 +152,3 @@ enum AddIncomeError: LocalizedError {
         }
     }
 }
-

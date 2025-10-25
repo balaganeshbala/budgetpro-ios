@@ -9,7 +9,11 @@ import SwiftUI
 
 // MARK: - Add Major Expense View
 struct AddMajorExpenseView: View {
-    @StateObject private var viewModel = AddMajorExpenseViewModel()
+    @StateObject private var viewModel: AddMajorExpenseViewModel
+    
+    init(repoService: TransactionRepoService) {
+        _viewModel = StateObject(wrappedValue: AddMajorExpenseViewModel(repoService: repoService))
+    }
     
     var body: some View {
         TransactionFormView(
@@ -29,7 +33,7 @@ struct AddMajorExpenseView: View {
 struct AddMajorExpenseView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            AddMajorExpenseView()
+            AddMajorExpenseView(repoService: SupabaseTransactionRepoService(transactionType: .majorExpense))
         }
     }
 }

@@ -168,7 +168,7 @@ struct HomeView: View {
                     VStack(spacing: 0) {
                         ForEach(Array(viewModel.recentExpenses.prefix(5).enumerated()), id: \.offset) { index, expense in
                             TransactionRow<Expense, ExpenseDetailsView>(title: expense.name, amount: expense.amount, dateString: expense.dateString, categoryIcon: expense.category.iconName, categoryColor: expense.category.color, iconShape: .roundedRectangle, amountColor: Color.primaryText, showChevron: true) {
-                                ExpenseDetailsView(expense: expense)
+                                ExpenseDetailsView(expense: expense, repoService: coordinator.expenseRepo)
                             }
                             
                             if index < min(viewModel.recentExpenses.count - 1, 4) {
@@ -256,7 +256,7 @@ struct HomeView: View {
                         ForEach(Array(viewModel.recentIncomes.prefix(5).enumerated()), id: \.offset) { index, income in
                             
                             TransactionRow<Income, IncomeDetailsView>(title: income.source, amount: income.amount, dateString: income.dateString, categoryIcon: income.category.iconName, categoryColor: income.category.color, iconShape: .roundedRectangle, amountColor: Color.primaryText, showChevron: true) {
-                                IncomeDetailsView(income: income)
+                                IncomeDetailsView(income: income, repoSerice: coordinator.incomeRepo)
                             }
                             
                             if index < min(viewModel.recentIncomes.count - 1, 4) {

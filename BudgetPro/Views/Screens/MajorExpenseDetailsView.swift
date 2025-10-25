@@ -13,7 +13,9 @@ struct MajorExpenseDetailsView: View {
     
     init(majorExpense: MajorExpense) {
         self.majorExpense = majorExpense
-        self._viewModel = StateObject(wrappedValue: MajorExpenseDetailsViewModel(majorExpense: majorExpense))
+        // For now, construct the service here. You can move this to a DI container later.
+        let service = SupabaseTransactionRepoService(transactionType: .majorExpense)
+        self._viewModel = StateObject(wrappedValue: MajorExpenseDetailsViewModel(majorExpense: majorExpense, repoService: service))
     }
     
     var body: some View {

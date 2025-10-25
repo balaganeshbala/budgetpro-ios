@@ -37,15 +37,17 @@ class MajorExpenseDetailsViewModel: ObservableObject, TransactionFormStateProtoc
     private var originalDate: Date
     private var originalNotes: String?
     
-    private let supabaseManager = SupabaseManager.shared
+    // Repository service abstraction
+    private let repoService: TransactionRepoService
     
-    init(majorExpense: MajorExpense) {
+    init(majorExpense: MajorExpense, repoService: TransactionRepoService) {
         self.originalMajorExpense = majorExpense
         self.originalName = majorExpense.name
         self.originalAmount = majorExpense.amount
         self.originalDate = majorExpense.date
         self.originalCategory = majorExpense.category
         self.originalNotes = majorExpense.notes
+        self.repoService = repoService
     }
     
     var hasChanges: Bool {
@@ -55,12 +57,6 @@ class MajorExpenseDetailsViewModel: ObservableObject, TransactionFormStateProtoc
                selectedCategory != originalCategory ||
                !Calendar.current.isDate(selectedDate, inSameDayAs: originalDate) ||
                notes != (originalNotes ?? "")
-    }
-    
-    var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM dd, yyyy"
-        return formatter.string(from: selectedDate)
     }
     
     var formattedDateForDisplay: String {
@@ -115,26 +111,19 @@ class MajorExpenseDetailsViewModel: ObservableObject, TransactionFormStateProtoc
         errorMessage = ""
         
         do {
-            guard let userId = supabaseManager.currentUser?.id else {
-                throw MajorExpenseDetailsError.userNotFound
-            }
-            
             let amount = Double(amountText) ?? 0
-            let dateString = formatDateForDatabase(selectedDate)
-            let notesValue = notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : notes.trimmingCharacters(in: .whitespacesAndNewlines)
+            let trimmedName = expenseName.trimmingCharacters(in: .whitespacesAndNewlines)
+            let trimmedNotes = notes.trimmingCharacters(in: .whitespacesAndNewlines)
+            let notesValue = trimmedNotes.isEmpty ? nil : trimmedNotes
             
-            try await supabaseManager.client
-                .from("major_expenses")
-                .update([
-                    "name": expenseName.trimmingCharacters(in: .whitespacesAndNewlines),
-                    "amount": amount.rawValue,
-                    "category": selectedCategory.rawValue,
-                    "date": dateString,
-                    "notes": notesValue
-                ])
-                .eq("id", value: originalMajorExpense.id)
-                .eq("user_id", value: userId)
-                .execute()
+            try await repoService.update(
+                id: originalMajorExpense.id,
+                name: trimmedName,
+                amount: amount,
+                categoryRaw: selectedCategory.rawValue,
+                date: selectedDate,
+                notes: notesValue
+            )
             
             successMessage = "Major expense updated successfully!"
             isSuccess = true
@@ -154,16 +143,7 @@ class MajorExpenseDetailsViewModel: ObservableObject, TransactionFormStateProtoc
         errorMessage = ""
         
         do {
-            guard let userId = supabaseManager.currentUser?.id else {
-                throw MajorExpenseDetailsError.userNotFound
-            }
-            
-            try await supabaseManager.client
-                .from("major_expenses")
-                .delete()
-                .eq("id", value: originalMajorExpense.id)
-                .eq("user_id", value: userId)
-                .execute()
+            try await repoService.delete(id: originalMajorExpense.id)
             
             successMessage = "Major expense deleted successfully!"
             isSuccess = true
@@ -180,14 +160,6 @@ class MajorExpenseDetailsViewModel: ObservableObject, TransactionFormStateProtoc
     
     func clearError() {
         errorMessage = ""
-    }
-    
-    // MARK: - Private Methods
-    
-    private func formatDateForDatabase(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MM/dd/yyyy"
-        return formatter.string(from: date)
     }
 }
 
@@ -212,4 +184,3 @@ enum MajorExpenseDetailsError: LocalizedError {
         }
     }
 }
-

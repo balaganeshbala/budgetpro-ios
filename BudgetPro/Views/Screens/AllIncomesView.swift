@@ -11,6 +11,8 @@ import SwiftUI
 struct AllIncomesView: View {
     @StateObject private var viewModel: AllIncomesViewModel
     
+    @EnvironmentObject private var coordinator: MainCoordinator
+    
     let incomes: [Income]
     let month: Int
     let year: Int
@@ -106,7 +108,7 @@ struct AllIncomesView: View {
                             amountColor: .primaryText,
                             showChevron: true,
                             destination: {
-                                IncomeDetailsView(income: income)
+                                IncomeDetailsView(income: income, repoSerice: coordinator.incomeRepo)
                             }
                         )
                         

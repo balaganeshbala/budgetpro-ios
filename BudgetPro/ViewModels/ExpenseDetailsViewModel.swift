@@ -37,14 +37,16 @@ class ExpenseDetailsViewModel: ObservableObject, TransactionFormStateProtocol, E
     private var originalCategory: ExpenseCategory
     private var originalDate: Date
     
-    private let supabaseManager = SupabaseManager.shared
+    // Repository service abstraction
+    private let repoService: TransactionRepoService
     
-    init(expense: Expense) {
+    init(expense: Expense, repoService: TransactionRepoService) {
         self.originalExpense = expense
         self.originalName = expense.name
         self.originalAmount = expense.amount
         self.originalDate = expense.date
         self.originalCategory = expense.category
+        self.repoService = repoService
     }
     
     var hasChanges: Bool {
@@ -112,24 +114,17 @@ class ExpenseDetailsViewModel: ObservableObject, TransactionFormStateProtocol, E
         errorMessage = ""
         
         do {
-            guard let userId = supabaseManager.currentUser?.id else {
-                throw ExpenseDetailsError.userNotFound
-            }
-            
             let amount = Double(amountText) ?? 0
-            let dateString = formatDateForDatabase(selectedDate)
+            let trimmedName = expenseName.trimmingCharacters(in: .whitespacesAndNewlines)
             
-            try await supabaseManager.client
-                .from("expenses")
-                .update([
-                    "name": expenseName.trimmingCharacters(in: .whitespacesAndNewlines),
-                    "amount": amount.rawValue,
-                    "category": selectedCategory.rawValue,
-                    "date": dateString
-                ])
-                .eq("id", value: originalExpense.id)
-                .eq("user_id", value: userId)
-                .execute()
+            try await repoService.update(
+                id: originalExpense.id,
+                name: trimmedName,
+                amount: amount,
+                categoryRaw: selectedCategory.rawValue,
+                date: selectedDate,
+                notes: nil // Expense model does not include notes
+            )
             
             successMessage = "Expense updated successfully!"
             isSuccess = true
@@ -149,16 +144,7 @@ class ExpenseDetailsViewModel: ObservableObject, TransactionFormStateProtocol, E
         errorMessage = ""
         
         do {
-            guard let userId = supabaseManager.currentUser?.id else {
-                throw ExpenseDetailsError.userNotFound
-            }
-            
-            try await supabaseManager.client
-                .from("expenses")
-                .delete()
-                .eq("id", value: originalExpense.id)
-                .eq("user_id", value: userId)
-                .execute()
+            try await repoService.delete(id: originalExpense.id)
             
             successMessage = "Expense deleted successfully!"
             isSuccess = true

@@ -36,14 +36,16 @@ class IncomeDetailsViewModel: ObservableObject, TransactionFormStateProtocol, Ed
     private var originalCategory: IncomeCategory
     private var originalDate: Date
     
-    private let supabaseManager = SupabaseManager.shared
+    // Repository service abstraction
+    private let repoService: TransactionRepoService
     
-    init(income: Income) {
+    init(income: Income, repoService: TransactionRepoService) {
         self.originalIncome = income
         self.originalSource = income.source
         self.originalAmount = income.amount
         self.originalDate = income.date
         self.originalCategory = income.category
+        self.repoService = repoService
     }
     
     var hasChanges: Bool {
@@ -111,24 +113,17 @@ class IncomeDetailsViewModel: ObservableObject, TransactionFormStateProtocol, Ed
         errorMessage = ""
         
         do {
-            guard let userId = supabaseManager.currentUser?.id else {
-                throw IncomeDetailsError.userNotFound
-            }
-            
             let amount = Double(amountText) ?? 0
-            let dateString = formatDateForDatabase(selectedDate)
+            let trimmedName = incomeName.trimmingCharacters(in: .whitespacesAndNewlines)
             
-            try await supabaseManager.client
-                .from("incomes")
-                .update([
-                    "source": incomeName.trimmingCharacters(in: .whitespacesAndNewlines),
-                    "amount": amount.rawValue,
-                    "category": selectedCategory.rawValue,
-                    "date": dateString
-                ])
-                .eq("id", value: originalIncome.id)
-                .eq("user_id", value: userId)
-                .execute()
+            try await repoService.update(
+                id: originalIncome.id,
+                name: trimmedName,
+                amount: amount,
+                categoryRaw: selectedCategory.rawValue,
+                date: selectedDate,
+                notes: nil // Income model does not include notes
+            )
             
             successMessage = "Income updated successfully!"
             isSuccess = true
@@ -148,16 +143,7 @@ class IncomeDetailsViewModel: ObservableObject, TransactionFormStateProtocol, Ed
         errorMessage = ""
         
         do {
-            guard let userId = supabaseManager.currentUser?.id else {
-                throw IncomeDetailsError.userNotFound
-            }
-            
-            try await supabaseManager.client
-                .from("incomes")
-                .delete()
-                .eq("id", value: originalIncome.id)
-                .eq("user_id", value: userId)
-                .execute()
+            try await repoService.delete(id: originalIncome.id)
             
             successMessage = "Income deleted successfully!"
             isSuccess = true

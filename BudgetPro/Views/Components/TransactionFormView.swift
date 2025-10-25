@@ -8,11 +8,8 @@
 import SwiftUI
 
 // MARK: - Transaction Type Enum
-enum TransactionType {
-    case expense
-    case income
-    case majorExpense
-    
+
+extension TransactionType {
     var title: String {
         switch self {
         case .expense: return "Expense Details"

@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct AddIncomeView: View {
-    @StateObject private var viewModel = AddIncomeViewModel()
+    @StateObject private var viewModel: AddIncomeViewModel
+    
+    init(repoService: TransactionRepoService) {
+        _viewModel = StateObject(wrappedValue: AddIncomeViewModel(repoService: repoService))
+    }
     
     var body: some View {
         TransactionFormView(
@@ -27,7 +31,7 @@ struct AddIncomeView: View {
 struct AddIncomeView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            AddIncomeView()
+            AddIncomeView(repoService: SupabaseTransactionRepoService(transactionType: .income))
         }
     }
 }

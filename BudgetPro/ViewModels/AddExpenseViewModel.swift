@@ -32,16 +32,11 @@ class AddExpenseViewModel: ObservableObject, TransactionFormStateProtocol, AddTr
     
     @Published var categories: [ExpenseCategory] = []
     
-    private let supabaseManager = SupabaseManager.shared
+    private let repoService: TransactionRepoService
     
-    init() {
+    init(repoService: TransactionRepoService) {
+        self.repoService = repoService
         validateForm()
-    }
-    
-    var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM dd, yyyy"
-        return formatter.string(from: selectedDate)
     }
     
     var formattedDateForDisplay: String {
@@ -97,26 +92,16 @@ class AddExpenseViewModel: ObservableObject, TransactionFormStateProtocol, AddTr
         errorMessage = ""
         
         do {
-            // Ensure user is authenticated before proceeding
-            let session = try await supabaseManager.client.auth.session
-            let userId = session.user.id
-            
             let amount = Double(amountText) ?? 0
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "MM/dd/yyyy"
+            let trimmedName = expenseName.trimmingCharacters(in: .whitespacesAndNewlines)
             
-            let expenseData = ExpenseInsertData(
-                name: expenseName.trimmingCharacters(in: .whitespacesAndNewlines),
+            try await repoService.create(
+                name: trimmedName,
                 amount: amount,
-                category: selectedCategory.rawValue,
-                date: dateFormatter.string(from: selectedDate),
-                userId: userId.uuidString
+                categoryRaw: selectedCategory.rawValue,
+                date: selectedDate,
+                notes: nil // Regular expense does not have notes
             )
-            
-            try await supabaseManager.client
-                .from("expenses")
-                .insert(expenseData)
-                .execute()
             
             isSuccess = true
             
@@ -165,4 +150,3 @@ enum AddExpenseError: LocalizedError {
         }
     }
 }
-

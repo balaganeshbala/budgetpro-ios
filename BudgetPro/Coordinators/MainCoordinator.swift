@@ -8,6 +8,16 @@ class MainCoordinator: Coordinator {
     @Published var selectedTab: Tab = .home
     @Published var presentedSheet: Sheet?
     
+    let expenseRepo: TransactionRepoService
+    let incomeRepo: TransactionRepoService
+    let majorExpenseRepo: TransactionRepoService
+    
+    init() {
+        self.expenseRepo = SupabaseTransactionRepoService(transactionType: .expense)
+        self.incomeRepo = SupabaseTransactionRepoService(transactionType: .income)
+        self.majorExpenseRepo = SupabaseTransactionRepoService(transactionType: .majorExpense)
+    }
+    
     enum Tab: CaseIterable {
         case home
         case profile
@@ -124,10 +134,10 @@ class MainCoordinator: Coordinator {
             ProfileView()
                 .environmentObject(self)
         case .addExpense:
-            AddExpenseView()
+            AddExpenseView(repoService: expenseRepo)
                 .environmentObject(self)
         case .addIncome:
-            AddIncomeView()
+            AddIncomeView(repoService: incomeRepo)
                 .environmentObject(self)
         case .createBudget(let month, let year):
             CreateBudgetView(month: month, year: year)
@@ -136,10 +146,10 @@ class MainCoordinator: Coordinator {
             EditBudgetView(budgetCategories: budgetCategories, month: month, year: year)
                 .environmentObject(self)
         case .expenseDetails(let expense):
-            ExpenseDetailsView(expense: expense)
+            ExpenseDetailsView(expense: expense, repoService: expenseRepo)
                 .environmentObject(self)
         case .incomeDetails(let income):
-            IncomeDetailsView(income: income)
+            IncomeDetailsView(income: income, repoSerice: incomeRepo)
                 .environmentObject(self)
         case .allExpenses(let expenses, let month, let year):
             AllExpensesView(expenses: expenses, month: month, year: year)
@@ -151,7 +161,7 @@ class MainCoordinator: Coordinator {
             AllMajorExpensesView()
                 .environmentObject(self)
         case .addMajorExpense:
-            AddMajorExpenseView()
+            AddMajorExpenseView(repoService: majorExpenseRepo)
                 .environmentObject(self)
         case .majorExpenseDetails(let majorExpense):
             MajorExpenseDetailsView(majorExpense: majorExpense)

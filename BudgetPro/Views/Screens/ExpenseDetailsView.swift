@@ -4,9 +4,9 @@ struct ExpenseDetailsView: View {
     @StateObject private var viewModel: ExpenseDetailsViewModel
     let expense: Expense
     
-    init(expense: Expense) {
+    init(expense: Expense, repoService: TransactionRepoService) {
         self.expense = expense
-        self._viewModel = StateObject(wrappedValue: ExpenseDetailsViewModel(expense: expense))
+        self._viewModel = StateObject(wrappedValue: ExpenseDetailsViewModel(expense: expense, repoService: repoService))
     }
     
     var body: some View {
@@ -34,7 +34,8 @@ struct ExpenseDetailsView_Previews: PreviewProvider {
                 amount: 250.0,
                 category: .food,
                 date: Date()
-            )
+            ),
+            repoService: SupabaseTransactionRepoService(transactionType: .expense)
         )
     }
 }
