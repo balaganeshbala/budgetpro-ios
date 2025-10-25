@@ -119,7 +119,7 @@ struct HomeView: View {
                 VStack(spacing: 16) {
                     HStack {
                         Text("Expenses")
-                            .font(.sora(18, weight: .semibold))
+                            .font(.appFont(18, weight: .semibold))
                             .foregroundColor(.primaryText)
                         Spacer()
                     }
@@ -132,11 +132,11 @@ struct HomeView: View {
                         
                         VStack(spacing: 8) {
                             Text("No expenses yet")
-                                .font(.sora(16, weight: .medium))
+                                .font(.appFont(16, weight: .medium))
                                 .foregroundColor(.secondaryText)
                             
                             Text("Add your first expense to track spending")
-                                .font(.sora(14))
+                                .font(.appFont(14))
                                 .foregroundColor(.tertiaryText)
                                 .multilineTextAlignment(.center)
                         }
@@ -145,7 +145,7 @@ struct HomeView: View {
                             coordinator.navigate(to: .addExpense)
                         }) {
                             Text("Add Expense")
-                                .font(.sora(14, weight: .medium))
+                                .font(.appFont(14, weight: .medium))
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 24)
                                 .padding(.vertical, 12)
@@ -159,7 +159,7 @@ struct HomeView: View {
                 VStack(spacing: 16) {
                     HStack {
                         Text("Expenses")
-                            .font(.sora(18, weight: .semibold))
+                            .font(.appFont(18, weight: .semibold))
                             .foregroundColor(.primaryText)
                         Spacer()
                     }
@@ -206,7 +206,7 @@ struct HomeView: View {
                 VStack(spacing: 16) {
                     HStack {
                         Text("Incomes")
-                            .font(.sora(18, weight: .semibold))
+                            .font(.appFont(18, weight: .semibold))
                             .foregroundColor(.primaryText)
                         Spacer()
                     }
@@ -219,11 +219,11 @@ struct HomeView: View {
                         
                         VStack(spacing: 8) {
                             Text("No incomes yet")
-                                .font(.sora(16, weight: .medium))
+                                .font(.appFont(16, weight: .medium))
                                 .foregroundColor(.secondaryText)
                             
                             Text("Add your income sources to track earnings")
-                                .font(.sora(14))
+                                .font(.appFont(14))
                                 .foregroundColor(.tertiaryText)
                                 .multilineTextAlignment(.center)
                         }
@@ -232,7 +232,7 @@ struct HomeView: View {
                             coordinator.navigate(to: .addIncome)
                         }) {
                             Text("Add Income")
-                                .font(.sora(14, weight: .medium))
+                                .font(.appFont(14, weight: .medium))
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 24)
                                 .padding(.vertical, 12)
@@ -246,7 +246,7 @@ struct HomeView: View {
                 VStack(spacing: 16) {
                     HStack {
                         Text("Incomes")
-                            .font(.sora(18, weight: .semibold))
+                            .font(.appFont(18, weight: .semibold))
                             .foregroundColor(.primaryText)
                         Spacer()
                     }
@@ -296,7 +296,7 @@ struct HomeView: View {
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(Color.secondary)
                 Text("Add New")
-                    .font(.sora(14, weight: .semibold))
+                    .font(.appFont(14, weight: .semibold))
                     .foregroundColor(Color.secondary)
                 Spacer()
             }
@@ -308,7 +308,7 @@ struct HomeView: View {
         HStack {
             Spacer()
             Text("More Details")
-                .font(.sora(14, weight: .semibold))
+                .font(.appFont(14, weight: .semibold))
                 .foregroundColor(Color.secondary)
             Image(systemName: "chevron.right")
                 .font(.system(size: 12))
@@ -381,7 +381,7 @@ struct HomeView: View {
                     // Header
                     HStack {
                         Text("Budget Overview")
-                            .font(.sora(18, weight: .semibold))
+                            .font(.appFont(18, weight: .semibold))
                             .foregroundColor(.primaryText)
                         
                         Spacer()
@@ -399,6 +399,7 @@ struct HomeView: View {
         } else {
             // Budget exists - use reusable component
             BudgetOverviewCard(
+                title: "Budget Overview",
                 totalBudget: viewModel.totalBudget,
                 totalSpent: viewModel.totalSpent,
                 showEditButton: !isPastMonth(month: selectedMonth, year: selectedYear),
@@ -421,7 +422,7 @@ struct HomeView: View {
                 // Header
                 HStack {
                     Text("Quick Actions")
-                        .font(.sora(18, weight: .semibold))
+                        .font(.appFont(18, weight: .semibold))
                         .foregroundColor(.primaryText)
                     
                     Spacer()
@@ -510,11 +511,11 @@ struct HomeView: View {
                 .foregroundColor(.secondaryText)
             
             Text("No Budget Data Available")
-                .font(.sora(18, weight: .semibold))
+                .font(.appFont(18, weight: .semibold))
                 .foregroundColor(.primaryText)
             
             Text("Budget data for past months cannot be created. Please select the current month to set a budget.")
-                .font(.sora(14))
+                .font(.appFont(14))
                 .foregroundColor(.secondaryText)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 8)
@@ -532,11 +533,11 @@ struct HomeView: View {
                 .foregroundColor(.secondaryText.opacity(0.6))
             
             Text("No budget created yet")
-                .font(.sora(16, weight: .medium))
+                .font(.appFont(16, weight: .medium))
                 .foregroundColor(.secondaryText)
             
             Text("Create your budget to track your expenses")
-                .font(.sora(14))
+                .font(.appFont(14))
                 .foregroundColor(.tertiaryText)
                 .multilineTextAlignment(.center)
             
@@ -544,7 +545,7 @@ struct HomeView: View {
                 coordinator.navigate(to: .createBudget(month: selectedMonth, year: selectedYear))
             }) {
                 Text("Create Budget")
-                    .font(.sora(14, weight: .medium))
+                    .font(.appFont(14, weight: .medium))
                     .foregroundColor(.white)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
@@ -576,7 +577,7 @@ struct OptionRow: View {
                     )
                 
                 Text(title)
-                    .font(.sora(16, weight: .medium))
+                    .font(.appFont(16, weight: .medium))
                     .foregroundColor(.primaryText)
                 
                 Spacer()

@@ -52,7 +52,7 @@ struct AllIncomesView: View {
         VStack(spacing: 8) {
             HStack {
                 Text("All Incomes")
-                    .font(.sora(18, weight: .semibold))
+                    .font(.appFont(18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 Spacer()
@@ -79,11 +79,11 @@ struct AllIncomesView: View {
             
             HStack {
                 Text("Sorted by: ")
-                    .font(.sora(14))
+                    .font(.appFont(14))
                     .foregroundColor(.secondaryText)
                 
                 Text(viewModel.currentSortType.rawValue)
-                    .font(.sora(14, weight: .medium))
+                    .font(.appFont(14, weight: .medium))
                     .foregroundColor(.primary)
                 
                 Spacer()
@@ -223,14 +223,14 @@ struct IncomeSummaryView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text("Total Income")
-                            .font(.sora(16, weight: .medium))
+                            .font(.appFont(16, weight: .medium))
                             .foregroundColor(.secondaryText)
                         Spacer()
                     }
                     
                     HStack {
                         Text("₹\(formatAmount(totalIncome))")
-                            .font(.sora(24, weight: .bold))
+                            .font(.appFont(24, weight: .bold))
                             .foregroundColor(.primaryText)
                         Spacer()
                     }
@@ -244,7 +244,7 @@ struct IncomeSummaryView: View {
                     // Category Breakdown Section
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Income by Category")
-                            .font(.sora(16, weight: .medium))
+                            .font(.appFont(16, weight: .medium))
                             .foregroundColor(.secondaryText)
                         
                         LazyVStack(spacing: 12) {
@@ -288,18 +288,18 @@ struct IncomeCategoryBreakdownRow: View {
                 .frame(width: 8, height: 8)
             
             Text(IncomeCategory.from(categoryName: category).displayName)
-                .font(.sora(14, weight: .medium))
+                .font(.appFont(14, weight: .medium))
                 .foregroundColor(.primaryText)
             
             Spacer()
             
             VStack(alignment: .trailing, spacing: 2) {
                 Text("₹\(formatAmount(amount))")
-                    .font(.sora(14, weight: .semibold))
+                    .font(.appFont(14, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 Text("\(String(format: "%.1f", percentage))%")
-                    .font(.sora(12))
+                    .font(.appFont(12))
                     .foregroundColor(.secondaryText)
             }
         }

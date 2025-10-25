@@ -1,7 +1,7 @@
 import SwiftUI
 
 extension Font {
-    static func sora(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
+    static func appFont(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
         switch weight {
         case .thin:
             return .custom("Sora-Thin", size: size)

@@ -61,23 +61,23 @@ struct TransactionRow<T, Destination: View>: View {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(.sora(14, weight: .medium))
+                        .font(.appFont(14, weight: .medium))
                         .foregroundColor(.primaryText)
                     
                     Text(dateString)
-                        .font(.sora(12))
+                        .font(.appFont(12))
                         .foregroundColor(.gray)
                 }
                 
                 Spacer()
                 
                 Text("₹\(formatAmount(amount))")
-                    .font(.sora(14, weight: .semibold))
+                    .font(.appFont(14, weight: .semibold))
                     .foregroundColor(amountColor)
                 
                 if showChevron {
                     Image(systemName: "chevron.right")
-                        .font(.sora(14, weight: .semibold))
+                        .font(.appFont(14, weight: .semibold))
                         .foregroundStyle(Color.gray)
                 }
             }

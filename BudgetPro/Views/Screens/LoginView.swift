@@ -15,11 +15,11 @@ struct LoginView: View {
                 // Welcome text
                 VStack(spacing: 8) {
                     Text("Welcome Back!")
-                        .font(.sora(32, weight: .bold))
+                        .font(.appFont(32, weight: .bold))
                         .foregroundColor(Color.primary)
                     
                     Text("Sign in to continue")
-                        .font(.sora(16))
+                        .font(.appFont(16))
                         .foregroundColor(.secondaryText)
                 }
                 .padding(.bottom, 60)
@@ -86,7 +86,7 @@ struct LoginView: View {
                 // Error message
                 if !viewModel.errorMessage.isEmpty {
                     Text(viewModel.errorMessage)
-                        .font(.sora(14))
+                        .font(.appFont(14))
                         .foregroundColor(.errorColor)
                         .padding(.horizontal, 20)
                         .padding(.bottom, 16)
@@ -104,7 +104,7 @@ struct LoginView: View {
                                 .scaleEffect(0.8)
                         } else {
                             Text("Sign In")
-                                .font(.sora(16, weight: .semibold))
+                                .font(.appFont(16, weight: .semibold))
                         }
                     }
                     .frame(maxWidth: .infinity)
@@ -133,7 +133,7 @@ struct LoginView: View {
                         .frame(height: 1)
                     
                     Text("OR")
-                        .font(.sora(14))
+                        .font(.appFont(14))
                         .foregroundColor(.secondaryText)
                         .padding(.horizontal, 16)
                     
@@ -147,14 +147,14 @@ struct LoginView: View {
                 // Sign up link
                 HStack {
                     Text("Don't have an account?")
-                        .font(.sora(16))
+                        .font(.appFont(16))
                         .foregroundColor(.secondaryText)
                     
                     Button(action: {
                         viewModel.showSignUp(coordinator: coordinator)
                     }) {
                         Text("Sign Up")
-                            .font(.sora(16, weight: .medium))
+                            .font(.appFont(16, weight: .medium))
                             .foregroundColor(Color.secondary)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)

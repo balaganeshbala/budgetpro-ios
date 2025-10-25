@@ -69,7 +69,7 @@ struct PieChartView: View {
         VStack(spacing: 20) {
             // Title
             Text(title)
-                .font(.sora(18, weight: .semibold))
+                .font(.appFont(18, weight: .semibold))
                 .foregroundColor(.primaryText)
             
             if total > 0 {
@@ -101,11 +101,11 @@ struct PieChartView: View {
                 // Empty state
                 VStack(spacing: 16) {
                     Image(systemName: "chart.pie")
-                        .font(.sora(40))
+                        .font(.appFont(40))
                         .foregroundColor(.secondaryText)
                     
                     Text("No data available")
-                        .font(.sora(16, weight: .medium))
+                        .font(.appFont(16, weight: .medium))
                         .foregroundColor(.secondaryText)
                 }
                 .frame(height: chartSize)
@@ -176,12 +176,12 @@ struct LegendItem: View {
             
             HStack(spacing: 10) {
                 Text(data.label)
-                    .font(.sora(13, weight: .medium))
+                    .font(.appFont(13, weight: .medium))
                     .foregroundColor(.primaryText)
                     .lineLimit(1)
                 
                 Text("(\(String(format: "%.1f", percentage))%)")
-                    .font(.sora(11))
+                    .font(.appFont(11))
                     .foregroundColor(.secondaryText)
             }
         }

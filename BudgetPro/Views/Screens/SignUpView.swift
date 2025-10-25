@@ -17,11 +17,11 @@ struct SignUpView: View {
                     // Welcome text
                     VStack(spacing: 8) {
                         Text("Create Account")
-                            .font(.sora(32, weight: .bold))
+                            .font(.appFont(32, weight: .bold))
                             .foregroundColor(.primary)
                         
                         Text("Sign up to get started")
-                            .font(.sora(16))
+                            .font(.appFont(16))
                             .foregroundColor(.gray)
                     }
                     .padding(.bottom, 40)
@@ -51,7 +51,7 @@ struct SignUpView: View {
                         
                         if !viewModel.fullNameError.isEmpty {
                             Text(viewModel.fullNameError)
-                                .font(.sora(12))
+                                .font(.appFont(12))
                                 .foregroundColor(.red)
                                 .padding(.leading, 8)
                         }
@@ -83,7 +83,7 @@ struct SignUpView: View {
                         
                         if !viewModel.emailError.isEmpty {
                             Text(viewModel.emailError)
-                                .font(.sora(12))
+                                .font(.appFont(12))
                                 .foregroundColor(.red)
                                 .padding(.leading, 8)
                         }
@@ -126,7 +126,7 @@ struct SignUpView: View {
                         
                         if !viewModel.passwordError.isEmpty {
                             Text(viewModel.passwordError)
-                                .font(.sora(12))
+                                .font(.appFont(12))
                                 .foregroundColor(.red)
                                 .padding(.leading, 8)
                         }
@@ -139,11 +139,11 @@ struct SignUpView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
                                 Text("Password Strength:")
-                                    .font(.sora(12))
+                                    .font(.appFont(12))
                                     .foregroundColor(.gray)
                                 
                                 Text(viewModel.passwordStrength.text)
-                                    .font(.sora(12, weight: .medium))
+                                    .font(.appFont(12, weight: .medium))
                                     .foregroundColor(viewModel.passwordStrength.color)
                                 
                                 Spacer()
@@ -158,7 +158,7 @@ struct SignUpView: View {
                                             .font(.system(size: 12))
                                         
                                         Text(requirement.text)
-                                            .font(.sora(12))
+                                            .font(.appFont(12))
                                             .foregroundColor(requirement.isMet ? .green : .gray)
                                         
                                         Spacer()
@@ -206,7 +206,7 @@ struct SignUpView: View {
                         
                         if !viewModel.confirmPasswordError.isEmpty {
                             Text(viewModel.confirmPasswordError)
-                                .font(.sora(12))
+                                .font(.appFont(12))
                                 .foregroundColor(.red)
                                 .padding(.leading, 8)
                         }
@@ -217,7 +217,7 @@ struct SignUpView: View {
                     // Error message
                     if !viewModel.errorMessage.isEmpty {
                         Text(viewModel.errorMessage)
-                            .font(.sora(14))
+                            .font(.appFont(14))
                             .foregroundColor(.red)
                             .padding(.horizontal, 20)
                             .padding(.bottom, 16)
@@ -227,7 +227,7 @@ struct SignUpView: View {
                     // Success message
                     if !viewModel.successMessage.isEmpty {
                         Text(viewModel.successMessage)
-                            .font(.sora(14))
+                            .font(.appFont(14))
                             .foregroundColor(.green)
                             .padding(.horizontal, 20)
                             .padding(.bottom, 16)
@@ -245,7 +245,7 @@ struct SignUpView: View {
                                     .scaleEffect(0.8)
                             } else {
                                 Text("Sign Up")
-                                    .font(.sora(16, weight: .semibold))
+                                    .font(.appFont(16, weight: .semibold))
                             }
                         }
                         .frame(maxWidth: .infinity)
@@ -270,14 +270,14 @@ struct SignUpView: View {
                     // Sign in link
                     HStack {
                         Text("Already have an account?")
-                            .font(.sora(16))
+                            .font(.appFont(16))
                             .foregroundColor(.gray)
                         
                         Button(action: {
                             presentationMode.wrappedValue.dismiss()
                         }) {
                             Text("Sign In")
-                                .font(.sora(16, weight: .medium))
+                                .font(.appFont(16, weight: .medium))
                                 .foregroundColor(Color.secondary)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)

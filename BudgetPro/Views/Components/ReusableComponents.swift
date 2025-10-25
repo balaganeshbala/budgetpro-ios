@@ -59,13 +59,13 @@ struct CustomTextField<TrailingContent: View>: View {
             HStack(spacing: 12) {
                 Image(systemName: iconName)
                     .foregroundColor(.secondaryText)
-                    .font(.sora(20))
+                    .font(.appFont(20))
                     .frame(width: 25, height: 25)
                 
                 ZStack(alignment: .leading) {
                     if isSecure {
                         SecureField(hint, text: $text)
-                            .font(.sora(16, weight: .medium))
+                            .font(.appFont(16, weight: .medium))
                             .foregroundColor(.primaryText)
                             .keyboardType(keyboardType)
                             .textInputAutocapitalization(textCapitalization)
@@ -76,7 +76,7 @@ struct CustomTextField<TrailingContent: View>: View {
                             .frame(height: 55)
                     } else {
                         TextField(hint, text: $text)
-                            .font(.sora(16, weight: .medium))
+                            .font(.appFont(16, weight: .medium))
                             .foregroundColor(.primaryText)
                             .keyboardType(keyboardType)
                             .textInputAutocapitalization(textCapitalization)

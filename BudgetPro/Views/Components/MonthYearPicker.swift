@@ -57,7 +57,7 @@ struct MonthYearPicker: View {
                     .foregroundColor(.secondary)
                 
                 Text("\(months[selectedMonth - 1]) \(String(selectedYear))")
-                    .font(.sora(16, weight: .semibold))
+                    .font(.appFont(16, weight: .semibold))
                     .foregroundColor(.secondary)
             }
             .padding(.horizontal, 12)
@@ -134,7 +134,7 @@ struct MonthYearPickerDialog: View {
             
             VStack(spacing: 20) {
                 Text("Select Month & Year")
-                    .font(.sora(_: 18, weight: .semibold))
+                    .font(.appFont(_: 18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 HStack(spacing: 0) {
@@ -142,7 +142,7 @@ struct MonthYearPickerDialog: View {
                     Picker("Month", selection: $selectedMonth) {
                         ForEach(availableMonths, id: \.self) { month in
                             Text(months[month - 1])
-                                .font(.sora(_: 16))
+                                .font(.appFont(_: 16))
                                 .tag(month)
                         }
                     }
@@ -160,7 +160,7 @@ struct MonthYearPickerDialog: View {
                     Picker("Year", selection: $selectedYear) {
                         ForEach(years, id: \.self) { year in
                             Text(String(year))
-                                .font(.sora(_: 16))
+                                .font(.appFont(_: 16))
                                 .tag(year)
                         }
                     }
@@ -174,7 +174,7 @@ struct MonthYearPickerDialog: View {
                         isPresented = false
                     }) {
                         Text("Cancel")
-                            .font(.sora(_: 16, weight: .medium))
+                            .font(.appFont(_: 16, weight: .medium))
                             .foregroundColor(.secondaryText)
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)
@@ -191,7 +191,7 @@ struct MonthYearPickerDialog: View {
                     
                     Button(action: onDone) {
                         Text("Done")
-                            .font(.sora(_: 16, weight: .semibold))
+                            .font(.appFont(_: 16, weight: .semibold))
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)
                     }

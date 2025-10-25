@@ -223,7 +223,7 @@ struct TransactionFormView<ViewState: TransactionFormStateProtocol, CategoryType
     private var titleSection: some View {
         HStack {
             Text(transactionType.title)
-                .font(.sora(20, weight: .semibold))
+                .font(.appFont(20, weight: .semibold))
                 .foregroundColor(.primaryText)
             Spacer()
         }
@@ -602,13 +602,13 @@ struct TransactionDateSelectorField<ViewModel: TransactionFormStateProtocol>: Vi
                         .font(.system(size: 20))
                     
                     Text("Date")
-                        .font(.sora(16, weight: .medium))
+                        .font(.appFont(16, weight: .medium))
                         .foregroundColor(.gray)
                     
                     Spacer()
                     
                     Text(viewModel.formattedDateForDisplay)
-                        .font(.sora(14, weight: .semibold))
+                        .font(.appFont(14, weight: .semibold))
                         .foregroundColor(.primary)
                 }
                 .padding(.horizontal, 16)
@@ -665,17 +665,17 @@ struct TransactionCategorySelectorField<CategoryType>: View where CategoryType: 
                         .font(.system(size: 20))
                     
                     Text("Category")
-                        .font(.sora(16, weight: .medium))
+                        .font(.appFont(16, weight: .medium))
                         .foregroundColor(.gray)
                     
                     Spacer()
                     
                     Text(selectedCategory.displayName.uppercased())
-                        .font(.sora(14, weight: .semibold))
+                        .font(.appFont(14, weight: .semibold))
                         .foregroundColor(.primary)
                     
                     Image(systemName: "chevron.down")
-                        .font(.sora(12))
+                        .font(.appFont(12))
                         .foregroundColor(.primary)
                 }
                 .padding(.horizontal, 16)
@@ -712,7 +712,7 @@ struct TransactionSaveButton<State: TransactionFormStateProtocol>: View {
                         .scaleEffect(0.8)
                 } else {
                     Text(transactionType.saveButtonText)
-                        .font(.sora(16, weight: .semibold))
+                        .font(.appFont(16, weight: .semibold))
                 }
             }
             .frame(maxWidth: .infinity)
@@ -755,7 +755,7 @@ struct TransactionUpdateButton<State: TransactionFormStateProtocol>: View {
                         .scaleEffect(0.8)
                 } else {
                     Text(transactionType.updateButtonText)
-                        .font(.sora(16, weight: .semibold))
+                        .font(.appFont(16, weight: .semibold))
                 }
             }
             .frame(maxWidth: .infinity)
@@ -794,7 +794,7 @@ struct TransactionLoadingOverlay: View {
                         .scaleEffect(1.5)
                     
                     Text(mode.isUpdate ? transactionType.updateLoadingText : transactionType.loadingText)
-                        .font(.sora(16, weight: .medium))
+                        .font(.appFont(16, weight: .medium))
                         .foregroundColor(.white)
                         .padding(.top, 16)
                 }

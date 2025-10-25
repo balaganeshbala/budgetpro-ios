@@ -46,15 +46,15 @@ struct SavingsAnalysisScreen: View {
             if incomes.isEmpty {
                 VStack(spacing: 16) {
                     Image(systemName: "chart.line.uptrend.xyaxis")
-                        .font(.sora(60))
+                        .font(.appFont(60))
                         .foregroundColor(.secondaryText)
                     
                     Text("No Income Data Available")
-                        .font(.sora(18, weight: .semibold))
+                        .font(.appFont(18, weight: .semibold))
                         .foregroundColor(.primaryText)
                     
                     Text("Add income entries to view your savings analysis.")
-                        .font(.sora(14))
+                        .font(.appFont(14))
                         .foregroundColor(.secondaryText)
                         .multilineTextAlignment(.center)
                 }
@@ -104,7 +104,7 @@ struct SectionHeader: View {
     var body: some View {
         HStack {
             Text(text)
-                .font(.sora(20, weight: .bold))
+                .font(.appFont(20, weight: .bold))
                 .foregroundColor(.primaryText)
             Spacer()
         }
@@ -174,7 +174,7 @@ struct CompactMetricCard: View {
         HStack(spacing: 10) {
             // Icon
             Image(systemName: icon)
-                .font(.sora(16, weight: .medium))
+                .font(.appFont(16, weight: .medium))
                 .foregroundColor(color)
                 .frame(width: 28, height: 28)
                 .background(color.opacity(0.1))
@@ -182,11 +182,11 @@ struct CompactMetricCard: View {
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.sora(11, weight: .medium))
+                    .font(.appFont(11, weight: .medium))
                     .foregroundColor(.secondaryText)
                 
                 Text(value)
-                    .font(.sora(14, weight: .bold))
+                    .font(.appFont(14, weight: .bold))
                     .foregroundColor(color)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
@@ -215,7 +215,7 @@ struct ModernSummaryItem: View {
         VStack(spacing: 12) {
             // Icon with background
             Image(systemName: icon)
-                .font(.sora(20, weight: .medium))
+                .font(.appFont(20, weight: .medium))
                 .foregroundColor(color)
                 .frame(width: 40, height: 40)
                 .background(color.opacity(0.1))
@@ -223,11 +223,11 @@ struct ModernSummaryItem: View {
             
             VStack(spacing: 4) {
                 Text(title)
-                    .font(.sora(12, weight: .medium))
+                    .font(.appFont(12, weight: .medium))
                     .foregroundColor(.primaryText)
                 
                 Text(value)
-                    .font(.sora(16, weight: .bold))
+                    .font(.appFont(16, weight: .bold))
                     .foregroundColor(color)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
@@ -261,16 +261,16 @@ struct SummaryItem: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 6) {
                 Image(systemName: icon)
-                    .font(.sora(14))
+                    .font(.appFont(14))
                     .foregroundColor(color)
                 
                 Text(title)
-                    .font(.sora(14))
+                    .font(.appFont(14))
                     .foregroundColor(.secondaryText)
             }
             
             Text(prefix + value)
-                .font(.sora(16, weight: .bold))
+                .font(.appFont(16, weight: .bold))
                 .foregroundColor(color)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -286,12 +286,12 @@ struct SavingsRateIndicator: View {
             VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Savings Rate")
-                        .font(.sora(16, weight: .semibold))
+                        .font(.appFont(16, weight: .semibold))
                         .foregroundColor(.primaryText)
                     
                     Text("Financial experts recommend saving at least 20% of your income.")
                         .lineSpacing(4)
-                        .font(.sora(14))
+                        .font(.appFont(14))
                         .foregroundColor(.secondaryText)
                 }
                 
@@ -299,7 +299,7 @@ struct SavingsRateIndicator: View {
                     HStack {
                         Spacer()
                         Text(String(format: "%.1f%%", savingsRate))
-                            .font(.sora(13, weight: .bold))
+                            .font(.appFont(13, weight: .bold))
                             .foregroundColor(CommonHelpers.getSavingsRateColor(savingsRate))
                     }
                     
@@ -336,19 +336,19 @@ struct SavingsRateIndicator: View {
                     // Labels below progress bar
                     HStack {
                         Text("0%")
-                            .font(.sora(12))
+                            .font(.appFont(12))
                             .foregroundColor(.secondaryText)
                         
                         Spacer()
                         
                         Text("20%")
-                            .font(.sora(12))
+                            .font(.appFont(12))
                             .foregroundColor(.secondaryText)
                         
                         Spacer()
                         
                         Text("40%")
-                            .font(.sora(12))
+                            .font(.appFont(12))
                             .foregroundColor(.secondaryText)
                     }
                     .padding(.top, 8)
@@ -357,10 +357,10 @@ struct SavingsRateIndicator: View {
                     HStack(spacing: 12) {
                         Image(systemName: CommonHelpers.getSavingsRateIcon(savingsRate))
                             .foregroundColor(CommonHelpers.getSavingsRateColor(savingsRate))
-                            .font(.sora(16))
+                            .font(.appFont(16))
                         
                         Text(CommonHelpers.getSavingsRateMessage(savingsRate))
-                            .font(.sora(14))
+                            .font(.appFont(14))
                             .foregroundColor(CommonHelpers.getSavingsRateColor(savingsRate))
                             .lineSpacing(4)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -401,7 +401,7 @@ struct SavingsRecommendations: View {
         CardView {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Recommendations")
-                    .font(.sora(16, weight: .semibold))
+                    .font(.appFont(16, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 VStack(spacing: 16) {
@@ -438,7 +438,7 @@ struct RecommendationItem: View {
         HStack(alignment: .top, spacing: 12) {
             VStack {
                 Image(systemName: icon)
-                    .font(.sora(20))
+                    .font(.appFont(20))
                     .foregroundColor(color)
                     .frame(width: 36, height: 36)
                     .background(color.opacity(0.1))
@@ -448,11 +448,11 @@ struct RecommendationItem: View {
             
             VStack(alignment: .leading, spacing: 8) {
                 Text(title)
-                    .font(.sora(14, weight: .semibold))
+                    .font(.appFont(14, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 Text(description)
-                    .font(.sora(14))
+                    .font(.appFont(14))
                     .foregroundColor(.secondaryText)
                     .fixedSize(horizontal: false, vertical: true)
                     .lineSpacing(4)

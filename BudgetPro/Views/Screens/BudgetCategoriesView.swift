@@ -75,7 +75,7 @@ struct BudgetCategoriesView: View {
         VStack(spacing: 16) {
             HStack {
                 Text("By Category")
-                    .font(.sora(18, weight: .semibold))
+                    .font(.appFont(18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 Spacer()
@@ -171,7 +171,7 @@ struct BudgetCategoryCard: View {
     
     private var statusInfo: (text: String, color: Color) {
         if category.budget == 0 && category.spent > 0 {
-            return ("Unplanned", .adaptiveSecondary)
+            return ("Unplanned", .secondary)
         } else if category.budget == 0 {
             return ("No Budget", .secondaryText)
         } else if percentageSpent > 1 {
@@ -199,11 +199,11 @@ struct BudgetCategoryCard: View {
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text(category.name)
-                                .font(.sora(16, weight: .medium))
+                                .font(.appFont(16, weight: .medium))
                                 .foregroundColor(.primaryText)
                             
                             Text("\(String(format: percentOfTotal < 1 && percentOfTotal > 0 ? "%.2f" : "%.0f", percentOfTotal))% of total budget")
-                                .font(.sora(12))
+                                .font(.appFont(12))
                                 .foregroundColor(.secondaryText)
                         }
                     }
@@ -212,7 +212,7 @@ struct BudgetCategoryCard: View {
                     
                     // Status badge
                     Text(statusInfo.text)
-                        .font(.sora(11, weight: .medium))
+                        .font(.appFont(11, weight: .medium))
                         .foregroundColor(statusInfo.color)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
@@ -224,11 +224,11 @@ struct BudgetCategoryCard: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Budget")
-                            .font(.sora(12))
+                            .font(.appFont(12))
                             .foregroundColor(.secondaryText)
                         
                         Text("₹\(Int(category.budget))")
-                            .font(.sora(16, weight: .semibold))
+                            .font(.appFont(16, weight: .semibold))
                             .foregroundColor(.primaryText)
                     }
                     
@@ -236,11 +236,11 @@ struct BudgetCategoryCard: View {
                     
                     VStack(alignment: .trailing, spacing: 4) {
                         Text("Remaining")
-                            .font(.sora(12))
+                            .font(.appFont(12))
                             .foregroundColor(.secondaryText)
                         
                         Text("₹\(Int(category.budget - category.spent))")
-                            .font(.sora(16, weight: .semibold))
+                            .font(.appFont(16, weight: .semibold))
                             .foregroundColor(percentageSpent > 1 ? .overBudgetColor : .primaryText)
                     }
                 }

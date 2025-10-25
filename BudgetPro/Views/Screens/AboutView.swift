@@ -40,7 +40,7 @@ struct AboutView: View {
                 trailing: Button("Done") {
                     presentationMode.wrappedValue.dismiss()
                 }
-                .font(.sora(16, weight: .medium))
+                .font(.appFont(16, weight: .medium))
                 .foregroundColor(.secondary)
             )
         }
@@ -60,15 +60,15 @@ struct AboutView: View {
                 
                 // App Name
                 Text("Budget")
-                    .font(.sora(24, weight: .bold))
+                    .font(.appFont(24, weight: .bold))
                     .foregroundColor(.primary)
                 +
                 Text(" Pro")
-                    .font(.sora(24, weight: .bold))
+                    .font(.appFont(24, weight: .bold))
                     .foregroundColor(.secondary)
                 
                 Text("Version \(appVersion)")
-                    .font(.sora(14))
+                    .font(.appFont(14))
                     .foregroundColor(.secondaryText)
             }
             .frame(maxWidth: .infinity)
@@ -80,16 +80,16 @@ struct AboutView: View {
         CardView(padding: EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20)) {
             VStack(alignment: .leading, spacing: 16) {
                 Text("About")
-                    .font(.sora(18, weight: .semibold))
+                    .font(.appFont(18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 Text("Budget Pro is a comprehensive personal finance application designed to help you manage budgets, track expenses & incomes, and achieve your financial goals.")
-                    .font(.sora(14))
+                    .font(.appFont(14))
                     .foregroundColor(.secondaryText)
                     .lineSpacing(4)
                 
                 Text("Take control of your finances with intuitive tools for budget planning, expense tracking, and financial insights.")
-                    .font(.sora(14))
+                    .font(.appFont(14))
                     .foregroundColor(.secondaryText)
                     .lineSpacing(4)
             }
@@ -102,7 +102,7 @@ struct AboutView: View {
         CardView(padding: EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20)) {
             VStack(alignment: .leading, spacing: 20) {
                 Text("Key Features")
-                    .font(.sora(18, weight: .semibold))
+                    .font(.appFont(18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 VStack(spacing: 20) {
@@ -151,15 +151,15 @@ struct AboutView: View {
         CardView(padding: EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20)) {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Developer")
-                    .font(.sora(18, weight: .semibold))
+                    .font(.appFont(18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 Text("Built with ❤️ using SwiftUI and Supabase")
-                    .font(.sora(14))
+                    .font(.appFont(14))
                     .foregroundColor(.secondaryText)
                 
                 Text("© 2025 BudgetPro. All rights reserved.")
-                    .font(.sora(12))
+                    .font(.appFont(12))
                     .foregroundColor(.secondaryText)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -193,12 +193,12 @@ struct FeatureRow: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.sora(14, weight: .medium))
+                    .font(.appFont(14, weight: .medium))
                     .foregroundColor(.primaryText)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 Text(description)
-                    .font(.sora(12))
+                    .font(.appFont(12))
                     .foregroundColor(.secondaryText)
                     .lineSpacing(4)
                     .frame(maxWidth: .infinity, alignment: .leading)

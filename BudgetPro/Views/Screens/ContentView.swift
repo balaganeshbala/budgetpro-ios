@@ -39,12 +39,12 @@ struct SplashView: View {
             VStack(spacing: 30) {
                 
                 ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: Color.adaptiveSecondary))
+                    .progressViewStyle(CircularProgressViewStyle(tint: Color.secondary))
                     .scaleEffect(2.0)
                     .padding(.top, 20)
                 
                 Text("Loading...")
-                    .font(.sora(16, weight: .medium))
+                    .font(.appFont(16, weight: .medium))
                     .foregroundStyle(Color.secondaryText)
             }
         }

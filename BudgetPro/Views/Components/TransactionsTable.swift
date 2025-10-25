@@ -45,7 +45,7 @@ struct TransactionsTable: View {
                 .foregroundColor(.secondaryText)
             
             Text("No transactions yet")
-                .font(.sora(16, weight: .medium))
+                .font(.appFont(16, weight: .medium))
                 .foregroundColor(.secondaryText)
         }
         .frame(maxWidth: .infinity)
@@ -133,13 +133,13 @@ struct TransactionsTable: View {
             }
             
             Text(title)
-                .font(.sora(12, weight: isActive ? .bold : .semibold))
-                .foregroundColor(isActive ? Color.adaptiveSecondary : .secondaryText)
+                .font(.appFont(12, weight: isActive ? .bold : .semibold))
+                .foregroundColor(isActive ? Color.secondary : .secondaryText)
             
             if let _ = onTap, isActive {
                 Image(systemName: isAscending ? "arrow.up" : "arrow.down")
                     .font(.system(size: 14))
-                    .foregroundColor(Color.adaptiveSecondary)
+                    .foregroundColor(Color.secondary)
             }
             
             if alignment == .leading {
@@ -169,13 +169,13 @@ struct TransactionsTable: View {
             HStack {
                 // Date column
                 Text(formatDate(transaction.date))
-                    .font(.sora(13, weight: .regular))
+                    .font(.appFont(13, weight: .regular))
                     .foregroundColor(.primaryText)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 // Description column
                 Text(transaction.name)
-                    .font(.sora(13, weight: .regular))
+                    .font(.appFont(13, weight: .regular))
                     .foregroundColor(.primaryText)
                     .lineLimit(1)
                     .truncationMode(.tail)
@@ -183,7 +183,7 @@ struct TransactionsTable: View {
                 
                 // Amount column
                 Text(formatRupees(transaction.amount))
-                    .font(.sora(13, weight: .regular))
+                    .font(.appFont(13, weight: .regular))
                     .foregroundColor(.primaryText)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }

@@ -66,8 +66,8 @@ struct CreateBudgetView: View {
                         await viewModel.saveBudget()
                     }
                 }
-                .font(.sora(16, weight: .medium))
-                .foregroundColor(viewModel.canSave ? .adaptiveSecondary : .secondaryText)
+                .font(.appFont(16, weight: .medium))
+                .foregroundColor(viewModel.canSave ? .secondary : .secondaryText)
                 .disabled(!viewModel.canSave || viewModel.isLoading)
             }
         }
@@ -99,11 +99,11 @@ struct CreateBudgetView: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Set your budget for \(monthName) \(String(year))")
-                .font(.sora(16))
+                .font(.appFont(16))
                 .foregroundColor(.secondaryText)
             
             Text("Enter budget amounts for each category to track your spending throughout the month.")
-                .font(.sora(14))
+                .font(.appFont(14))
                 .foregroundColor(.secondaryText.opacity(0.8))
                 .lineSpacing(2)
         }
@@ -119,13 +119,13 @@ struct CreateBudgetView: View {
         VStack(spacing: 16) {
             HStack {
                 Text("Total Budget")
-                    .font(.sora(18, weight: .semibold))
+                    .font(.appFont(18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 Spacer()
                 
                 Text("₹\(Int(viewModel.totalBudget))")
-                    .font(.sora(24, weight: .bold))
+                    .font(.appFont(24, weight: .bold))
                     .foregroundColor(.primary)
             }
         }
@@ -140,7 +140,7 @@ struct CreateBudgetView: View {
         VStack(spacing: 16) {
             HStack {
                 Text("Budget Categories")
-                    .font(.sora(18, weight: .semibold))
+                    .font(.appFont(18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 Spacer()
@@ -198,16 +198,16 @@ struct BudgetCategoryInput: View {
             // Category Info
             VStack(alignment: .leading, spacing: 4) {
                 Text(category.displayName)
-                    .font(.sora(16, weight: .medium))
+                    .font(.appFont(16, weight: .medium))
                     .foregroundColor(.primaryText)
                 
                 if amount > 0 {
                     Text("₹\(Int(amount))")
-                        .font(.sora(12))
+                        .font(.appFont(12))
                         .foregroundColor(.secondaryText)
                 } else {
                     Text("No budget set")
-                        .font(.sora(12))
+                        .font(.appFont(12))
                         .foregroundColor(.secondaryText.opacity(0.6))
                 }
             }
@@ -218,11 +218,11 @@ struct BudgetCategoryInput: View {
             VStack(spacing: 8) {
                 HStack {
                     Text("₹")
-                        .font(.sora(16))
+                        .font(.appFont(16))
                         .foregroundColor(.secondaryText)
                     
                     TextField("0", text: $textAmount)
-                        .font(.sora(16, weight: .medium))
+                        .font(.appFont(16, weight: .medium))
                         .foregroundColor(.primaryText)
                         .keyboardType(.decimalPad)
                         .focused($isFocused)
@@ -233,7 +233,7 @@ struct BudgetCategoryInput: View {
                 .padding(.vertical, 10)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(isFocused ? Color.adaptiveSecondary : Color.inputBorder, lineWidth: isFocused ? 2 : 1)
+                        .stroke(isFocused ? Color.secondary : Color.inputBorder, lineWidth: isFocused ? 2 : 1)
                         .background(Color.inputBackground)
                 )
                 .cornerRadius(8)

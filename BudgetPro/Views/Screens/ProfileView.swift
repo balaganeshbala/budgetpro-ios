@@ -69,12 +69,12 @@ struct ProfileView: View {
                 VStack(spacing: 8) {
                     // User Name
                     Text(viewModel.userName)
-                        .font(.sora(20, weight: .semibold))
+                        .font(.appFont(20, weight: .semibold))
                         .foregroundColor(.primaryText)
                     
                     // User Email
                     Text(viewModel.userEmail)
-                        .font(.sora(14))
+                        .font(.appFont(14))
                         .foregroundColor(.secondaryText)
                 }
             }
@@ -148,7 +148,7 @@ struct SettingsRow: View {
                 
                 // Title
                 Text(title)
-                    .font(.sora(16))
+                    .font(.appFont(16))
                     .foregroundColor(.primaryText)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 

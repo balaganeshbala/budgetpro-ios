@@ -87,7 +87,7 @@ struct EditBudgetView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Total Budget")
-                        .font(.sora(14))
+                        .font(.appFont(14))
                         .foregroundColor(.secondaryText)
                     
                     if viewModel.hasChanges {
@@ -95,30 +95,30 @@ struct EditBudgetView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 8) {
                                 Text("₹\(Int(viewModel.totalBudget))")
-                                    .font(.sora(24, weight: .bold))
+                                    .font(.appFont(24, weight: .bold))
                                     .foregroundColor(.primary)
                                 
                                 Text("(Updated)")
-                                    .font(.sora(12, weight: .medium))
+                                    .font(.appFont(12, weight: .medium))
                                     .foregroundColor(.orange)
                             }
                             
                             HStack(spacing: 4) {
                                 Text("was ₹\(Int(originalTotalBudget))")
-                                    .font(.sora(14))
+                                    .font(.appFont(14))
                                     .foregroundColor(.secondaryText)
                                     .strikethrough()
                                 
                                 let difference = viewModel.totalBudget - originalTotalBudget
                                 Text(difference >= 0 ? "+₹\(Int(abs(difference)))" : "-₹\(Int(abs(difference)))")
-                                    .font(.sora(12, weight: .semibold))
+                                    .font(.appFont(12, weight: .semibold))
                                     .foregroundColor(difference >= 0 ? .green : .red)
                             }
                         }
                     } else {
                         // Show normal budget when no changes
                         Text("₹\(Int(viewModel.totalBudget))")
-                            .font(.sora(24, weight: .bold))
+                            .font(.appFont(24, weight: .bold))
                             .foregroundColor(.primary)
                     }
                 }
@@ -143,7 +143,7 @@ struct EditBudgetView: View {
         VStack(spacing: 16) {
             HStack {
                 Text("Budget Categories")
-                    .font(.sora(18, weight: .semibold))
+                    .font(.appFont(18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 Spacer()
@@ -184,10 +184,10 @@ struct EditBudgetView: View {
                     .scaleEffect(0.8)
             } else {
                 Text("Update")
-                    .font(.sora(15, weight: .semibold))
+                    .font(.appFont(15, weight: .semibold))
                     .foregroundColor(
                         viewModel.canUpdate && viewModel.hasChanges && !viewModel.isLoading
-                            ? Color.adaptiveSecondary
+                            ? Color.secondary
                             : .secondaryText
                     )
             }
@@ -237,7 +237,7 @@ struct EditBudgetCategoryInput: View {
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text(budgetCategory.category.displayName)
-                        .font(.sora(16, weight: .medium))
+                        .font(.appFont(16, weight: .medium))
                         .foregroundColor(.primaryText)
                     
                     if hasChanged {
@@ -249,12 +249,12 @@ struct EditBudgetCategoryInput: View {
                 
                 HStack(spacing: 8) {
                     Text("Current: ₹\(Int(budgetCategory.amount))")
-                        .font(.sora(12))
+                        .font(.appFont(12))
                         .foregroundColor(hasChanged ? .orange : .secondaryText)
                     
                     if hasChanged && originalAmount != budgetCategory.amount {
                         Text("(was ₹\(Int(originalAmount)))")
-                            .font(.sora(11))
+                            .font(.appFont(11))
                             .foregroundColor(.secondaryText.opacity(0.6))
                     }
                 }
@@ -266,11 +266,11 @@ struct EditBudgetCategoryInput: View {
             VStack(spacing: 8) {
                 HStack {
                     Text("₹")
-                        .font(.sora(16))
+                        .font(.appFont(16))
                         .foregroundColor(.secondaryText)
                     
                     TextField("0", text: $textAmount)
-                        .font(.sora(16, weight: .medium))
+                        .font(.appFont(16, weight: .medium))
                         .foregroundColor(.primaryText)
                         .keyboardType(.decimalPad)
                         .focused($isFocused)

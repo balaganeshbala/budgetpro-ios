@@ -10,7 +10,7 @@ import SwiftUI
 // MARK: - Budget Overview Card Component
 
 struct BudgetOverviewCard: View {
-    let title: String
+    let title: String?
     let totalBudget: Double
     let totalSpent: Double
     let showEditButton: Bool
@@ -19,7 +19,7 @@ struct BudgetOverviewCard: View {
     let onDetailsTapped: (() -> Void)?
     
     init(
-        title: String = "Budget Overview",
+        title: String? = nil,
         totalBudget: Double,
         totalSpent: Double,
         showEditButton: Bool = false,
@@ -51,33 +51,37 @@ struct BudgetOverviewCard: View {
     var body: some View {
         VStack(spacing: 16) {
             // Header
-            HStack {
-                Text(title)
-                    .font(.sora(18, weight: .semibold))
-                    .foregroundColor(.primaryText)
-                
-                Spacer()
-                
-                if showEditButton {
-                    Button(action: {
-                        onEditTapped?()
-                    }) {
-                        Label {
-                            Text("Edit")
-                                .font(.sora(14, weight: .semibold))
-                        } icon: {
-                            if #available(iOS 16.0, *) {
-                                Image(systemName: "pencil")
-                                    .fontWeight(.bold)
-                            } else {
-                                Image(systemName: "pencil")
+            if title != nil || showEditButton {
+                HStack {
+                    if let title = title {
+                        Text(title)
+                            .font(.appFont(18, weight: .semibold))
+                            .foregroundColor(.primaryText)
+                    }
+                    
+                    Spacer()
+                    
+                    if showEditButton {
+                        Button(action: {
+                            onEditTapped?()
+                        }) {
+                            Label {
+                                Text("Edit")
+                                    .font(.appFont(14, weight: .semibold))
+                            } icon: {
+                                if #available(iOS 16.0, *) {
+                                    Image(systemName: "pencil")
+                                        .fontWeight(.bold)
+                                } else {
+                                    Image(systemName: "pencil")
+                                }
                             }
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.secondary.opacity(0.1))
+                            .cornerRadius(16)
                         }
-                        .foregroundColor(.adaptiveSecondary)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(Color.adaptiveSecondary.opacity(0.1))
-                        .cornerRadius(16)
                     }
                 }
             }
@@ -87,20 +91,20 @@ struct BudgetOverviewCard: View {
                 // Remaining Amount - Highlighted at the top
                 VStack(alignment: .center, spacing: 8) {
                     Text(isOverBudget ? "Overspent": "Remaining Budget")
-                        .font(.sora(18, weight: .medium))
+                        .font(.appFont(18, weight: .medium))
                         .foregroundColor(.secondaryText)
                     
                     Text("₹\(CommonHelpers.formatAmount(abs(remainingBudget)))")
-                        .font(.sora(30, weight: .bold))
-                        .foregroundColor(isOverBudget ? .overBudgetColor : .adaptivePrimary)
+                        .font(.appFont(30, weight: .bold))
+                        .foregroundColor(isOverBudget ? .overBudgetColor : .primary)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(20)
                 .background(
                     LinearGradient(
                         gradient: Gradient(colors: [
-                            isOverBudget ? Color.overBudgetColor.opacity(0.05) : Color.adaptivePrimary.opacity(0.05),
-                            isOverBudget ? Color.overBudgetColor.opacity(0.1) : Color.adaptivePrimary.opacity(0.1)
+                            isOverBudget ? Color.overBudgetColor.opacity(0.05) : Color.primary.opacity(0.05),
+                            isOverBudget ? Color.overBudgetColor.opacity(0.1) : Color.primary.opacity(0.1)
                         ]),
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -109,7 +113,7 @@ struct BudgetOverviewCard: View {
                 .cornerRadius(16)
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(isOverBudget ? Color.overBudgetColor.opacity(0.2) : Color.adaptivePrimary.opacity(0.2), lineWidth: 1)
+                        .stroke(isOverBudget ? Color.overBudgetColor.opacity(0.2) : Color.primary.opacity(0.2), lineWidth: 1)
                 )
                 
                 // Budget Summary Row
@@ -117,11 +121,11 @@ struct BudgetOverviewCard: View {
                     // Total Budget
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Total Budget")
-                            .font(.sora(14))
+                            .font(.appFont(14))
                             .foregroundColor(.secondaryText)
                         
                         Text("₹\(CommonHelpers.formatAmount(totalBudget))")
-                            .font(.sora(20, weight: .semibold))
+                            .font(.appFont(20, weight: .semibold))
                             .foregroundColor(.primaryText)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -132,11 +136,11 @@ struct BudgetOverviewCard: View {
                     // Total Spent
                     VStack(alignment: .trailing, spacing: 4) {
                         Text("Total Spent")
-                            .font(.sora(14))
+                            .font(.appFont(14))
                             .foregroundColor(.secondaryText)
                         
                         Text("₹\(CommonHelpers.formatAmount(totalSpent))")
-                            .font(.sora(20, weight: .semibold))
+                            .font(.appFont(20, weight: .semibold))
                             .foregroundColor(isOverBudget ? .overBudgetColor : .warningColor)
                     }
                     .frame(maxWidth: .infinity, alignment: .trailing)
@@ -147,13 +151,13 @@ struct BudgetOverviewCard: View {
                     VStack(spacing: 8) {
                         HStack {
                             Text("Budget Usage")
-                                .font(.sora(14, weight: .medium))
+                                .font(.appFont(14, weight: .medium))
                                 .foregroundColor(.secondaryText)
                             
                             Spacer()
                             
                             Text("\(usagePercentage)%")
-                                .font(.sora(16, weight: .bold))
+                                .font(.appFont(16, weight: .bold))
                                 .foregroundColor(isOverBudget ? .overBudgetColor : .warningColor)
                         }
                         
@@ -191,14 +195,14 @@ struct BudgetOverviewCard: View {
                     }) {
                         HStack {
                             Text("View Budget Details")
-                                .font(.sora(14, weight: .semibold))
-                                .foregroundColor(.adaptiveSecondary)
+                                .font(.appFont(14, weight: .semibold))
+                                .foregroundColor(.secondary)
                             
                             Spacer()
                             
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.adaptiveSecondary)
+                                .foregroundColor(.secondary)
                         }
                         .padding(.vertical, 16)
                         .padding(.horizontal, 4)
@@ -210,5 +214,22 @@ struct BudgetOverviewCard: View {
         .background(Color.cardBackground)
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
+    }
+}
+
+#Preview {
+    VStack {
+        BudgetOverviewCard(totalBudget: 150000, totalSpent: 65000, showEditButton: false, showDetailsButton: false) {
+            
+        } onDetailsTapped: {
+            
+        }
+        
+        BudgetOverviewCard(title: "Overview", totalBudget: 120000, totalSpent: 85000, showEditButton: true, showDetailsButton: true) {
+            
+        } onDetailsTapped: {
+            
+        }
+        
     }
 }

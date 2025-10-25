@@ -52,19 +52,19 @@ struct DropdownSelectorField<T: Hashable>: View {
                         .font(.system(size: 20))
                     
                     Text(label)
-                        .font(.sora(16, weight: .medium))
+                        .font(.appFont(16, weight: .medium))
                         .foregroundColor(.secondaryText)
                     
                     Spacer()
                     
                     if let selectedItem = selectedItem {
                         Text(itemDisplayName(selectedItem).uppercased())
-                            .font(.sora(14, weight: .semibold))
+                            .font(.appFont(14, weight: .semibold))
                             .foregroundColor(Color.primary)
                     }
                     
                     Image(systemName: "chevron.down")
-                        .font(.sora(12))
+                        .font(.appFont(12))
                         .foregroundColor(Color.primary)
                 }
                 .padding(.horizontal, 16)

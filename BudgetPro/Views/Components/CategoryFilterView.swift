@@ -73,22 +73,22 @@ struct CategoryFilterView: View {
             HStack {
                 Button(action: selectAllCategories) {
                     Text("Select All")
-                        .font(.sora(14, weight: .medium))
-                        .foregroundColor(.adaptiveSecondary)
+                        .font(.appFont(14, weight: .medium))
+                        .foregroundColor(.secondary)
                 }
                 
                 Spacer()
                 
                 Text("\(tempSelectedCategories.count) of \(availableCategories.count) selected")
-                    .font(.sora(14))
+                    .font(.appFont(14))
                     .foregroundColor(.secondaryText)
                 
                 Spacer()
                 
                 Button(action: deselectAllCategories) {
                     Text("Clear All")
-                        .font(.sora(14, weight: .medium))
-                        .foregroundColor(.adaptiveSecondary)
+                        .font(.appFont(14, weight: .medium))
+                        .foregroundColor(.secondary)
                 }
             }
             .padding(.horizontal, 16)
@@ -136,7 +136,7 @@ struct CategoryFilterRow: View {
             
             // Category name
             Text(categoryName)
-                .font(.sora(16, weight: .medium))
+                .font(.appFont(16, weight: .medium))
                 .foregroundColor(.primaryText)
                 .frame(maxWidth: .infinity, alignment: .leading)
             

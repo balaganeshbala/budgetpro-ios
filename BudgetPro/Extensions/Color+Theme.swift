@@ -32,10 +32,6 @@ extension Color {
     static let tertiarySystemFill = Color(UIColor.tertiarySystemFill)
     static let quaternarySystemFill = Color(UIColor.quaternarySystemFill)
     
-//    // Custom Adaptive Colors
-//    static let adaptivePrimary = Color("AdaptivePrimary")
-//    static let adaptiveSecondary = Color("AdaptiveSecondary")
-    
     // Input Field Colors
     static let inputBackground = Color(UIColor.tertiarySystemBackground)
     static let inputBorder = Color(UIColor.systemGray4)

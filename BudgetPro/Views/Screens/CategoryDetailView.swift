@@ -24,9 +24,6 @@ struct CategoryDetailView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Category Header
-            categoryHeader
-            
             ScrollView {
                 VStack(spacing: 20) {
                     // Budget Overview Card (reused from HomeView but without buttons)
@@ -43,16 +40,33 @@ struct CategoryDetailView: View {
             .disableScrollViewBounce()
         }
         .background(Color.groupedBackground)
-        .navigationTitle(category.name)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(false)
-
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                HStack(spacing: 12) {
+                    Circle()
+                        .fill(categoryColor.opacity(0.2))
+                        .frame(width: 36, height: 36)
+                        .overlay(
+                            Image(systemName: categoryIcon)
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(categoryColor)
+                        )
+                    
+                    
+                    Text(category.name)
+                        .font(.appFont(16, weight: .medium))
+                        .foregroundColor(.primaryText)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
     }
     
     // MARK: - Budget Overview Card (Reusable Component)
     private var budgetOverviewCard: some View {
         BudgetOverviewCard(
-            title: "\(category.name) Budget",
             totalBudget: category.budget,
             totalSpent: category.spent,
             showEditButton: false,
@@ -75,13 +89,13 @@ struct CategoryDetailView: View {
         VStack(spacing: 16) {
             HStack {
                 Text("Transactions")
-                    .font(.sora(18, weight: .semibold))
+                    .font(.appFont(18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 Spacer()
                 
                 Text("\(categoryExpenses.count) items")
-                    .font(.sora(14))
+                    .font(.appFont(14))
                     .foregroundColor(.secondaryText)
             }
             .padding(.horizontal, 16)
@@ -99,7 +113,7 @@ struct CategoryDetailView: View {
         VStack(spacing: 16) {
             HStack {
                 Text("Transactions")
-                    .font(.sora(18, weight: .semibold))
+                    .font(.appFont(18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 Spacer()
@@ -112,11 +126,11 @@ struct CategoryDetailView: View {
                 
                 VStack(spacing: 8) {
                     Text("No transactions yet")
-                        .font(.sora(16, weight: .medium))
+                        .font(.appFont(16, weight: .medium))
                         .foregroundColor(.secondaryText)
                     
                     Text("No expenses found for \(category.name) category")
-                        .font(.sora(14))
+                        .font(.appFont(14))
                         .foregroundColor(.tertiaryText)
                         .multilineTextAlignment(.center)
                 }
@@ -127,41 +141,6 @@ struct CategoryDetailView: View {
         .background(Color.cardBackground)
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
-    }
-    
-
-    
-    // MARK: - Category Header
-    private var categoryHeader: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 12) {
-                Circle()
-                    .fill(categoryColor.opacity(0.2))
-                    .frame(width: 50, height: 50)
-                    .overlay(
-                        Image(systemName: categoryIcon)
-                            .font(.system(size: 20, weight: .medium))
-                            .foregroundColor(categoryColor)
-                    )
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(category.name)
-                        .font(.sora(20, weight: .bold))
-                        .foregroundColor(.primaryText)
-                    
-                    Text(monthName)
-                        .font(.sora(14))
-                        .foregroundColor(.secondaryText)
-                }
-                
-                Spacer()
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 16)
-            
-            Divider()
-        }
-        .background(Color.cardBackground)
     }
     
     // MARK: - Helper Functions
@@ -194,7 +173,7 @@ struct CategoryDetailView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             CategoryDetailView(
-                category: BudgetCategory(id: "1", name: "Food", budget: 15000, spent: 12000),
+                category: BudgetCategory(id: "1", name: "Family", budget: 15000, spent: 12000),
                 expenses: [
                     Expense(
                         id: 1,

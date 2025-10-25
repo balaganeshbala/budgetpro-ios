@@ -23,7 +23,7 @@ struct DatePickerDialog: View {
             
             VStack(spacing: 20) {
                 Text("Select Date")
-                    .font(.sora(_: 18, weight: .semibold))
+                    .font(.appFont(_: 18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 DatePicker("Date", selection: $selectedDate, displayedComponents: .date)
@@ -36,7 +36,7 @@ struct DatePickerDialog: View {
                         isPresented = false
                     }) {
                         Text("Cancel")
-                            .font(.sora(_: 16, weight: .medium))
+                            .font(.appFont(_: 16, weight: .medium))
                             .foregroundColor(.secondaryText)
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)
@@ -54,7 +54,7 @@ struct DatePickerDialog: View {
                         isPresented = false
                     }) {
                         Text("Done")
-                            .font(.sora(_: 16, weight: .semibold))
+                            .font(.appFont(_: 16, weight: .semibold))
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)
                     }

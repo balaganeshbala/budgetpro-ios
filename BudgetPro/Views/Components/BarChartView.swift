@@ -62,7 +62,7 @@ struct BarChartView: View {
         VStack(spacing: 20) {
             // Title
             Text(title)
-                .font(.sora(18, weight: .semibold))
+                .font(.appFont(18, weight: .semibold))
                 .foregroundColor(.primaryText)
             
             if !data.isEmpty {
@@ -76,11 +76,11 @@ struct BarChartView: View {
                 // Empty state
                 VStack(spacing: 16) {
                     Image(systemName: "chart.bar")
-                        .font(.sora(40))
+                        .font(.appFont(40))
                         .foregroundColor(.secondaryText)
                     
                     Text("No data available")
-                        .font(.sora(16, weight: .medium))
+                        .font(.appFont(16, weight: .medium))
                         .foregroundColor(.secondaryText)
                 }
                 .frame(height: chartHeight)
@@ -98,7 +98,7 @@ struct BarChartView: View {
                         // Value label
                         if showValues {
                             Text("₹\(CommonHelpers.formatAmount(item.value))")
-                                .font(.sora(14, weight: .regular))
+                                .font(.appFont(14, weight: .regular))
                                 .foregroundColor(item.color)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.8)
@@ -126,12 +126,12 @@ struct BarChartView: View {
                         VStack(spacing: 4) {
                             if let icon = item.icon {
                                 Image(systemName: icon)
-                                    .font(.sora(12, weight: .medium))
+                                    .font(.appFont(12, weight: .medium))
                                     .foregroundColor(item.color)
                             }
                             
                             Text(item.label)
-                                .font(.sora(14, weight: .regular))
+                                .font(.appFont(14, weight: .regular))
                                 .foregroundColor(.primaryText)
                                 .lineLimit(2)
                                 .multilineTextAlignment(.center)
@@ -154,13 +154,13 @@ struct BarChartView: View {
                     HStack(spacing: 8) {
                         if let icon = item.icon {
                             Image(systemName: icon)
-                                .font(.sora(14))
+                                .font(.appFont(14))
                                 .foregroundColor(item.color)
                                 .frame(width: 20)
                         }
                         
                         Text(item.label)
-                            .font(.sora(13, weight: .medium))
+                            .font(.appFont(13, weight: .medium))
                             .foregroundColor(.primaryText)
                             .frame(width: 80, alignment: .leading)
                             .lineLimit(1)
@@ -200,7 +200,7 @@ struct BarChartView: View {
                     if showValues {
                         VStack(alignment: .trailing, spacing: 2) {
                             Text("₹\(CommonHelpers.formatAmount(item.value))")
-                                .font(.sora(12, weight: .semibold))
+                                .font(.appFont(12, weight: .semibold))
                                 .foregroundColor(item.color)
                         }
                         .frame(width: 80, alignment: .trailing)

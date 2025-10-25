@@ -71,7 +71,7 @@ struct AllMajorExpensesView: View {
             ProgressView()
                 .scaleEffect(1.2)
             Text("Loading major expenses...")
-                .font(.sora(16))
+                .font(.appFont(16))
                 .foregroundColor(.secondaryText)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -87,11 +87,11 @@ struct AllMajorExpensesView: View {
             
             VStack(spacing: 8) {
                 Text("No Major Expenses")
-                    .font(.sora(20, weight: .semibold))
+                    .font(.appFont(20, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 Text("Start tracking your major expenses by adding your first one.")
-                    .font(.sora(14))
+                    .font(.appFont(14))
                     .foregroundColor(.secondaryText)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
@@ -101,7 +101,7 @@ struct AllMajorExpensesView: View {
                 coordinator.navigate(to: .addMajorExpense)
             }) {
                 Text("Add Major Expense")
-                    .font(.sora(16, weight: .medium))
+                    .font(.appFont(16, weight: .medium))
                     .foregroundColor(.white)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
@@ -118,7 +118,7 @@ struct AllMajorExpensesView: View {
         VStack(spacing: 8) {
             HStack {
                 Text("All Major Expenses")
-                    .font(.sora(18, weight: .semibold))
+                    .font(.appFont(18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 Spacer()
@@ -145,11 +145,11 @@ struct AllMajorExpensesView: View {
             
             HStack {
                 Text("Sorted by: ")
-                    .font(.sora(14))
+                    .font(.appFont(14))
                     .foregroundColor(.secondaryText)
                 
                 Text(viewModel.currentSortType.rawValue)
-                    .font(.sora(14, weight: .medium))
+                    .font(.appFont(14, weight: .medium))
                     .foregroundColor(.primary)
                 
                 Spacer()
@@ -214,14 +214,14 @@ struct MajorExpenseSummaryView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text("Total Major Expenses")
-                            .font(.sora(16, weight: .medium))
+                            .font(.appFont(16, weight: .medium))
                             .foregroundColor(.secondaryText)
                         Spacer()
                     }
                     
                     HStack {
                         Text("₹\(formatAmount(totalMajorExpense))")
-                            .font(.sora(24, weight: .bold))
+                            .font(.appFont(24, weight: .bold))
                             .foregroundColor(Color.secondary)
                         Spacer()
                     }
@@ -233,7 +233,7 @@ struct MajorExpenseSummaryView: View {
                     // Category Breakdown Section
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Major Expenses by Category")
-                            .font(.sora(16, weight: .medium))
+                            .font(.appFont(16, weight: .medium))
                             .foregroundColor(.secondaryText)
                         
                         LazyVStack(spacing: 12) {
@@ -277,18 +277,18 @@ struct MajorCategoryBreakdownRow: View {
                 .frame(width: 8, height: 8)
             
             Text(category)
-                .font(.sora(14, weight: .medium))
+                .font(.appFont(14, weight: .medium))
                 .foregroundColor(.primaryText)
             
             Spacer()
             
             VStack(alignment: .trailing, spacing: 2) {
                 Text("₹\(formatAmount(amount))")
-                    .font(.sora(14, weight: .semibold))
+                    .font(.appFont(14, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 Text("\(String(format: "%.1f", percentage))%")
-                    .font(.sora(12))
+                    .font(.appFont(12))
                     .foregroundColor(.secondaryText)
             }
         }

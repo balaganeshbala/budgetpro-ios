@@ -51,7 +51,7 @@ struct DropdownPickerDialog<T: Hashable>: View {
                 // Header
                 HStack {
                     Text(title)
-                        .font(.sora(20, weight: .semibold))
+                        .font(.appFont(20, weight: .semibold))
                         .foregroundColor(.primaryText)
                     
                     Spacer()
@@ -82,7 +82,7 @@ struct DropdownPickerDialog<T: Hashable>: View {
                                 }
                                 
                                 Text(itemDisplayName(item))
-                                    .font(.sora(16, weight: .medium))
+                                    .font(.appFont(16, weight: .medium))
                                     .foregroundColor(.primaryText)
                                 
                                 Spacer()
