@@ -8,11 +8,15 @@ class MainCoordinator: Coordinator {
     @Published var selectedTab: Tab = .home
     @Published var presentedSheet: Sheet?
     
+    let userId: String
     let expenseRepo: TransactionRepoService
     let incomeRepo: TransactionRepoService
     let majorExpenseRepo: TransactionRepoService
+    let dataFetchRepo: DataFetchRepoService
     
-    init() {
+    init(userId: String) {
+        self.userId = userId
+        self.dataFetchRepo = SupabaseDataFetchRepoService()
         self.expenseRepo = SupabaseTransactionRepoService(transactionType: .expense)
         self.incomeRepo = SupabaseTransactionRepoService(transactionType: .income)
         self.majorExpenseRepo = SupabaseTransactionRepoService(transactionType: .majorExpense)
@@ -128,7 +132,7 @@ class MainCoordinator: Coordinator {
     func view(for route: Route) -> some View {
         switch route {
         case .home:
-            HomeView()
+            HomeView(userId: userId, repoService: dataFetchRepo)
                 .environmentObject(self)
         case .profile:
             ProfileView()

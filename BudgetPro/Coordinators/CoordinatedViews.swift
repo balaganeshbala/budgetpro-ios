@@ -16,7 +16,11 @@ struct CoordinatedNavigationView<Content: View>: View {
 }
 
 struct CoordinatedTabView: View {
-    @StateObject private var coordinator = MainCoordinator()
+    @StateObject private var coordinator: MainCoordinator
+    
+    init(userId: String) {
+        _coordinator = StateObject(wrappedValue: MainCoordinator(userId: userId))
+    }
     
     var body: some View {
         TabView(selection: $coordinator.selectedTab) {

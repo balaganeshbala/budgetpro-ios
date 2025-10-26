@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct HomeView: View {
-    @StateObject private var viewModel = HomeViewModel()
+    
+    @StateObject private var viewModel: HomeViewModel
+    
     @EnvironmentObject private var coordinator: MainCoordinator
     @State private var selectedMonth = Calendar.current.component(.month, from: Date())
     @State private var selectedYear = Calendar.current.component(.year, from: Date())
@@ -10,6 +12,10 @@ struct HomeView: View {
     @State private var tempMonth = Calendar.current.component(.month, from: Date())
     @State private var tempYear = Calendar.current.component(.year, from: Date())
     @State private var hasLoadedInitialData = false
+    
+    init(userId: String, repoService: DataFetchRepoService) {
+        self._viewModel = StateObject(wrappedValue: HomeViewModel(userId: userId, repoService: repoService))
+    }
     
     var body: some View {
         GeometryReader { geometry in
@@ -597,6 +603,6 @@ struct OptionRow: View {
 // MARK: - Preview
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        HomeView(userId: "", repoService: SupabaseDataFetchRepoService())
     }
 }

@@ -9,6 +9,10 @@ struct ContentView: View {
             if isLoading {
                 // Splash Screen
                 SplashView()
+            } else if appCoordinator.currentUserId == nil {
+                CoordinatedNavigationView {
+                    LoginView()
+                }
             } else {
                 switch appCoordinator.currentFlow {
                 case .loading:
@@ -18,11 +22,11 @@ struct ContentView: View {
                         LoginView()
                     }
                 case .main:
-                    CoordinatedTabView()
+                    CoordinatedTabView(userId: appCoordinator.currentUserId!)
                 }
             }
         }
-        .onChange(of: appCoordinator.isAuthenticated) { _ in
+        .onChange(of: appCoordinator.currentFlow) { _ in
             isLoading = false
         }
         .environmentObject(appCoordinator)

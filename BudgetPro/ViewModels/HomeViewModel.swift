@@ -1,5 +1,4 @@
 import Foundation
-import Supabase
 import SwiftUI
 
 @MainActor
@@ -18,45 +17,39 @@ class HomeViewModel: ObservableObject {
     // Incomes data
     @Published var recentIncomes: [Income] = []
     
-    private let supabaseManager = SupabaseManager.shared
+    private let userId: String
+    private let repoService: DataFetchRepoService
     
-    // Add this to prevent concurrent executions
     private var currentLoadingTask: Task<Void, Never>?
+
+    init(
+        userId: String,
+        repoService: DataFetchRepoService
+    ) {
+        self.userId = userId
+        self.repoService = repoService
+    }
     
     func loadData(month: Int, year: Int) async {
-        // Cancel any existing task
         currentLoadingTask?.cancel()
-        
-        // Create new task
         currentLoadingTask = Task {
             await performLoadData(month: month, year: year)
         }
-        
-        // Wait for completion
         await currentLoadingTask?.value
     }
     
     private func performLoadData(month: Int, year: Int) async {
-        // Check if cancelled before starting
         guard !Task.isCancelled else { return }
-        
         isLoading = true
         errorMessage = ""
         
-        // First fetch expenses data once
         async let expensesData = loadExpensesData(month: month, year: year)
         async let incomesData = loadIncomesData(month: month, year: year)
         
         do {
             let (expenses, incomes) = try await (expensesData, incomesData)
-            
-            // Check if cancelled before continuing
             guard !Task.isCancelled else { return }
-            
-            // Now load budget data using the already fetched expenses
             let budget = try await loadBudgetData(month: month, year: year, expenses: expenses)
-            
-            // Check if cancelled before updating UI
             guard !Task.isCancelled else { return }
             
             self.budgetCategories = budget.categories
@@ -64,20 +57,14 @@ class HomeViewModel: ObservableObject {
             self.totalSpent = budget.spent
             self.recentExpenses = expenses
             self.recentIncomes = incomes
-            
         } catch {
-            // Check if cancelled
             guard !Task.isCancelled else { return }
-            
-            // Handle cancellation errors
             if let urlError = error as? URLError, urlError.code == .cancelled {
                 print("Request cancelled - this is normal")
                 return
             }
-            
             self.errorMessage = "Failed to load data: \(error.localizedDescription)"
         }
-        
         isLoading = false
     }
     
@@ -85,82 +72,52 @@ class HomeViewModel: ObservableObject {
         await loadData(month: month, year: year)
     }
     
-    
     // MARK: - Private Methods
     
     private func loadBudgetData(month: Int, year: Int, expenses: [Expense]) async throws -> (categories: [BudgetCategory], total: Double, spent: Double) {
-        guard let userId = supabaseManager.currentUser?.id else {
-            throw HomeError.userNotFound
-        }
-        
         do {
-            // Create target date for budget lookup (matches Flutter format)
             let targetDate = getMonthStartDate(month: month, year: year)
-            
-            // Load budget categories for the month/year
-            let budgetResponse: [BudgetResponse] = try await supabaseManager.client
-                .from("budget")  // Changed from "budgets" to "budget"
-                .select("*")
-                .eq("user_id", value: userId)
-                .eq("date", value: targetDate)  // Changed to use date instead of month/year
-                .execute()
-                .value
+            let filters = [
+                RepoQueryFilter(column: "user_id", op: .eq, value: userId),
+                RepoQueryFilter(column: "date", op: .eq, value: targetDate)
+            ]
+            let budgetResponse: [BudgetResponse] = try await repoService.fetchAll(from: "budget", filters: filters)
             
             var categories: [BudgetCategory] = []
             var totalBudget: Double = 0
             
-            // Group expenses by category, normalized by ExpenseCategory
-            let expensesByCategory = Dictionary(grouping: expenses) { expense in
-                expense.category.displayName
-            }
-            
-            // Create dictionaries of budget amounts and IDs by category
-            let budgetsByCategory = Dictionary(uniqueKeysWithValues: budgetResponse.map { budget in
-                (ExpenseCategory.from(categoryName: budget.category).displayName, budget.amount)
+            let expensesByCategory = Dictionary(grouping: expenses) { $0.category.displayName }
+            let budgetsByCategory = Dictionary(uniqueKeysWithValues: budgetResponse.map {
+                (ExpenseCategory.from(categoryName: $0.category).displayName, $0.amount)
             })
-            
-            let budgetIdsByCategory = Dictionary(uniqueKeysWithValues: budgetResponse.map { budget in
-                (ExpenseCategory.from(categoryName: budget.category).displayName, String(budget.id))
+            let budgetIdsByCategory = Dictionary(uniqueKeysWithValues: budgetResponse.map {
+                (ExpenseCategory.from(categoryName: $0.category).displayName, String($0.id))
             })
-            
-            // Get all categories that have either budget or expenses
             let allCategoryNames = Set(expensesByCategory.keys).union(Set(budgetsByCategory.keys))
             
             for categoryName in allCategoryNames {
                 let budgetAmount = budgetsByCategory[categoryName] ?? 0
                 let spent = expensesByCategory[categoryName]?.reduce(0) { $0 + $1.amount } ?? 0
-                let budgetId = budgetIdsByCategory[categoryName] ?? UUID().uuidString // fallback for categories without budgets
-                
+                let budgetId = budgetIdsByCategory[categoryName] ?? UUID().uuidString
                 let category = BudgetCategory(
                     id: budgetId,
                     name: categoryName,
                     budget: budgetAmount,
                     spent: spent
                 )
-                
                 categories.append(category)
                 totalBudget += budgetAmount
             }
             
-            // Sort categories: Unplanned and Overspent first, then by name
-            categories.sort { category1, category2 in
-                let status1 = getCategoryStatus(category1)
-                let status2 = getCategoryStatus(category2)
-                
-                // Priority order: Overspent (3), Unplanned (2), others (1)
-                let priority1 = getCategoryPriority(status1)
-                let priority2 = getCategoryPriority(status2)
-                
-                if priority1 != priority2 {
-                    return priority1 > priority2
-                } else {
-                    // Within same priority, sort by name
-                    return category1.name < category2.name
-                }
+            categories.sort { c1, c2 in
+                let s1 = getCategoryStatus(c1)
+                let s2 = getCategoryStatus(c2)
+                let p1 = getCategoryPriority(s1)
+                let p2 = getCategoryPriority(s2)
+                if p1 != p2 { return p1 > p2 }
+                return c1.name < c2.name
             }
-            
             let totalSpent = expenses.reduce(0) { $0 + $1.amount }
-            
             return (categories: categories, total: totalBudget, spent: totalSpent)
         } catch {
             throw HomeError.decodingError
@@ -168,22 +125,13 @@ class HomeViewModel: ObservableObject {
     }
     
     private func loadExpensesData(month: Int, year: Int) async throws -> [Expense] {
-        guard let userId = supabaseManager.currentUser?.id else {
-            throw HomeError.userNotFound
-        }
-        
         do {
-            let response: [ExpenseResponse] = try await supabaseManager.client
-                .from("expenses")
-                .select("*")
-                .eq("user_id", value: userId)
-                .gte("date", value: getMonthStartDate(month: month, year: year))
-                .lt("date", value: getMonthEndDate(month: month, year: year))
-                .order("date", ascending: false)
-                .order("id", ascending: false)
-                .execute()
-                .value
-            
+            let filters = [
+                RepoQueryFilter(column: "user_id", op: .eq, value: userId),
+                RepoQueryFilter(column: "date", op: .gte, value: getMonthStartDate(month: month, year: year)),
+                RepoQueryFilter(column: "date", op: .lt, value: getMonthEndDate(month: month, year: year))
+            ]
+            let response: [ExpenseResponse] = try await repoService.fetchAll(from: "expenses", filters: filters)
             return response.map { expenseResponse in
                 let categoryEnum = ExpenseCategory.from(categoryName: expenseResponse.category)
                 return Expense(
@@ -191,7 +139,7 @@ class HomeViewModel: ObservableObject {
                     name: expenseResponse.name,
                     amount: expenseResponse.amount,
                     category: categoryEnum,
-                    date: parseDate(expenseResponse.date),
+                    date: parseDate(expenseResponse.date)
                 )
             }
         } catch {
@@ -200,22 +148,13 @@ class HomeViewModel: ObservableObject {
     }
     
     private func loadIncomesData(month: Int, year: Int) async throws -> [Income] {
-        guard let userId = supabaseManager.currentUser?.id else {
-            throw HomeError.userNotFound
-        }
-        
         do {
-            let response: [IncomeResponse] = try await supabaseManager.client
-                .from("incomes")
-                .select("*")
-                .eq("user_id", value: userId)
-                .gte("date", value: getMonthStartDate(month: month, year: year))
-                .lt("date", value: getMonthEndDate(month: month, year: year))
-                .order("date", ascending: false)
-                .order("id", ascending: false)
-                .execute()
-                .value
-            
+            let filters = [
+                RepoQueryFilter(column: "user_id", op: .eq, value: userId),
+                RepoQueryFilter(column: "date", op: .gte, value: getMonthStartDate(month: month, year: year)),
+                RepoQueryFilter(column: "date", op: .lt, value: getMonthEndDate(month: month, year: year))
+            ]
+            let response: [IncomeResponse] = try await repoService.fetchAll(from: "incomes", filters: filters)
             return response.map { incomeResponse in
                 let categoryEnum = IncomeCategory.from(categoryName: incomeResponse.category)
                 return Income(
@@ -243,7 +182,7 @@ class HomeViewModel: ObservableObject {
     private func getMonthStartDate(month: Int, year: Int) -> String {
         let startDate = Calendar.current.date(from: DateComponents(year: year, month: month, day: 1)) ?? Date()
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"  // Changed to match Flutter format
+        formatter.dateFormat = "yyyy-MM-dd"
         return formatter.string(from: startDate)
     }
     
@@ -251,32 +190,23 @@ class HomeViewModel: ObservableObject {
         let startDate = Calendar.current.date(from: DateComponents(year: year, month: month, day: 1)) ?? Date()
         let endDate = Calendar.current.date(byAdding: .month, value: 1, to: startDate) ?? Date()
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"  // Changed to match Flutter format
+        formatter.dateFormat = "yyyy-MM-dd"
         return formatter.string(from: endDate)
     }
     
-    
-    
-    // Add this method to your HomeViewModel class
     private func parseDate(_ dateString: String) -> Date {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
-        
         if let date = formatter.date(from: dateString) {
             return date
         }
-        
-        // Fallback: try ISO8601 format for older data
         let isoFormatter = ISO8601DateFormatter()
         if let date = isoFormatter.date(from: dateString) {
             return date
         }
-        
-        // Final fallback
         return Date()
     }
     
-    // Helper methods for category sorting
     private func getCategoryStatus(_ category: BudgetCategory) -> String {
         if category.budget == 0 && category.spent > 0 {
             return "Unplanned"
@@ -297,9 +227,6 @@ class HomeViewModel: ObservableObject {
         }
     }
 }
-
-
-// MARK: - Errors
 
 enum HomeError: LocalizedError {
     case userNotFound

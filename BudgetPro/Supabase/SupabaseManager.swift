@@ -1,7 +1,6 @@
 import Foundation
 import Supabase
 
-@MainActor
 class SupabaseManager: ObservableObject {
     static let shared = SupabaseManager()
     

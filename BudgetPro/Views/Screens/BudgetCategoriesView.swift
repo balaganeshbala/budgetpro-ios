@@ -294,7 +294,7 @@ struct BudgetCategoriesView_Previews: PreviewProvider {
                     year: 2025
                 )
             }
-            .environmentObject(MainCoordinator())
+            .environmentObject(MainCoordinator(userId: ""))
             .preferredColorScheme(.light)
             
             // Dark mode preview
@@ -312,7 +312,7 @@ struct BudgetCategoriesView_Previews: PreviewProvider {
                     year: 2025
                 )
             }
-            .environmentObject(MainCoordinator())
+            .environmentObject(MainCoordinator(userId: ""))
             .preferredColorScheme(.dark)
         }
     }

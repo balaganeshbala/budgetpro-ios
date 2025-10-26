@@ -15,8 +15,9 @@ protocol Coordinator: ObservableObject {
 
 @MainActor
 class AppCoordinator: ObservableObject {
-    @Published var isAuthenticated = false
     @Published var currentFlow: AppFlow = .loading
+    
+    var currentUserId: String?
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -34,7 +35,7 @@ class AppCoordinator: ObservableObject {
         SupabaseManager.shared.$isAuthenticated
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isAuthenticated in
-                self?.isAuthenticated = isAuthenticated
+                self?.currentUserId = isAuthenticated ? SupabaseManager.shared.currentUser?.id.uuidString : nil
                 self?.currentFlow = isAuthenticated ? .main : .authentication
             }
             .store(in: &cancellables)

@@ -7,6 +7,16 @@ enum TransactionType {
     case majorExpense
 }
 
+struct RepoQueryFilter {
+    let column: String
+    let op: RepoQueryOperator
+    let value: String
+}
+
+enum RepoQueryOperator: String {
+    case eq, gte, lt
+}
+
 protocol TransactionRepoService {
     // Create
     func create(
@@ -31,4 +41,12 @@ protocol TransactionRepoService {
     func delete(
         id: Int
     ) async throws
+}
+
+protocol DataFetchRepoService {
+    // Fetch
+    func fetchAll<T: Decodable>(
+        from table: String,
+        filters: [RepoQueryFilter]
+    ) async throws -> [T]
 }
