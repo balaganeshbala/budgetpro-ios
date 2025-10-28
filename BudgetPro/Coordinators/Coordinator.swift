@@ -33,6 +33,7 @@ class AppCoordinator: ObservableObject {
     
     private func setupAuthenticationObserver() {
         SupabaseManager.shared.$isAuthenticated
+            .dropFirst()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isAuthenticated in
                 self?.currentUserId = isAuthenticated ? SupabaseManager.shared.currentUser?.id.uuidString : nil

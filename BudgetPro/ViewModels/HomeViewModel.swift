@@ -3,7 +3,7 @@ import SwiftUI
 
 @MainActor
 class HomeViewModel: ObservableObject {
-    @Published var isLoading = false
+    @Published var isLoading = true
     @Published var errorMessage = ""
     
     // Budget data
