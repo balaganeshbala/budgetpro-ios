@@ -224,7 +224,7 @@ struct ExpenseIncomeBarChart: View {
             data.append(BarChartData(
                 label: "Income",
                 value: totalIncome,
-                color: .primary
+                color: .adaptiveGreen
             ))
         }
         
@@ -232,7 +232,7 @@ struct ExpenseIncomeBarChart: View {
             data.append(BarChartData(
                 label: "Expenses",
                 value: totalExpenses,
-                color: .secondary
+                color: .adaptiveRed
             ))
         }
         

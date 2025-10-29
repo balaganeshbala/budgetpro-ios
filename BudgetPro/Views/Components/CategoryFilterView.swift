@@ -143,7 +143,7 @@ struct CategoryFilterRow: View {
             // Checkmark
             Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                 .font(.system(size: 20))
-                .foregroundColor(isSelected ? .adaptivePrimary : .secondaryText)
+                .foregroundColor(isSelected ? .primary : .secondaryText)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)

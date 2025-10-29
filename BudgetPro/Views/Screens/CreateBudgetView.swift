@@ -126,7 +126,7 @@ struct CreateBudgetView: View {
                 
                 Text("₹\(Int(viewModel.totalBudget))")
                     .font(.appFont(24, weight: .bold))
-                    .foregroundColor(.primary)
+                    .foregroundColor(.primaryText)
             }
         }
         .padding(16)
@@ -146,8 +146,7 @@ struct CreateBudgetView: View {
                 Spacer()
                 
                 if viewModel.isLoading {
-                    ProgressView()
-                        .scaleEffect(0.8)
+                    ScreenProgressView()
                 }
             }
             .padding(.horizontal, 16)

@@ -58,7 +58,7 @@ struct ProfileView: View {
             VStack(spacing: 16) {
                 // Profile Avatar
                 Circle()
-                    .fill(.gray.opacity(0.2))
+                    .fill(Color.primary.opacity(0.2))
                     .frame(width: 80, height: 80)
                     .overlay(
                         Image(systemName: "person.fill")

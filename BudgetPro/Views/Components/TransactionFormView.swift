@@ -182,10 +182,7 @@ struct TransactionFormView<ViewState: TransactionFormStateProtocol, CategoryType
             formScrollView
             
             if viewModel.isLoading {
-                TransactionLoadingOverlay(
-                    transactionType: transactionType,
-                    mode: mode
-                )
+                LoadingOverlay(titleText: mode.isUpdate ? transactionType.updateLoadingText : transactionType.loadingText)
             }
         }
     }
@@ -609,7 +606,7 @@ struct TransactionDateSelectorField<ViewModel: TransactionFormStateProtocol>: Vi
                     
                     Text(viewModel.formattedDateForDisplay)
                         .font(.appFont(14, weight: .semibold))
-                        .foregroundColor(.primary)
+                        .foregroundColor(.secondary)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 16)
@@ -672,11 +669,11 @@ struct TransactionCategorySelectorField<CategoryType>: View where CategoryType: 
                     
                     Text(selectedCategory.displayName.uppercased())
                         .font(.appFont(14, weight: .semibold))
-                        .foregroundColor(.primary)
+                        .foregroundColor(.secondary)
                     
                     Image(systemName: "chevron.down")
                         .font(.appFont(12))
-                        .foregroundColor(.primary)
+                        .foregroundColor(.secondary)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 16)
@@ -707,9 +704,7 @@ struct TransactionSaveButton<State: TransactionFormStateProtocol>: View {
         }) {
             HStack {
                 if viewModel.state.isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .scaleEffect(0.8)
+                    ButtonProgressView()
                 } else {
                     Text(transactionType.saveButtonText)
                         .font(.appFont(16, weight: .semibold))
@@ -750,9 +745,7 @@ struct TransactionUpdateButton<State: TransactionFormStateProtocol>: View {
         }) {
             HStack {
                 if viewModel.state.isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .scaleEffect(0.8)
+                    ButtonProgressView()
                 } else {
                     Text(transactionType.updateButtonText)
                         .font(.appFont(16, weight: .semibold))
@@ -775,33 +768,6 @@ struct TransactionUpdateButton<State: TransactionFormStateProtocol>: View {
         )
         .disabled(!viewModel.state.isFormValid || !viewModel.state.hasChanges || viewModel.state.isLoading)
         .padding(.top, 10)
-    }
-}
-
-// MARK: - Loading Overlay
-
-struct TransactionLoadingOverlay: View {
-    let transactionType: TransactionType
-    let mode: TransactionFormMode
-    
-    var body: some View {
-        Color.black.opacity(0.5)
-            .edgesIgnoringSafeArea(.all)
-            .overlay(
-                VStack {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: Color.secondary))
-                        .scaleEffect(1.5)
-                    
-                    Text(mode.isUpdate ? transactionType.updateLoadingText : transactionType.loadingText)
-                        .font(.appFont(16, weight: .medium))
-                        .foregroundColor(.white)
-                        .padding(.top, 16)
-                }
-                .padding(32)
-                .background(Color.black.opacity(0.8))
-                .cornerRadius(16)
-            )
     }
 }
 

@@ -67,15 +67,8 @@ struct AllMajorExpensesView: View {
     
     // MARK: - Loading View
     private var loadingView: some View {
-        VStack(spacing: 16) {
-            ProgressView()
-                .scaleEffect(1.2)
-            Text("Loading major expenses...")
-                .font(.appFont(16))
-                .foregroundColor(.secondaryText)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.top, 100)
+        LoadingView(titleText: "Loading major expenses...")
+            .padding(.top, 100)
     }
     
     // MARK: - Empty State View
@@ -83,7 +76,7 @@ struct AllMajorExpensesView: View {
         VStack(spacing: 20) {
             Image(systemName: "creditcard.trianglebadge.exclamationmark")
                 .font(.system(size: 60))
-                .foregroundColor(.secondary)
+                .foregroundColor(.secondaryText)
             
             VStack(spacing: 8) {
                 Text("No Major Expenses")
@@ -222,7 +215,7 @@ struct MajorExpenseSummaryView: View {
                     HStack {
                         Text("₹\(formatAmount(totalMajorExpense))")
                             .font(.appFont(24, weight: .bold))
-                            .foregroundColor(Color.secondary)
+                            .foregroundColor(Color.primaryText)
                         Spacer()
                     }
                 }

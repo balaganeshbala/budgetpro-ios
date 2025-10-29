@@ -61,11 +61,11 @@ struct AboutView: View {
                 // App Name
                 Text("Budget")
                     .font(.appFont(24, weight: .bold))
-                    .foregroundColor(.primary)
+                    .foregroundColor(.adaptiveGreen)
                 +
                 Text(" Pro")
                     .font(.appFont(24, weight: .bold))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.adaptiveRed)
                 
                 Text("Version \(appVersion)")
                     .font(.appFont(14))

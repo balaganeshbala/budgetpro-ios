@@ -96,7 +96,7 @@ struct EditBudgetView: View {
                             HStack(spacing: 8) {
                                 Text("₹\(Int(viewModel.totalBudget))")
                                     .font(.appFont(24, weight: .bold))
-                                    .foregroundColor(.primary)
+                                    .foregroundColor(.primaryText)
                                 
                                 Text("(Updated)")
                                     .font(.appFont(12, weight: .medium))
@@ -119,7 +119,7 @@ struct EditBudgetView: View {
                         // Show normal budget when no changes
                         Text("₹\(Int(viewModel.totalBudget))")
                             .font(.appFont(24, weight: .bold))
-                            .foregroundColor(.primary)
+                            .foregroundColor(.primaryText)
                     }
                 }
                 
@@ -149,8 +149,7 @@ struct EditBudgetView: View {
                 Spacer()
                 
                 if viewModel.isLoading {
-                    ProgressView()
-                        .scaleEffect(0.8)
+                    ScreenProgressView()
                 }
             }
             
@@ -172,25 +171,15 @@ struct EditBudgetView: View {
     // MARK: - Toolbar Update Button
     private var toolbarUpdateButton: some View {
         Button(action: {
-            if viewModel.hasChanges {
-                showingConfirmDialog = true
-            } else {
-                viewModel.errorMessage = "No changes made to the budget"
-            }
+            showingConfirmDialog = true
         }) {
-            if viewModel.isLoading {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .secondary))
-                    .scaleEffect(0.8)
-            } else {
-                Text("Update")
-                    .font(.appFont(15, weight: .semibold))
-                    .foregroundColor(
-                        viewModel.canUpdate && viewModel.hasChanges && !viewModel.isLoading
-                            ? Color.secondary
-                            : .secondaryText
-                    )
-            }
+            Text("Update")
+                .font(.appFont(15, weight: .semibold))
+                .foregroundColor(
+                    viewModel.canUpdate && viewModel.hasChanges && !viewModel.isLoading
+                        ? Color.secondary
+                        : .secondaryText
+                )
         }
         .disabled(!viewModel.canUpdate || !viewModel.hasChanges || viewModel.isLoading)
     }
@@ -283,7 +272,7 @@ struct EditBudgetCategoryInput: View {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(
                             hasChanged ? Color.orange : 
-                            (isFocused ? .primary : Color.gray.opacity(0.3)), 
+                            (isFocused ? .secondary : Color.gray.opacity(0.3)), 
                             lineWidth: hasChanged ? 2 : (isFocused ? 2 : 1)
                         )
                         .background(Color.cardBackground)

@@ -99,9 +99,7 @@ struct LoginView: View {
                 }) {
                     HStack {
                         if viewModel.isLoading {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .primaryText))
-                                .scaleEffect(0.8)
+                            ButtonProgressView()
                         } else {
                             Text("Sign In")
                                 .font(.appFont(16, weight: .semibold))

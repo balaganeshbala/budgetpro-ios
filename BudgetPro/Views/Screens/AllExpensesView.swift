@@ -200,7 +200,7 @@ struct ExpenseSummaryView: View {
                     HStack {
                         Text("₹\(formatAmount(totalExpense))")
                             .font(.appFont(24, weight: .bold))
-                            .foregroundColor(Color.secondary)
+                            .foregroundColor(Color.primaryText)
                         Spacer()
                     }
                 }

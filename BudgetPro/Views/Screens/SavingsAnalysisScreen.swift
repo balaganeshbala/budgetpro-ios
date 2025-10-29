@@ -126,7 +126,7 @@ struct SavingsSummaryCard: View {
                     ModernSummaryItem(
                         title: "Net Savings",
                         value: CommonHelpers.formatCurrencyWithSign(savings),
-                        color: savings >= 0 ? .primary : .red,
+                        color: savings >= 0 ? .adaptiveGreen : .adaptiveRed,
                         icon: savings >= 0 ? "arrow.up.circle.fill" : "arrow.down.circle.fill",
                         isPositive: savings >= 0
                     )
@@ -145,7 +145,7 @@ struct SavingsSummaryCard: View {
                     ModernSummaryItem(
                         title: "Income",
                         value: CommonHelpers.formatCurrency(totalIncome),
-                        color: .primary,
+                        color: .adaptiveGreen,
                         icon: "plus.circle.fill",
                         isPositive: true
                     )
@@ -153,7 +153,7 @@ struct SavingsSummaryCard: View {
                     ModernSummaryItem(
                         title: "Expenses",
                         value: CommonHelpers.formatCurrency(effectiveExpenses),
-                        color: .secondary,
+                        color: .adaptiveRed,
                         icon: "minus.circle.fill",
                         isPositive: false
                     )

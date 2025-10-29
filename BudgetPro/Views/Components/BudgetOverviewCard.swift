@@ -96,15 +96,15 @@ struct BudgetOverviewCard: View {
                     
                     Text("₹\(CommonHelpers.formatAmount(abs(remainingBudget)))")
                         .font(.appFont(30, weight: .bold))
-                        .foregroundColor(isOverBudget ? .overBudgetColor : .primary)
+                        .foregroundColor(isOverBudget ? .adaptiveRed : .adaptiveGreen)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(20)
                 .background(
                     LinearGradient(
                         gradient: Gradient(colors: [
-                            isOverBudget ? Color.overBudgetColor.opacity(0.05) : Color.primary.opacity(0.05),
-                            isOverBudget ? Color.overBudgetColor.opacity(0.1) : Color.primary.opacity(0.1)
+                            isOverBudget ? Color.adaptiveRed.opacity(0.05) : Color.adaptiveGreen.opacity(0.05),
+                            isOverBudget ? Color.adaptiveRed.opacity(0.1) : Color.adaptiveGreen.opacity(0.1)
                         ]),
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -113,7 +113,7 @@ struct BudgetOverviewCard: View {
                 .cornerRadius(16)
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(isOverBudget ? Color.overBudgetColor.opacity(0.2) : Color.primary.opacity(0.2), lineWidth: 1)
+                        .stroke(isOverBudget ? Color.adaptiveRed.opacity(0.2) : Color.adaptiveGreen.opacity(0.2), lineWidth: 1)
                 )
                 
                 // Budget Summary Row
@@ -141,7 +141,7 @@ struct BudgetOverviewCard: View {
                         
                         Text("₹\(CommonHelpers.formatAmount(totalSpent))")
                             .font(.appFont(20, weight: .semibold))
-                            .foregroundColor(isOverBudget ? .overBudgetColor : .warningColor)
+                            .foregroundColor(isOverBudget ? .adaptiveRed : .warningColor)
                     }
                     .frame(maxWidth: .infinity, alignment: .trailing)
                 }
@@ -158,7 +158,7 @@ struct BudgetOverviewCard: View {
                             
                             Text("\(usagePercentage)%")
                                 .font(.appFont(16, weight: .bold))
-                                .foregroundColor(isOverBudget ? .overBudgetColor : .warningColor)
+                                .foregroundColor(isOverBudget ? .adaptiveRed : .warningColor)
                         }
                         
                         GeometryReader { geometry in
@@ -172,8 +172,8 @@ struct BudgetOverviewCard: View {
                                     .fill(
                                         LinearGradient(
                                             gradient: Gradient(colors: [
-                                                isOverBudget ? Color.overBudgetColor : Color.warningColor,
-                                                isOverBudget ? Color.overBudgetColor.opacity(0.8) : Color.warningColor.opacity(0.8)
+                                                isOverBudget ? Color.adaptiveRed : Color.warningColor,
+                                                isOverBudget ? Color.adaptiveRed.opacity(0.8) : Color.warningColor.opacity(0.8)
                                             ]),
                                             startPoint: .leading,
                                             endPoint: .trailing

@@ -39,25 +39,21 @@ struct SplashView: View {
             Color.cardBackground
                 .ignoresSafeArea()
 
-            // Loading Indicator
-            VStack(spacing: 30) {
-                
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: Color.secondary))
-                    .scaleEffect(2.0)
-                    .padding(.top, 20)
-                
-                Text("Loading...")
-                    .font(.appFont(16, weight: .medium))
-                    .foregroundStyle(Color.secondaryText)
-            }
+            LoadingView(titleText: "Loading...")
         }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct ContentViewLight_Previews: PreviewProvider {
     static var previews: some View {
         SplashView()
             .preferredColorScheme(.light)
+    }
+}
+
+struct ContentViewDark_Previews: PreviewProvider {
+    static var previews: some View {
+        SplashView()
+            .preferredColorScheme(.dark)
     }
 }

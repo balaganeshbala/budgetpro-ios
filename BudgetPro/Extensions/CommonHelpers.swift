@@ -57,9 +57,9 @@ struct CommonHelpers {
     /// - Returns: Color representing the savings rate quality
     static func getSavingsRateColor(_ rate: Double) -> Color {
         if rate < 0 { return .red }
-        if rate < 10 { return .secondary }
+        if rate < 10 { return .adaptiveRed }
         if rate < 20 { return .orange }
-        return .primary
+        return .adaptiveGreen
     }
     
     /// Returns the appropriate SF Symbol icon for a given savings rate

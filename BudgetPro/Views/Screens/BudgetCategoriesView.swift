@@ -175,7 +175,7 @@ struct BudgetCategoryCard: View {
         } else if category.budget == 0 {
             return ("No Budget", .secondaryText)
         } else if percentageSpent > 1 {
-            return ("Overspent", .overBudgetColor)
+            return ("Overspent", .adaptiveRed)
         } else {
             return ("On Track", .successColor)
         }
@@ -241,7 +241,7 @@ struct BudgetCategoryCard: View {
                         
                         Text("₹\(Int(category.budget - category.spent))")
                             .font(.appFont(16, weight: .semibold))
-                            .foregroundColor(percentageSpent > 1 ? .overBudgetColor : .primaryText)
+                            .foregroundColor(percentageSpent > 1 ? .adaptiveRed : .primaryText)
                     }
                 }
                 
@@ -255,7 +255,7 @@ struct BudgetCategoryCard: View {
                                 .cornerRadius(3)
                             
                             Rectangle()
-                                .fill(percentageSpent > 1 ? Color.overBudgetColor : Color.budgetProgressColor)
+                                .fill(percentageSpent > 1 ? Color.adaptiveRed : Color.adaptiveGreen)
                                 .frame(width: min(geometry.size.width, geometry.size.width * percentageSpent), height: 6)
                                 .cornerRadius(3)
                         }

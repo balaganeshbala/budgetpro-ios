@@ -2,8 +2,13 @@ import SwiftUI
 
 extension Color {
     // MARK: - Theme Colors
-    static let primary = Color(light: Color(red: 0.259, green: 0.561, blue: 0.490), dark: Color(red: 0.3, green: 0.7, blue: 0.6)) // #428F7D
-    static let secondary = Color(light: Color(red: 1.0, green: 0.420, blue: 0.420), dark: Color(red: 1.0, green: 0.4, blue: 0.4)) // #FF6B6B
+    static let primary = Color(light: Color(red: 0.9, green: 0.25, blue: 0.65),
+                                 dark: Color(red: 0.85, green: 0.3, blue: 0.7)) // #E640A6
+    static let secondary = Color(light: Color(red: 0.13, green: 0.43, blue: 0.95),
+                               dark: Color(red: 0.18, green: 0.48, blue: 1.0)) // #216DF3
+    
+    static let adaptiveGreen = Color(light: Color(red: 0.259, green: 0.561, blue: 0.490), dark: Color(red: 0.3, green: 0.7, blue: 0.6)) // #428F7D
+    static let adaptiveRed = Color(light: Color(red: 1.0, green: 0.420, blue: 0.420), dark: Color(red: 1.0, green: 0.4, blue: 0.4)) // #FF6B6B
     
     // MARK: - Adaptive Theme Colors
     

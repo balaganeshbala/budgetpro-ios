@@ -240,9 +240,7 @@ struct SignUpView: View {
                     }) {
                         HStack {
                             if viewModel.isLoading {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                    .scaleEffect(0.8)
+                                ButtonProgressView()
                             } else {
                                 Text("Sign Up")
                                     .font(.appFont(16, weight: .semibold))

@@ -209,7 +209,7 @@ struct ExpenseIncomePieChart: View {
             data.append(PieChartData(
                 label: "Income",
                 value: totalIncome,
-                color: .primary
+                color: .adaptiveGreen
             ))
         }
         
@@ -217,7 +217,7 @@ struct ExpenseIncomePieChart: View {
             data.append(PieChartData(
                 label: "Expenses",
                 value: totalExpenses,
-                color: .secondary
+                color: .adaptiveRed
             ))
         }
         
