@@ -74,7 +74,7 @@ struct CategoryFilterView: View {
                 Button(action: selectAllCategories) {
                     Text("Select All")
                         .font(.appFont(14, weight: .medium))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
                 }
                 
                 Spacer()
@@ -88,7 +88,7 @@ struct CategoryFilterView: View {
                 Button(action: deselectAllCategories) {
                     Text("Clear All")
                         .font(.appFont(14, weight: .medium))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
                 }
             }
             .padding(.horizontal, 16)

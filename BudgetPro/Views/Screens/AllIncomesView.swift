@@ -73,7 +73,7 @@ struct AllIncomesView: View {
                 } label: {
                     Image(systemName: "arrow.up.arrow.down")
                         .font(.system(size: 16))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
                 }
             }
             

@@ -155,7 +155,7 @@ struct HomeView: View {
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 24)
                                 .padding(.vertical, 12)
-                                .background(Color.secondary)
+                                .background(Color.primary)
                                 .cornerRadius(8)
                         }
                     }
@@ -242,7 +242,7 @@ struct HomeView: View {
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 24)
                                 .padding(.vertical, 12)
-                                .background(Color.secondary)
+                                .background(Color.primary)
                                 .cornerRadius(8)
                         }
                     }
@@ -300,10 +300,10 @@ struct HomeView: View {
                 Spacer()
                 Image(systemName: "plus")
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(Color.secondary)
+                    .foregroundColor(Color.primary)
                 Text("Add New")
                     .font(.appFont(14, weight: .semibold))
-                    .foregroundColor(Color.secondary)
+                    .foregroundColor(Color.primary)
                 Spacer()
             }
             .padding(16)
@@ -315,10 +315,10 @@ struct HomeView: View {
             Spacer()
             Text("More Details")
                 .font(.appFont(14, weight: .semibold))
-                .foregroundColor(Color.secondary)
+                .foregroundColor(Color.primary)
             Image(systemName: "chevron.right")
                 .font(.system(size: 12))
-                .foregroundColor(Color.secondary)
+                .foregroundColor(Color.primary)
             Spacer()
         }
         .padding(16)
@@ -333,7 +333,7 @@ struct HomeView: View {
                     coordinator.selectTab(.profile)
                 }) {
                     Image(systemName: "person.fill")
-                        .foregroundColor(Color.secondary)
+                        .foregroundColor(Color.primary)
                         .font(.system(size: 20))
                         .frame(width: 40, height: 40)
                         
@@ -346,7 +346,7 @@ struct HomeView: View {
                             .clipShape(Circle())
                     }
                 }
-                .tint(Color.secondary.opacity(0.2))
+                .tint(Color.primary.opacity(0.2))
                 
                 Spacer()
                 
@@ -555,7 +555,7 @@ struct HomeView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
-                    .background(Color.secondary)
+                    .background(Color.primary)
                     .cornerRadius(8)
             }
         }

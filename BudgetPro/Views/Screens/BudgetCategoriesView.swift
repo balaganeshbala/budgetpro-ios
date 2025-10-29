@@ -171,7 +171,7 @@ struct BudgetCategoryCard: View {
     
     private var statusInfo: (text: String, color: Color) {
         if category.budget == 0 && category.spent > 0 {
-            return ("Unplanned", .secondary)
+            return ("Unplanned", .primary)
         } else if category.budget == 0 {
             return ("No Budget", .secondaryText)
         } else if percentageSpent > 1 {

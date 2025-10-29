@@ -41,7 +41,7 @@ struct AboutView: View {
                     presentationMode.wrappedValue.dismiss()
                 }
                 .font(.appFont(16, weight: .medium))
-                .foregroundColor(.secondary)
+                .foregroundColor(.primary)
             )
         }
         .onAppear {
@@ -59,13 +59,9 @@ struct AboutView: View {
                     .frame(width: 80, height: 80)
                 
                 // App Name
-                Text("Budget")
+                Text("Budget Pro")
                     .font(.appFont(24, weight: .bold))
-                    .foregroundColor(.adaptiveGreen)
-                +
-                Text(" Pro")
-                    .font(.appFont(24, weight: .bold))
-                    .foregroundColor(.adaptiveRed)
+                    .foregroundColor(.primaryText)
                 
                 Text("Version \(appVersion)")
                     .font(.appFont(14))
@@ -108,7 +104,7 @@ struct AboutView: View {
                 VStack(spacing: 20) {
                     FeatureRow(
                         icon: "chart.pie",
-                        iconColor: Color.secondary,
+                        iconColor: Color.primary,
                         title: "Budget Management",
                         description: "Create and track monthly budgets by category"
                     )
@@ -154,11 +150,11 @@ struct AboutView: View {
                     .font(.appFont(18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
-                Text("Built with ❤️ using SwiftUI and Supabase")
+                Text("Built with ❤️ in India")
                     .font(.appFont(14))
                     .foregroundColor(.secondaryText)
                 
-                Text("© 2025 BudgetPro. All rights reserved.")
+                Text("© 2025 Clogeon. All rights reserved.")
                     .font(.appFont(12))
                     .foregroundColor(.secondaryText)
             }

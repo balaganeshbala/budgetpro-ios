@@ -177,7 +177,7 @@ struct EditBudgetView: View {
                 .font(.appFont(15, weight: .semibold))
                 .foregroundColor(
                     viewModel.canUpdate && viewModel.hasChanges && !viewModel.isLoading
-                        ? Color.secondary
+                        ? Color.primary
                         : .secondaryText
                 )
         }
@@ -272,7 +272,7 @@ struct EditBudgetCategoryInput: View {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(
                             hasChanged ? Color.orange : 
-                            (isFocused ? .secondary : Color.gray.opacity(0.3)), 
+                            (isFocused ? .primary : Color.gray.opacity(0.3)), 
                             lineWidth: hasChanged ? 2 : (isFocused ? 2 : 1)
                         )
                         .background(Color.cardBackground)

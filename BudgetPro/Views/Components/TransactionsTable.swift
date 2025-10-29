@@ -134,12 +134,12 @@ struct TransactionsTable: View {
             
             Text(title)
                 .font(.appFont(12, weight: isActive ? .bold : .semibold))
-                .foregroundColor(isActive ? Color.secondary : .secondaryText)
+                .foregroundColor(isActive ? Color.primary : .secondaryText)
             
             if let _ = onTap, isActive {
                 Image(systemName: isAscending ? "arrow.up" : "arrow.down")
                     .font(.system(size: 14))
-                    .foregroundColor(Color.secondary)
+                    .foregroundColor(Color.primary)
             }
             
             if alignment == .leading {

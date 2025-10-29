@@ -76,10 +76,10 @@ struct BudgetOverviewCard: View {
                                     Image(systemName: "pencil")
                                 }
                             }
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.primary)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(Color.secondary.opacity(0.1))
+                            .background(Color.primary.opacity(0.1))
                             .cornerRadius(16)
                         }
                     }
@@ -196,13 +196,13 @@ struct BudgetOverviewCard: View {
                         HStack {
                             Text("View Budget Details")
                                 .font(.appFont(14, weight: .semibold))
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.primary)
                             
                             Spacer()
                             
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.primary)
                         }
                         .padding(.vertical, 16)
                         .padding(.horizontal, 4)

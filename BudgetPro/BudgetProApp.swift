@@ -21,7 +21,7 @@ struct BudgetProApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .tint(Color.secondary)
+                .tint(Color.primary)
         }
     }
 }

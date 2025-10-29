@@ -54,7 +54,7 @@ struct CreateBudgetView: View {
                     presentationMode.wrappedValue.dismiss()
                 }) {
                     Image(systemName: "chevron.left")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
                         .font(.title3)
                 }
             }
@@ -67,7 +67,7 @@ struct CreateBudgetView: View {
                     }
                 }
                 .font(.appFont(16, weight: .medium))
-                .foregroundColor(viewModel.canSave ? .secondary : .secondaryText)
+                .foregroundColor(viewModel.canSave ? .primary : .secondaryText)
                 .disabled(!viewModel.canSave || viewModel.isLoading)
             }
         }
@@ -232,7 +232,7 @@ struct BudgetCategoryInput: View {
                 .padding(.vertical, 10)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(isFocused ? Color.secondary : Color.inputBorder, lineWidth: isFocused ? 2 : 1)
+                        .stroke(isFocused ? Color.primary : Color.inputBorder, lineWidth: isFocused ? 2 : 1)
                         .background(Color.inputBackground)
                 )
                 .cornerRadius(8)

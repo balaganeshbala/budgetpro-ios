@@ -13,7 +13,7 @@ struct BorderOverlayModifier: ViewModifier {
         content
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.secondary.opacity(0.8), lineWidth: 1)
+                    .stroke(Color.primary.opacity(0.8), lineWidth: 1)
             )
     }
 }
@@ -54,11 +54,11 @@ struct MonthYearPicker: View {
         }) {
             HStack(spacing: 10) {
                 Image(systemName: "calendar")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.primary)
                 
                 Text("\(months[selectedMonth - 1]) \(String(selectedYear))")
                     .font(.appFont(16, weight: .semibold))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.primary)
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
@@ -69,7 +69,7 @@ struct MonthYearPicker: View {
             } else {
                 $0.overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.secondary.opacity(0.8), lineWidth: 1)
+                        .stroke(Color.primary.opacity(0.8), lineWidth: 1)
                 )
             }
         }
@@ -202,7 +202,7 @@ struct MonthYearPickerDialog: View {
                             $0.buttonStyle(.borderedProminent)
                         }
                     }
-                    .tint(Color.secondary)
+                    .tint(Color.primary)
                 }
             }
             .padding(24)

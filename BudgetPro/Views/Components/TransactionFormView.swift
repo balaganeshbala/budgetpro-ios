@@ -291,7 +291,7 @@ struct TransactionFormView<ViewState: TransactionFormStateProtocol, CategoryType
                         dismiss()
                     }) {
                         Image(systemName: "chevron.left")
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.primary)
                             .font(.title3)
                     }
                 }
@@ -606,7 +606,7 @@ struct TransactionDateSelectorField<ViewModel: TransactionFormStateProtocol>: Vi
                     
                     Text(viewModel.formattedDateForDisplay)
                         .font(.appFont(14, weight: .semibold))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 16)
@@ -669,11 +669,11 @@ struct TransactionCategorySelectorField<CategoryType>: View where CategoryType: 
                     
                     Text(selectedCategory.displayName.uppercased())
                         .font(.appFont(14, weight: .semibold))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
                     
                     Image(systemName: "chevron.down")
                         .font(.appFont(12))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 16)
@@ -722,7 +722,7 @@ struct TransactionSaveButton<State: TransactionFormStateProtocol>: View {
         }
         .tint(
             viewModel.state.isFormValid && !viewModel.state.isLoading
-                ? Color.secondary
+                ? Color.primary
                 : Color.gray.opacity(0.6)
         )
         .disabled(!viewModel.state.isFormValid || viewModel.state.isLoading)
@@ -763,7 +763,7 @@ struct TransactionUpdateButton<State: TransactionFormStateProtocol>: View {
         }
         .tint(
             viewModel.state.isFormValid && !viewModel.state.isLoading
-                ? Color.secondary
+                ? Color.primary
                 : Color.gray.opacity(0.6)
         )
         .disabled(!viewModel.state.isFormValid || !viewModel.state.hasChanges || viewModel.state.isLoading)

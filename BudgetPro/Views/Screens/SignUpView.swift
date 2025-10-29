@@ -258,7 +258,7 @@ struct SignUpView: View {
                     }
                     .tint(
                         viewModel.isFormValid && !viewModel.isLoading
-                            ? Color.secondary
+                            ? Color.primary
                             : Color.gray.opacity(0.6)
                     )
                     .disabled(!viewModel.isFormValid || viewModel.isLoading)
@@ -276,7 +276,7 @@ struct SignUpView: View {
                         }) {
                             Text("Sign In")
                                 .font(.appFont(16, weight: .medium))
-                                .foregroundColor(Color.secondary)
+                                .foregroundColor(Color.primary)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
                         }

@@ -65,7 +65,7 @@ struct DatePickerDialog: View {
                             $0.buttonStyle(.borderedProminent)
                         }
                     }
-                    .tint(Color.secondary)
+                    .tint(Color.primary)
                 }
             }
             .padding(24)
