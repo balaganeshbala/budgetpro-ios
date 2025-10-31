@@ -245,8 +245,7 @@ struct TransactionFormView<ViewState: TransactionFormStateProtocol, CategoryType
             )
             
             TransactionDateSelectorField(
-                viewModel: viewModel,
-                showingDatePicker: $showingDatePicker
+                viewModel: viewModel
             )
             
             // Notes field for major expenses only
@@ -335,13 +334,6 @@ struct TransactionFormView<ViewState: TransactionFormStateProtocol, CategoryType
     @ViewBuilder
     private var overlayDialogs: some View {
         Group {
-            if showingDatePicker {
-                DatePickerDialog(
-                    selectedDate: $viewModel.selectedDate,
-                    isPresented: $showingDatePicker
-                )
-            }
-            
             if showingCategoryPicker {
                 categoryPickerDialog
             }
@@ -585,39 +577,31 @@ struct TransactionAmountInputField<ViewModel: TransactionFormStateProtocol>: Vie
 
 struct TransactionDateSelectorField<ViewModel: TransactionFormStateProtocol>: View {
     @ObservedObject var viewModel: ViewModel
-    @Binding var showingDatePicker: Bool
     
     var body: some View {
-        VStack(spacing: 0) {
-            Button(action: {
-                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                showingDatePicker = true
-            }) {
-                HStack(spacing: 12) {
-                    Image(systemName: "calendar")
-                        .foregroundColor(.gray)
-                        .font(.system(size: 20))
-                    
-                    Text("Date")
-                        .font(.appFont(16, weight: .medium))
-                        .foregroundColor(.gray)
-                    
-                    Spacer()
-                    
-                    Text(viewModel.formattedDateForDisplay)
-                        .font(.appFont(14, weight: .semibold))
-                        .foregroundColor(.primary)
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 16)
-                .background(Color.inputBackground)
-                .cornerRadius(12)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.inputBorder, lineWidth: 1)
-                )
-            }
+        HStack(spacing: 12) {
+            Image(systemName: "calendar")
+                .foregroundColor(.gray)
+                .font(.system(size: 20))
+            
+            Text("Date")
+                .font(.appFont(16, weight: .medium))
+                .foregroundColor(.gray)
+            
+            Spacer()
+            
+            DatePicker("", selection: $viewModel.selectedDate, in: ...Date(), displayedComponents: .date)
+                .datePickerStyle(.compact)
+                .labelsHidden()
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 16)
+        .background(Color.inputBackground)
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.inputBorder, lineWidth: 1)
+        )
     }
 }
 
