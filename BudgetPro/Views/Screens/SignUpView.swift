@@ -29,7 +29,7 @@ struct SignUpView: View {
                     
                     // Full Name input
                     VStack(alignment: .leading, spacing: 4) {
-                        CustomTextField(
+                        AppTextField(
                             hint: "Full Name",
                             iconName: "person",
                             text: $viewModel.fullName,
@@ -61,7 +61,7 @@ struct SignUpView: View {
                     
                     // Email input
                     VStack(alignment: .leading, spacing: 4) {
-                        CustomTextField(
+                        AppTextField(
                             hint: "Email",
                             iconName: "envelope",
                             text: $viewModel.email,
@@ -93,7 +93,7 @@ struct SignUpView: View {
                     
                     // Password input
                     VStack(alignment: .leading, spacing: 4) {
-                        CustomTextField(
+                        AppTextField(
                             hint: "Password",
                             iconName: "lock",
                             text: $viewModel.password,
@@ -172,7 +172,7 @@ struct SignUpView: View {
                     
                     // Confirm Password input
                     VStack(alignment: .leading, spacing: 4) {
-                        CustomTextField(
+                        AppTextField(
                             hint: "Confirm Password",
                             iconName: "lock.fill",
                             text: $viewModel.confirmPassword,

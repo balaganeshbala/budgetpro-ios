@@ -510,7 +510,7 @@ struct TransactionNameInputField<ViewModel: TransactionFormStateProtocol>: View 
     let transactionType: TransactionType
     
     var body: some View {
-        CustomTextField(
+        AppTextField(
             hint: transactionType.nameFieldLabel,
             iconName: transactionType.nameFieldIcon,
             text: $viewModel.transactionName,
@@ -547,7 +547,7 @@ struct TransactionAmountInputField<ViewModel: TransactionFormStateProtocol>: Vie
     var focusedField: FocusState<TransactionField?>.Binding
     
     var body: some View {
-        CustomTextField(
+        AppTextField(
             hint: "Amount",
             iconName: "indianrupeesign",
             text: $viewModel.amountText,
@@ -611,7 +611,7 @@ struct TransactionNotesInputField<ViewModel: TransactionFormStateProtocol>: View
     var focusedField: FocusState<TransactionField?>.Binding
     
     var body: some View {
-        CustomTextField(
+        AppTextField(
             hint: "Notes (Optional)",
             iconName: "note.text",
             text: $viewModel.notes,

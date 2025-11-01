@@ -18,6 +18,9 @@ struct BudgetOverviewCard: View {
     let onEditTapped: (() -> Void)?
     let onDetailsTapped: (() -> Void)?
     
+    // Expansion state for Budget Summary Row
+    @State private var isSummaryExpanded: Bool = false
+    
     init(
         title: String? = nil,
         totalBudget: Double,
@@ -46,6 +49,14 @@ struct BudgetOverviewCard: View {
     
     private var usagePercentage: Int {
         Int((totalSpent / max(totalBudget, 1)) * 100)
+    }
+    
+    private var usageBasedColor: Color {
+        isOverBudget ? .adaptiveRed : usagePercentage > 80 ? .warningColor : .adaptiveGreen
+    }
+    
+    private var spentBasedColor: Color {
+        isOverBudget ? .adaptiveRed : .adaptiveGreen
     }
     
     var body: some View {
@@ -89,62 +100,82 @@ struct BudgetOverviewCard: View {
             // Budget content
             VStack(spacing: 20) {
                 // Remaining Amount - Highlighted at the top
-                VStack(alignment: .center, spacing: 8) {
-                    Text(isOverBudget ? "Overspent": "Remaining Budget")
-                        .font(.appFont(18, weight: .medium))
-                        .foregroundColor(.secondaryText)
-                    
-                    Text("₹\(CommonHelpers.formatAmount(abs(remainingBudget)))")
-                        .font(.appFont(30, weight: .bold))
-                        .foregroundColor(isOverBudget ? .adaptiveRed : .adaptiveGreen)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(20)
-                .background(
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            isOverBudget ? Color.adaptiveRed.opacity(0.05) : Color.adaptiveGreen.opacity(0.05),
-                            isOverBudget ? Color.adaptiveRed.opacity(0.1) : Color.adaptiveGreen.opacity(0.1)
-                        ]),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .cornerRadius(16)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(isOverBudget ? Color.adaptiveRed.opacity(0.2) : Color.adaptiveGreen.opacity(0.2), lineWidth: 1)
-                )
-                
-                // Budget Summary Row
-                HStack(spacing: 16) {
-                    // Total Budget
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Total Budget")
-                            .font(.appFont(14))
-                            .foregroundColor(.secondaryText)
-                        
-                        Text("₹\(CommonHelpers.formatAmount(totalBudget))")
-                            .font(.appFont(20, weight: .semibold))
-                            .foregroundColor(.primaryText)
+                VStack(spacing: 0) {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            isSummaryExpanded.toggle()
+                        }
+                    } label: {
+                        HStack(alignment: .center, spacing: 12) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Group {
+                                    Text(isOverBudget ? "Overspent": "Remaining Budget")
+                                        .font(.appFont(18, weight: .medium))
+                                        .foregroundColor(.secondaryText)
+                                    
+                                    Text("₹\(CommonHelpers.formatAmount(abs(remainingBudget)))")
+                                        .font(.appFont(30, weight: .bold))
+                                        .foregroundStyle(spentBasedColor)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            // Chevron on right side
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundColor(.secondaryText)
+                                .rotationEffect(.degrees(isSummaryExpanded ? 90 : 0))
+                                .animation(.easeInOut(duration: 0.25), value: isSummaryExpanded)
+                        }
+                        .contentShape(Rectangle())
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .buttonStyle(.plain)
+                    .padding(20)
                     
                     Divider()
-                        .frame(height: 30)
                     
-                    // Total Spent
-                    VStack(alignment: .trailing, spacing: 4) {
-                        Text("Total Spent")
-                            .font(.appFont(14))
-                            .foregroundColor(.secondaryText)
-                        
-                        Text("₹\(CommonHelpers.formatAmount(totalSpent))")
-                            .font(.appFont(20, weight: .semibold))
-                            .foregroundColor(isOverBudget ? .adaptiveRed : .warningColor)
+                    // Budget Summary Row (Expandable/Collapsible)
+                    if isSummaryExpanded {
+                        HStack(spacing: 16) {
+                            // Total Budget
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Total Budget")
+                                    .font(.appFont(14))
+                                    .foregroundColor(.secondaryText)
+                                
+                                Text("₹\(CommonHelpers.formatAmount(totalBudget))")
+                                    .font(.appFont(20, weight: .semibold))
+                                    .foregroundColor(.primaryText)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            Divider()
+                                .frame(width: 1, height: 40)
+                            
+                            // Total Spent
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Total Spent")
+                                    .font(.appFont(14))
+                                    .foregroundColor(.secondaryText)
+                                
+                                Text("₹\(CommonHelpers.formatAmount(totalSpent))")
+                                    .font(.appFont(20, weight: .semibold))
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .padding(20)
                     }
-                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                )
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.clear)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 16))
                 
                 // Progress Bar with Percentage
                 if totalBudget > 0 {
@@ -158,7 +189,7 @@ struct BudgetOverviewCard: View {
                             
                             Text("\(usagePercentage)%")
                                 .font(.appFont(16, weight: .bold))
-                                .foregroundColor(isOverBudget ? .adaptiveRed : .warningColor)
+                                .foregroundColor(isOverBudget ? .adaptiveRed : usagePercentage > 80 ? .warningColor : .adaptiveGreen)
                         }
                         
                         GeometryReader { geometry in
@@ -172,8 +203,8 @@ struct BudgetOverviewCard: View {
                                     .fill(
                                         LinearGradient(
                                             gradient: Gradient(colors: [
-                                                isOverBudget ? Color.adaptiveRed : Color.warningColor,
-                                                isOverBudget ? Color.adaptiveRed.opacity(0.8) : Color.warningColor.opacity(0.8)
+                                                usageBasedColor,
+                                                usageBasedColor.opacity(0.8)
                                             ]),
                                             startPoint: .leading,
                                             endPoint: .trailing
@@ -219,17 +250,37 @@ struct BudgetOverviewCard: View {
 
 #Preview {
     VStack {
-        BudgetOverviewCard(totalBudget: 150000, totalSpent: 65000, showEditButton: false, showDetailsButton: false) {
+        BudgetOverviewCard(totalBudget: 150000, totalSpent: 165000, showEditButton: false, showDetailsButton: false) {
             
         } onDetailsTapped: {
             
         }
         
-        BudgetOverviewCard(title: "Overview", totalBudget: 120000, totalSpent: 85000, showEditButton: true, showDetailsButton: true) {
+        BudgetOverviewCard(title: "Overview", totalBudget: 120000, totalSpent: 95000, showEditButton: true, showDetailsButton: true) {
+            
+        } onDetailsTapped: {
+            
+        }
+        
+        Spacer()
+        
+    }
+}
+
+#Preview {
+    VStack {
+        BudgetOverviewCard(totalBudget: 150000, totalSpent: 165000, showEditButton: false, showDetailsButton: false) {
+            
+        } onDetailsTapped: {
+            
+        }
+        
+        BudgetOverviewCard(title: "Overview", totalBudget: 120000, totalSpent: 115000, showEditButton: true, showDetailsButton: true) {
             
         } onDetailsTapped: {
             
         }
         
     }
+    .preferredColorScheme(.dark)
 }

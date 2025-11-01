@@ -26,7 +26,7 @@ struct LoginView: View {
                 .padding(.top, 60)
                 
                 // Email input
-                CustomTextField(
+                AppTextField(
                     hint: "Email",
                     iconName: "envelope",
                     text: $viewModel.email,
@@ -49,7 +49,7 @@ struct LoginView: View {
                 .padding(.bottom, 16)
                 
                 // Password input (with show/hide)
-                CustomTextField(
+                AppTextField(
                     hint: "Password",
                     iconName: "lock",
                     text: $viewModel.password,
