@@ -56,7 +56,7 @@ struct BudgetOverviewCard: View {
     }
     
     private var spentBasedColor: Color {
-        isOverBudget ? .adaptiveRed : .adaptiveGreen
+        isOverBudget ? .adaptiveRed : .primaryText
     }
     
     var body: some View {
