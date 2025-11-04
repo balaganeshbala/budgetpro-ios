@@ -162,7 +162,7 @@ class MainCoordinator: Coordinator {
             AllIncomesView(incomes: incomes, month: month, year: year)
                 .environmentObject(self)
         case .allMajorExpenses:
-            AllMajorExpensesView()
+            AllMajorExpensesView(repoService: dataFetchRepo)
                 .environmentObject(self)
         case .addMajorExpense:
             AddMajorExpenseView(repoService: majorExpenseRepo)

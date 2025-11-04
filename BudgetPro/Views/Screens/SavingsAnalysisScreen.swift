@@ -512,7 +512,7 @@ struct SavingsAnalysisScreen_Previews: PreviewProvider {
         Expense(
             id: 3,
             name: "Movie Tickets",
-            amount: 50000,
+            amount: 4000,
             category: .entertainment,
             date: Date()
         )

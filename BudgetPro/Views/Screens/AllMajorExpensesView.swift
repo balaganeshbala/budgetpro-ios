@@ -9,8 +9,12 @@ import SwiftUI
 
 // MARK: - All Major Expenses View
 struct AllMajorExpensesView: View {
-    @StateObject private var viewModel = AllMajorExpensesViewModel()
     @EnvironmentObject private var coordinator: MainCoordinator
+    @StateObject private var viewModel: AllMajorExpensesViewModel
+    
+    init(repoService: DataFetchRepoService) {
+        self._viewModel = StateObject(wrappedValue: AllMajorExpensesViewModel(repoService: repoService))
+    }
     
     var body: some View {
         ScrollView {
@@ -299,7 +303,7 @@ struct MajorCategoryBreakdownRow: View {
 struct AllMajorExpensesView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            AllMajorExpensesView()
+            AllMajorExpensesView(repoService: SupabaseDataFetchRepoService())
         }
     }
 }

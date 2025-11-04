@@ -18,8 +18,10 @@ class AllMajorExpensesViewModel: ObservableObject {
     @Published var errorMessage = ""
     
     private let supabaseManager = SupabaseManager.shared
+    private let repoService: DataFetchRepoService
     
-    init() {
+    init(repoService: DataFetchRepoService) {
+        self.repoService = repoService
         setupNotificationObserver()
     }
     
@@ -44,17 +46,19 @@ class AllMajorExpensesViewModel: ObservableObject {
         errorMessage = ""
         
         do {
+            // Obtain current user id from SupabaseManager (auth source of truth)
             let session = try await supabaseManager.client.auth.session
-            let userId = session.user.id
+            let userId = session.user.id.uuidString
             
-            let response: [MajorExpenseResponse] = try await supabaseManager.client
-                .from("major_expenses")
-                .select("*")
-                .eq("user_id", value: userId.uuidString)
-                .order("date", ascending: false)
-                .execute()
-                .value
+            // Fetch rows using the repo service
+            let response: [MajorExpenseResponse] = try await repoService.fetchAll(
+                from: "major_expenses",
+                filters: [
+                    RepoQueryFilter(column: "user_id", op: .eq, value: userId)
+                ]
+            )
             
+            // Map to domain model
             majorExpenses = response.compactMap { responseItem in
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "yyyy-MM-dd"

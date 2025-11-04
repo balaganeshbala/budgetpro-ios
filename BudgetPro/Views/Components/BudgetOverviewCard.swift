@@ -281,6 +281,8 @@ struct BudgetOverviewCard: View {
             
         }
         
+        Spacer()
+        
     }
     .preferredColorScheme(.dark)
 }
