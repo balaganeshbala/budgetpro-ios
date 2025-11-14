@@ -5,7 +5,6 @@
 //  Created by Balaganesh S on 15/07/25.
 //
 
-
 import SwiftUI
 
 // MARK: - Sort Type Enum
@@ -283,6 +282,9 @@ struct CategoryBreakdownRow: View {
 
 // MARK: - Preview
 struct AllExpensesView_Previews: PreviewProvider {
+    
+    @StateObject static var coordinator = MainCoordinator(userId: "userId")
+    
     static var sampleExpenses: [Expense] {
         [
             Expense(
@@ -347,5 +349,6 @@ struct AllExpensesView_Previews: PreviewProvider {
             .preferredColorScheme(.dark)
             .previewDisplayName("Dark Theme")
         }
+        .environmentObject(coordinator)
     }
 }

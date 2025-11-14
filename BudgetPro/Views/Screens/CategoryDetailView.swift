@@ -68,9 +68,7 @@ struct CategoryDetailView: View {
     private var budgetOverviewCard: some View {
         BudgetOverviewCard(
             totalBudget: category.budget,
-            totalSpent: category.spent,
-            showEditButton: false,
-            showDetailsButton: false
+            totalSpent: category.spent
         )
     }
     

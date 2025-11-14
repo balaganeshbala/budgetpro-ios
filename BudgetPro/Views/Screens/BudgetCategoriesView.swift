@@ -31,9 +31,7 @@ struct BudgetCategoriesView: View {
                 BudgetOverviewCard(
                     title: "Overall Budget",
                     totalBudget: filteredTotalBudget,
-                    totalSpent: filteredTotalSpent,
-                    showEditButton: false,
-                    showDetailsButton: false
+                    totalSpent: filteredTotalSpent
                 )
                 
                 // Budget categories list

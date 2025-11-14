@@ -168,6 +168,30 @@ struct HomeView: View {
                             .font(.appFont(18, weight: .semibold))
                             .foregroundColor(.primaryText)
                         Spacer()
+                        
+                        
+                        if !viewModel.recentExpenses.isEmpty {
+                            Button {
+                                coordinator.navigate(to: .addExpense)
+                            } label: {
+                                Label {
+                                    Text("Add")
+                                        .font(.appFont(14, weight: .semibold))
+                                } icon: {
+                                    if #available(iOS 16.0, *) {
+                                        Image(systemName: "plus")
+                                            .fontWeight(.bold)
+                                    } else {
+                                        Image(systemName: "plus")
+                                    }
+                                }
+                                .foregroundColor(.primary)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color.primary.opacity(0.1))
+                                .cornerRadius(16)
+                            }
+                        }
                     }
                     .padding([.horizontal], 16)
                     
@@ -181,12 +205,6 @@ struct HomeView: View {
                                 Divider()
                                     .padding(.horizontal, 16)
                             }
-                        }
-                        
-                        Button(action: {
-                            coordinator.navigate(to: .addExpense)
-                        }) {
-                            addNewButton
                         }
                         
                         if !viewModel.recentExpenses.isEmpty {
@@ -255,6 +273,29 @@ struct HomeView: View {
                             .font(.appFont(18, weight: .semibold))
                             .foregroundColor(.primaryText)
                         Spacer()
+                        
+                        if !viewModel.recentIncomes.isEmpty {
+                            Button {
+                                coordinator.navigate(to: .addIncome)
+                            } label: {
+                                Label {
+                                    Text("Add")
+                                        .font(.appFont(14, weight: .semibold))
+                                } icon: {
+                                    if #available(iOS 16.0, *) {
+                                        Image(systemName: "plus")
+                                            .fontWeight(.bold)
+                                    } else {
+                                        Image(systemName: "plus")
+                                    }
+                                }
+                                .foregroundColor(.primary)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color.primary.opacity(0.1))
+                                .cornerRadius(16)
+                            }
+                        }
                     }
                     .padding([.horizontal], 16)
                     
@@ -269,12 +310,6 @@ struct HomeView: View {
                                 Divider()
                                     .padding(.horizontal, 16)
                             }
-                        }
-                        
-                        Button(action: {
-                            coordinator.navigate(to: .addIncome)
-                        }) {
-                            addNewButton
                         }
                         
                         if !viewModel.recentIncomes.isEmpty {
@@ -377,6 +412,18 @@ struct HomeView: View {
         .background(Color.cardBackground)
     }
     
+    private var isOverBudget: Bool {
+        viewModel.totalSpent > viewModel.totalBudget
+    }
+    
+    private var remainingBudget: Double {
+        viewModel.totalBudget - viewModel.totalSpent
+    }
+    
+    private var spentBasedColor: Color {
+        isOverBudget ? .adaptiveRed : .primaryText
+    }
+    
     // MARK: - Budget Overview Card
     @ViewBuilder
     private var budgetOverviewCard: some View {
@@ -403,20 +450,73 @@ struct HomeView: View {
                 }
             }
         } else {
-            // Budget exists - use reusable component
-            BudgetOverviewCard(
-                title: "Budget Overview",
-                totalBudget: viewModel.totalBudget,
-                totalSpent: viewModel.totalSpent,
-                showEditButton: !isPastMonth(month: selectedMonth, year: selectedYear),
-                showDetailsButton: true,
-                onEditTapped: {
-                    coordinator.navigate(to: .editBudget(budgetCategories: viewModel.budgetCategories, month: selectedMonth, year: selectedYear))
-                },
-                onDetailsTapped: {
-                    coordinator.navigate(to: .budgetCategories(budgetCategories: viewModel.budgetCategories, totalBudget: viewModel.totalBudget, totalSpent: viewModel.totalSpent, expenses: viewModel.recentExpenses, month: selectedMonth, year: selectedYear))
+            // Budget exists
+            CardView {
+                VStack {
+                    // Header
+                    HStack {
+                        
+                        Text("Budget")
+                            .font(.appFont(18, weight: .semibold))
+                            .foregroundColor(.primaryText)
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            coordinator.navigate(to: .editBudget(budgetCategories: viewModel.budgetCategories, month: selectedMonth, year: selectedYear))
+                        }) {
+                            Label {
+                                Text("Edit")
+                                    .font(.appFont(14, weight: .semibold))
+                            } icon: {
+                                if #available(iOS 16.0, *) {
+                                    Image(systemName: "pencil")
+                                        .fontWeight(.bold)
+                                } else {
+                                    Image(systemName: "pencil")
+                                }
+                            }
+                            .foregroundColor(.primary)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.primary.opacity(0.1))
+                            .cornerRadius(16)
+                        }
+                    }
+                    
+                    Divider()
+                    
+                    // Remaining Amount - Highlighted at the top
+                    VStack(spacing: 0) {
+                        Button {
+                            coordinator.navigate(to: .budgetCategories(budgetCategories: viewModel.budgetCategories, totalBudget: viewModel.totalBudget, totalSpent: viewModel.totalSpent, expenses: viewModel.recentExpenses, month: selectedMonth, year: selectedYear))
+                        } label: {
+                            HStack(alignment: .center, spacing: 12) {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Group {
+                                        Text(isOverBudget ? "Overspent": "Remaining")
+                                            .font(.appFont(14, weight: .medium))
+                                            .foregroundColor(.secondaryText)
+                                        
+                                        Text("₹\(CommonHelpers.formatAmount(abs(remainingBudget)))")
+                                            .font(.appFont(30, weight: .bold))
+                                            .foregroundStyle(spentBasedColor)
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                                // Chevron on right side
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundColor(.secondaryText)
+                            }
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
-            )
+            }
         }
     }
     
@@ -602,7 +702,62 @@ struct OptionRow: View {
 
 // MARK: - Preview
 struct HomeView_Previews: PreviewProvider {
+    // Simple mock that returns empty or sample data and never hits the network.
+    private final class MockDataFetchRepoService: DataFetchRepoService {
+        
+        func fetchAll<T>(from table: String, filters: [RepoQueryFilter]) async throws -> [T] where T : Decodable {
+            // Simulate small async latency for previews
+            try? await Task.sleep(nanoseconds: 100_000_000) // 100 ms
+            
+            let previewUserId = "preview-user"
+            
+            // Return concrete arrays only when T matches exactly.
+            if T.self == BudgetResponse.self, table == "budget" {
+                let result: [BudgetResponse] = [
+                    BudgetResponse(id: 1, category: ExpenseCategory.food.rawValue, amount: 20000, date: "2025-07-01", userId: previewUserId),
+                    BudgetResponse(id: 2, category: ExpenseCategory.housing.rawValue, amount: 30000, date: "2025-07-01", userId: previewUserId),
+                    BudgetResponse(id: 3, category: ExpenseCategory.travel.rawValue, amount: 10000, date: "2025-07-01", userId: previewUserId)
+                ]
+                if let typed = result as? [T] { return typed }
+            }
+            
+            if T.self == ExpenseResponse.self, table == "expenses" {
+                let result: [ExpenseResponse] = [
+                    ExpenseResponse(id: 10, date: "2025-07-12", name: "Groceries", category: ExpenseCategory.groceries.rawValue, amount: 2500, userId: previewUserId),
+                    ExpenseResponse(id: 11, date: "2025-07-10", name: "Fuel", category: ExpenseCategory.vehicle.rawValue, amount: 1200, userId: previewUserId),
+                    ExpenseResponse(id: 12, date: "2025-07-08", name: "Dinner", category: ExpenseCategory.food.rawValue, amount: 1800, userId: previewUserId)
+                ]
+                if let typed = result as? [T] { return typed }
+            }
+            
+            if T.self == IncomeResponse.self, table == "incomes" {
+                let result: [IncomeResponse] = [
+                    IncomeResponse(id: 21, source: "Salary", amount: 60000, category: IncomeCategory.salary.rawValue, date: "2025-07-01", userId: previewUserId),
+                    IncomeResponse(id: 22, source: "Freelance", amount: 15000, category: IncomeCategory.sideHustle.rawValue, date: "2025-07-08", userId: previewUserId)
+                ]
+                if let typed = result as? [T] { return typed }
+            }
+            
+            // Default empty
+            return []
+        }
+    }
+    
     static var previews: some View {
-        HomeView(userId: "", repoService: SupabaseDataFetchRepoService())
+        // Coordinator is required as EnvironmentObject for navigation and repos.
+        let coordinator = MainCoordinator(userId: "preview-user")
+        let mockRepo = MockDataFetchRepoService()
+        
+        return Group {
+            HomeView(userId: "preview-user", repoService: mockRepo)
+                .environmentObject(coordinator)
+                .preferredColorScheme(.light)
+                .previewDisplayName("Home - Light")
+            
+            HomeView(userId: "preview-user", repoService: mockRepo)
+                .environmentObject(coordinator)
+                .preferredColorScheme(.dark)
+                .previewDisplayName("Home - Dark")
+        }
     }
 }

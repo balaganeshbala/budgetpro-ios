@@ -13,30 +13,15 @@ struct BudgetOverviewCard: View {
     let title: String?
     let totalBudget: Double
     let totalSpent: Double
-    let showEditButton: Bool
-    let showDetailsButton: Bool
-    let onEditTapped: (() -> Void)?
-    let onDetailsTapped: (() -> Void)?
-    
-    // Expansion state for Budget Summary Row
-    @State private var isSummaryExpanded: Bool = false
     
     init(
         title: String? = nil,
         totalBudget: Double,
-        totalSpent: Double,
-        showEditButton: Bool = false,
-        showDetailsButton: Bool = false,
-        onEditTapped: (() -> Void)? = nil,
-        onDetailsTapped: (() -> Void)? = nil
+        totalSpent: Double
     ) {
         self.title = title
         self.totalBudget = totalBudget
         self.totalSpent = totalSpent
-        self.showEditButton = showEditButton
-        self.showDetailsButton = showDetailsButton
-        self.onEditTapped = onEditTapped
-        self.onDetailsTapped = onDetailsTapped
     }
     
     private var remainingBudget: Double {
@@ -62,37 +47,14 @@ struct BudgetOverviewCard: View {
     var body: some View {
         VStack(spacing: 16) {
             // Header
-            if title != nil || showEditButton {
+            if title != nil {
                 HStack {
                     if let title = title {
                         Text(title)
                             .font(.appFont(18, weight: .semibold))
                             .foregroundColor(.primaryText)
-                    }
-                    
-                    Spacer()
-                    
-                    if showEditButton {
-                        Button(action: {
-                            onEditTapped?()
-                        }) {
-                            Label {
-                                Text("Edit")
-                                    .font(.appFont(14, weight: .semibold))
-                            } icon: {
-                                if #available(iOS 16.0, *) {
-                                    Image(systemName: "pencil")
-                                        .fontWeight(.bold)
-                                } else {
-                                    Image(systemName: "pencil")
-                                }
-                            }
-                            .foregroundColor(.primary)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.primary.opacity(0.1))
-                            .cornerRadius(16)
-                        }
+                        
+                        Spacer()
                     }
                 }
             }
@@ -101,71 +63,48 @@ struct BudgetOverviewCard: View {
             VStack(spacing: 20) {
                 // Remaining Amount - Highlighted at the top
                 VStack(spacing: 0) {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            isSummaryExpanded.toggle()
-                        }
-                    } label: {
-                        HStack(alignment: .center, spacing: 12) {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Group {
-                                    Text(isOverBudget ? "Overspent": "Remaining Budget")
-                                        .font(.appFont(18, weight: .medium))
-                                        .foregroundColor(.secondaryText)
-                                    
-                                    Text("₹\(CommonHelpers.formatAmount(abs(remainingBudget)))")
-                                        .font(.appFont(30, weight: .bold))
-                                        .foregroundStyle(spentBasedColor)
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            
-                            // Chevron on right side
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(.secondaryText)
-                                .rotationEffect(.degrees(isSummaryExpanded ? 90 : 0))
-                                .animation(.easeInOut(duration: 0.25), value: isSummaryExpanded)
-                        }
-                        .contentShape(Rectangle())
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(isOverBudget ? "Overspent": "Remaining Budget")
+                            .font(.appFont(18, weight: .medium))
+                            .foregroundColor(.secondaryText)
+                        
+                        Text("₹\(CommonHelpers.formatAmount(abs(remainingBudget)))")
+                            .font(.appFont(30, weight: .bold))
+                            .foregroundStyle(spentBasedColor)
                     }
-                    .buttonStyle(.plain)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(20)
                     
                     Divider()
                     
-                    // Budget Summary Row (Expandable/Collapsible)
-                    if isSummaryExpanded {
-                        HStack(spacing: 16) {
-                            // Total Budget
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Total Budget")
-                                    .font(.appFont(14))
-                                    .foregroundColor(.secondaryText)
-                                
-                                Text("₹\(CommonHelpers.formatAmount(totalBudget))")
-                                    .font(.appFont(20, weight: .semibold))
-                                    .foregroundColor(.primaryText)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                    HStack(spacing: 16) {
+                        // Total Budget
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Total Budget")
+                                .font(.appFont(14))
+                                .foregroundColor(.secondaryText)
                             
-                            Divider()
-                                .frame(width: 1, height: 40)
-                            
-                            // Total Spent
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Total Spent")
-                                    .font(.appFont(14))
-                                    .foregroundColor(.secondaryText)
-                                
-                                Text("₹\(CommonHelpers.formatAmount(totalSpent))")
-                                    .font(.appFont(20, weight: .semibold))
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                            Text("₹\(CommonHelpers.formatAmount(totalBudget))")
+                                .font(.appFont(20, weight: .semibold))
+                                .foregroundColor(.primaryText)
                         }
-                        .padding(20)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        Divider()
+                            .frame(width: 1, height: 40)
+                        
+                        // Total Spent
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Total Spent")
+                                .font(.appFont(14))
+                                .foregroundColor(.secondaryText)
+                            
+                            Text("₹\(CommonHelpers.formatAmount(totalSpent))")
+                                .font(.appFont(20, weight: .semibold))
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
+                    .padding(20)
                 }
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
@@ -218,27 +157,6 @@ struct BudgetOverviewCard: View {
                         .frame(height: 10)
                     }
                 }
-                
-                // Details Button
-                if showDetailsButton {
-                    Button(action: {
-                        onDetailsTapped?()
-                    }) {
-                        HStack {
-                            Text("View Budget Details")
-                                .font(.appFont(14, weight: .semibold))
-                                .foregroundColor(.primary)
-                            
-                            Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.primary)
-                        }
-                        .padding(.vertical, 16)
-                        .padding(.horizontal, 4)
-                    }
-                }
             }
         }
         .padding(16)
@@ -250,17 +168,9 @@ struct BudgetOverviewCard: View {
 
 #Preview {
     VStack {
-        BudgetOverviewCard(totalBudget: 150000, totalSpent: 165000, showEditButton: false, showDetailsButton: false) {
-            
-        } onDetailsTapped: {
-            
-        }
+        BudgetOverviewCard(totalBudget: 150000, totalSpent: 165000)
         
-        BudgetOverviewCard(title: "Overview", totalBudget: 120000, totalSpent: 95000, showEditButton: true, showDetailsButton: true) {
-            
-        } onDetailsTapped: {
-            
-        }
+        BudgetOverviewCard(title: "Overview", totalBudget: 120000, totalSpent: 95000)
         
         Spacer()
         
@@ -269,17 +179,9 @@ struct BudgetOverviewCard: View {
 
 #Preview {
     VStack {
-        BudgetOverviewCard(totalBudget: 150000, totalSpent: 165000, showEditButton: false, showDetailsButton: false) {
-            
-        } onDetailsTapped: {
-            
-        }
+        BudgetOverviewCard(totalBudget: 150000, totalSpent: 165000)
         
-        BudgetOverviewCard(title: "Overview", totalBudget: 120000, totalSpent: 115000, showEditButton: true, showDetailsButton: true) {
-            
-        } onDetailsTapped: {
-            
-        }
+        BudgetOverviewCard(title: "Overview", totalBudget: 120000, totalSpent: 115000)
         
         Spacer()
         

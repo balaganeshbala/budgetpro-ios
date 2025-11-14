@@ -26,27 +26,13 @@ struct TransactionRow<T, Destination: View>: View {
                     case .circle:
                         Circle()
                             .fill(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [
-                                        (categoryColor ?? Color.primary).opacity(0.3),
-                                        (categoryColor ?? Color.primary).opacity(0.1)
-                                    ]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
+                                Color.primary.opacity(0.1)
                             )
                             .frame(width: 40, height: 40)
                     case .roundedRectangle:
                         RoundedRectangle(cornerRadius: 10, style: .circular)
                             .fill(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [
-                                        (categoryColor ?? Color.primary).opacity(0.3),
-                                        (categoryColor ?? Color.primary).opacity(0.1)
-                                    ]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
+                                Color.primary.opacity(0.1)
                             )
                             .frame(width: 40, height: 40)
                     }
@@ -54,7 +40,7 @@ struct TransactionRow<T, Destination: View>: View {
                 .overlay(
                     Image(systemName: categoryIcon)
                         .foregroundStyle(
-                            .linearGradient(colors: [categoryColor ?? Color.primary, (categoryColor ?? Color.primary).opacity(0.5)], startPoint: .top, endPoint: .bottomTrailing)
+                            Color.secondary
                         )
                         .font(.system(size: 16, weight: .bold))
                 )
@@ -77,7 +63,7 @@ struct TransactionRow<T, Destination: View>: View {
                 
                 if showChevron {
                     Image(systemName: "chevron.right")
-                        .font(.appFont(14, weight: .semibold))
+                        .font(.appFont(14, weight: .regular))
                         .foregroundStyle(Color.gray)
                 }
             }
@@ -93,5 +79,140 @@ struct TransactionRow<T, Destination: View>: View {
         formatter.numberStyle = .decimal
         formatter.maximumFractionDigits = 0
         return formatter.string(from: NSNumber(value: amount)) ?? "0"
+    }
+}
+
+// MARK: - Previews
+struct TransactionRow_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            NavigationView {
+                List {
+                    Section(header: Text("Rounded Rectangle")) {
+                        TransactionRow<Void, Text>(
+                            title: "Groceries",
+                            amount: 2350,
+                            dateString: "12 Jul 2025",
+                            categoryIcon: "cart.fill",
+                            categoryColor: .green,
+                            iconShape: .roundedRectangle,
+                            amountColor: .primaryText,
+                            showChevron: true
+                        ) {
+                            Text("Detail")
+                        }
+                        
+                        TransactionRow<Void, Text>(
+                            title: "Fuel",
+                            amount: 1200,
+                            dateString: "10 Jul 2025",
+                            categoryIcon: "fuelpump.fill",
+                            categoryColor: .orange,
+                            iconShape: .roundedRectangle,
+                            amountColor: .primaryText,
+                            showChevron: false
+                        ) {
+                            Text("Detail")
+                        }
+                    }
+                    
+                    Section(header: Text("Circle")) {
+                        TransactionRow<Void, Text>(
+                            title: "Salary",
+                            amount: 60000,
+                            dateString: "01 Jul 2025",
+                            categoryIcon: "indianrupeesign.circle.fill",
+                            categoryColor: .blue,
+                            iconShape: .circle,
+                            amountColor: .primaryText,
+                            showChevron: true
+                        ) {
+                            Text("Detail")
+                        }
+                        
+                        TransactionRow<Void, Text>(
+                            title: "Freelance",
+                            amount: 15000,
+                            dateString: "08 Jul 2025",
+                            categoryIcon: "briefcase.fill",
+                            categoryColor: .purple,
+                            iconShape: .circle,
+                            amountColor: .primaryText,
+                            showChevron: false
+                        ) {
+                            Text("Detail")
+                        }
+                    }
+                }
+                .listStyle(.insetGrouped)
+                .navigationTitle("TransactionRow")
+            }
+            .preferredColorScheme(.light)
+            .previewDisplayName("Light Mode")
+            
+            NavigationView {
+                List {
+                    Section(header: Text("Rounded Rectangle")) {
+                        TransactionRow<Void, Text>(
+                            title: "Groceries",
+                            amount: 2350,
+                            dateString: "12 Jul 2025",
+                            categoryIcon: "cart.fill",
+                            categoryColor: .green,
+                            iconShape: .roundedRectangle,
+                            amountColor: .primaryText,
+                            showChevron: true
+                        ) {
+                            Text("Detail")
+                        }
+                        
+                        TransactionRow<Void, Text>(
+                            title: "Fuel",
+                            amount: 1200,
+                            dateString: "10 Jul 2025",
+                            categoryIcon: "fuelpump.fill",
+                            categoryColor: .orange,
+                            iconShape: .roundedRectangle,
+                            amountColor: .primaryText,
+                            showChevron: false
+                        ) {
+                            Text("Detail")
+                        }
+                    }
+                    
+                    Section(header: Text("Circle")) {
+                        TransactionRow<Void, Text>(
+                            title: "Salary",
+                            amount: 60000,
+                            dateString: "01 Jul 2025",
+                            categoryIcon: "indianrupeesign.circle.fill",
+                            categoryColor: .blue,
+                            iconShape: .circle,
+                            amountColor: .primaryText,
+                            showChevron: true
+                        ) {
+                            Text("Detail")
+                        }
+                        
+                        TransactionRow<Void, Text>(
+                            title: "Freelance",
+                            amount: 15000,
+                            dateString: "08 Jul 2025",
+                            categoryIcon: "briefcase.fill",
+                            categoryColor: .purple,
+                            iconShape: .circle,
+                            amountColor: .primaryText,
+                            showChevron: false
+                        ) {
+                            Text("Detail")
+                        }
+                    }
+                }
+                .listStyle(.insetGrouped)
+                .navigationTitle("TransactionRow")
+            }
+            .preferredColorScheme(.dark)
+            .previewDisplayName("Dark Mode")
+        }
     }
 }
