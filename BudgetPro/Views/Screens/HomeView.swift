@@ -13,6 +13,14 @@ struct HomeView: View {
     @State private var tempYear = Calendar.current.component(.year, from: Date())
     @State private var hasLoadedInitialData = false
     
+    // New: Tab selection for combined transactions section
+    private enum TransactionsTab: String, CaseIterable, Identifiable {
+        case expenses = "Expenses"
+        case incomes = "Incomes"
+        var id: String { rawValue }
+    }
+    @State private var selectedTransactionsTab: TransactionsTab = .expenses
+    
     init(userId: String, repoService: DataFetchRepoService) {
         self._viewModel = StateObject(wrappedValue: HomeViewModel(userId: userId, repoService: repoService))
     }
@@ -39,11 +47,8 @@ struct HomeView: View {
                             
                             // Only show other sections if budget exists
                             if !viewModel.isLoading && !viewModel.budgetCategories.isEmpty {
-                                // Recent Expenses Section
-                                expensesSection
-                                
-                                // Recent Incomes Section
-                                incomesSection
+                                // Combined Transactions Section (Expenses/Incomes)
+                                transactionsSection
                                 
                                 // Options/Features Section
                                 optionsSection
@@ -118,19 +123,74 @@ struct HomeView: View {
         }
     }
     
-    // MARK: - Expenses Section
-    private var expensesSection: some View {
+    // MARK: - Combined Transactions Section (Tabbed)
+    private var transactionsSection: some View {
         CardView(padding: EdgeInsets(top: 16, leading: 0, bottom: 10, trailing: 0)) {
-            if viewModel.recentExpenses.isEmpty {
-                VStack(spacing: 16) {
+            VStack(spacing: 16) {
+                // Header with segmented control
+                VStack(spacing: 12) {
                     HStack {
-                        Text("Expenses")
+                        Text("Transactions")
                             .font(.appFont(18, weight: .semibold))
                             .foregroundColor(.primaryText)
                         Spacer()
+                        
+                        // Contextual Add button
+                        Button {
+                            switch selectedTransactionsTab {
+                            case .expenses:
+                                coordinator.navigate(to: .addExpense)
+                            case .incomes:
+                                coordinator.navigate(to: .addIncome)
+                            }
+                        } label: {
+                            Label {
+                                Text("Add")
+                                    .font(.appFont(14, weight: .semibold))
+                            } icon: {
+                                if #available(iOS 16.0, *) {
+                                    Image(systemName: "plus")
+                                        .fontWeight(.bold)
+                                } else {
+                                    Image(systemName: "plus")
+                                }
+                            }
+                            .foregroundColor(.primary)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.primary.opacity(0.1))
+                            .cornerRadius(16)
+                        }
                     }
-                    .padding([.horizontal], 16)
+                    .padding(.horizontal, 16)
                     
+                    // Segmented control
+                    Picker("Transactions", selection: $selectedTransactionsTab) {
+                        ForEach(TransactionsTab.allCases) { tab in
+                            Text(tab.rawValue).tag(tab)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal, 16)
+                }
+                
+                // Content for selected tab
+                VStack(spacing: 0) {
+                    if selectedTransactionsTab == .expenses {
+                        expensesTabContent
+                    } else {
+                        incomesTabContent
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: - Expenses Tab Content
+    private var expensesTabContent: some View {
+        Group {
+            if viewModel.recentExpenses.isEmpty {
+                VStack(spacing: 16) {
                     VStack(spacing: 16) {
                         Image(systemName: "creditcard")
                             .font(.system(size: 40))
@@ -162,60 +222,24 @@ struct HomeView: View {
                     .padding(.vertical, 16)
                 }
             } else {
-                VStack(spacing: 16) {
-                    HStack {
-                        Text("Expenses")
-                            .font(.appFont(18, weight: .semibold))
-                            .foregroundColor(.primaryText)
-                        Spacer()
+                VStack(spacing: 0) {
+                    ForEach(Array(viewModel.recentExpenses.prefix(5).enumerated()), id: \.offset) { index, expense in
+                        TransactionRow<Expense, ExpenseDetailsView>(title: expense.name, amount: expense.amount, dateString: expense.dateString, categoryIcon: expense.category.iconName, categoryColor: expense.category.color, iconShape: .roundedRectangle, amountColor: Color.primaryText, showChevron: true) {
+                            ExpenseDetailsView(expense: expense, repoService: coordinator.expenseRepo)
+                        }
                         
-                        
-                        if !viewModel.recentExpenses.isEmpty {
-                            Button {
-                                coordinator.navigate(to: .addExpense)
-                            } label: {
-                                Label {
-                                    Text("Add")
-                                        .font(.appFont(14, weight: .semibold))
-                                } icon: {
-                                    if #available(iOS 16.0, *) {
-                                        Image(systemName: "plus")
-                                            .fontWeight(.bold)
-                                    } else {
-                                        Image(systemName: "plus")
-                                    }
-                                }
-                                .foregroundColor(.primary)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(Color.primary.opacity(0.1))
-                                .cornerRadius(16)
-                            }
+                        if index < min(viewModel.recentExpenses.count - 1, 4) {
+                            Divider()
+                                .padding(.horizontal, 16)
                         }
                     }
-                    .padding([.horizontal], 16)
                     
-                    VStack(spacing: 0) {
-                        ForEach(Array(viewModel.recentExpenses.prefix(5).enumerated()), id: \.offset) { index, expense in
-                            TransactionRow<Expense, ExpenseDetailsView>(title: expense.name, amount: expense.amount, dateString: expense.dateString, categoryIcon: expense.category.iconName, categoryColor: expense.category.color, iconShape: .roundedRectangle, amountColor: Color.primaryText, showChevron: true) {
-                                ExpenseDetailsView(expense: expense, repoService: coordinator.expenseRepo)
-                            }
-                            
-                            if index < min(viewModel.recentExpenses.count - 1, 4) {
-                                Divider()
-                                    .padding(.horizontal, 16)
-                            }
-                        }
-                        
-                        if !viewModel.recentExpenses.isEmpty {
-                            VStack {
-                                Divider()
-                                Button(action: {
-                                    coordinator.navigate(to: .allExpenses(expenses: viewModel.recentExpenses, month: selectedMonth, year: selectedYear))
-                                }) {
-                                    moreDetailsButton
-                                }
-                            }
+                    VStack {
+                        Divider()
+                        Button(action: {
+                            coordinator.navigate(to: .allExpenses(expenses: viewModel.recentExpenses, month: selectedMonth, year: selectedYear))
+                        }) {
+                            moreDetailsButton
                         }
                     }
                 }
@@ -223,19 +247,11 @@ struct HomeView: View {
         }
     }
     
-    // MARK: - Incomes Section  
-    private var incomesSection: some View {
-        CardView(padding: EdgeInsets(top: 16, leading: 0, bottom: 10, trailing: 0)) {
+    // MARK: - Incomes Tab Content
+    private var incomesTabContent: some View {
+        Group {
             if viewModel.recentIncomes.isEmpty {
                 VStack(spacing: 16) {
-                    HStack {
-                        Text("Incomes")
-                            .font(.appFont(18, weight: .semibold))
-                            .foregroundColor(.primaryText)
-                        Spacer()
-                    }
-                    .padding([.horizontal], 16)
-                    
                     VStack(spacing: 16) {
                         Image(systemName: "dollarsign.circle")
                             .font(.system(size: 40))
@@ -267,81 +283,28 @@ struct HomeView: View {
                     .padding(.vertical, 16)
                 }
             } else {
-                VStack(spacing: 16) {
-                    HStack {
-                        Text("Incomes")
-                            .font(.appFont(18, weight: .semibold))
-                            .foregroundColor(.primaryText)
-                        Spacer()
+                VStack(spacing: 0) {
+                    ForEach(Array(viewModel.recentIncomes.prefix(5).enumerated()), id: \.offset) { index, income in
+                        TransactionRow<Income, IncomeDetailsView>(title: income.source, amount: income.amount, dateString: income.dateString, categoryIcon: income.category.iconName, categoryColor: income.category.color, iconShape: .roundedRectangle, amountColor: Color.primaryText, showChevron: true) {
+                            IncomeDetailsView(income: income, repoSerice: coordinator.incomeRepo)
+                        }
                         
-                        if !viewModel.recentIncomes.isEmpty {
-                            Button {
-                                coordinator.navigate(to: .addIncome)
-                            } label: {
-                                Label {
-                                    Text("Add")
-                                        .font(.appFont(14, weight: .semibold))
-                                } icon: {
-                                    if #available(iOS 16.0, *) {
-                                        Image(systemName: "plus")
-                                            .fontWeight(.bold)
-                                    } else {
-                                        Image(systemName: "plus")
-                                    }
-                                }
-                                .foregroundColor(.primary)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(Color.primary.opacity(0.1))
-                                .cornerRadius(16)
-                            }
+                        if index < min(viewModel.recentIncomes.count - 1, 4) {
+                            Divider()
+                                .padding(.horizontal, 16)
                         }
                     }
-                    .padding([.horizontal], 16)
                     
-                    VStack(spacing: 0) {
-                        ForEach(Array(viewModel.recentIncomes.prefix(5).enumerated()), id: \.offset) { index, income in
-                            
-                            TransactionRow<Income, IncomeDetailsView>(title: income.source, amount: income.amount, dateString: income.dateString, categoryIcon: income.category.iconName, categoryColor: income.category.color, iconShape: .roundedRectangle, amountColor: Color.primaryText, showChevron: true) {
-                                IncomeDetailsView(income: income, repoSerice: coordinator.incomeRepo)
-                            }
-                            
-                            if index < min(viewModel.recentIncomes.count - 1, 4) {
-                                Divider()
-                                    .padding(.horizontal, 16)
-                            }
-                        }
-                        
-                        if !viewModel.recentIncomes.isEmpty {
-                            VStack {
-                                Divider()
-                                Button(action: {
-                                    coordinator.navigate(to: .allIncomes(incomes: viewModel.recentIncomes, month: selectedMonth, year: selectedYear))
-                                }) {
-                                    moreDetailsButton
-                                }
-                            }
+                    VStack {
+                        Divider()
+                        Button(action: {
+                            coordinator.navigate(to: .allIncomes(incomes: viewModel.recentIncomes, month: selectedMonth, year: selectedYear))
+                        }) {
+                            moreDetailsButton
                         }
                     }
                 }
             }
-        }
-    }
-    
-    private var addNewButton: some View {
-        VStack {
-            Divider()
-            HStack {
-                Spacer()
-                Image(systemName: "plus")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(Color.primary)
-                Text("Add New")
-                    .font(.appFont(14, weight: .semibold))
-                    .foregroundColor(Color.primary)
-                Spacer()
-            }
-            .padding(16)
         }
     }
     
@@ -363,28 +326,6 @@ struct HomeView: View {
     private var headerView: some View {
         VStack(spacing: 0) {
             HStack {
-                // Profile Button
-                Button(action: {
-                    coordinator.selectTab(.profile)
-                }) {
-                    Image(systemName: "person.fill")
-                        .foregroundColor(Color.primary)
-                        .font(.system(size: 20))
-                        .frame(width: 40, height: 40)
-                        
-                }
-                .modify {
-                    if #available(iOS 26.0, *) {
-                        $0.liquidGlassProminent()
-                    } else {
-                        $0.buttonStyle(.borderedProminent)
-                            .clipShape(Circle())
-                    }
-                }
-                .tint(Color.primary.opacity(0.2))
-                
-                Spacer()
-                
                 // Month/Year Selector
                 MonthYearPicker(
                     selectedMonth: $selectedMonth,
@@ -402,6 +343,8 @@ struct HomeView: View {
                         tempYear = selectedYear
                     }
                 }
+                
+                Spacer()
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
@@ -424,6 +367,20 @@ struct HomeView: View {
         isOverBudget ? .adaptiveRed : .primaryText
     }
     
+    private var isPastMonth: Bool {
+        let currentDate = Date()
+        let calendar = Calendar.current
+        let currentMonth = calendar.component(.month, from: currentDate)
+        let currentYear = calendar.component(.year, from: currentDate)
+        
+        if selectedYear < currentYear {
+            return true
+        } else if selectedYear == currentYear && selectedMonth < currentMonth {
+            return true
+        }
+        return false
+    }
+    
     // MARK: - Budget Overview Card
     @ViewBuilder
     private var budgetOverviewCard: some View {
@@ -433,14 +390,14 @@ struct HomeView: View {
                 VStack(spacing: 16) {
                     // Header
                     HStack {
-                        Text("Budget Overview")
+                        Text("Budget")
                             .font(.appFont(18, weight: .semibold))
                             .foregroundColor(.primaryText)
                         
                         Spacer()
                     }
                     
-                    if isPastMonth(month: selectedMonth, year: selectedYear) {
+                    if isPastMonth {
                         // Past month no budget state
                         pastMonthNoBudgetState
                     } else {
@@ -462,25 +419,27 @@ struct HomeView: View {
                         
                         Spacer()
                         
-                        Button(action: {
-                            coordinator.navigate(to: .editBudget(budgetCategories: viewModel.budgetCategories, month: selectedMonth, year: selectedYear))
-                        }) {
-                            Label {
-                                Text("Edit")
-                                    .font(.appFont(14, weight: .semibold))
-                            } icon: {
-                                if #available(iOS 16.0, *) {
-                                    Image(systemName: "pencil")
-                                        .fontWeight(.bold)
-                                } else {
-                                    Image(systemName: "pencil")
+                        if (!isPastMonth) {
+                            Button(action: {
+                                coordinator.navigate(to: .editBudget(budgetCategories: viewModel.budgetCategories, month: selectedMonth, year: selectedYear))
+                            }) {
+                                Label {
+                                    Text("Edit")
+                                        .font(.appFont(14, weight: .semibold))
+                                } icon: {
+                                    if #available(iOS 16.0, *) {
+                                        Image(systemName: "pencil")
+                                            .fontWeight(.bold)
+                                    } else {
+                                        Image(systemName: "pencil")
+                                    }
                                 }
+                                .foregroundColor(.primary)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color.primary.opacity(0.1))
+                                .cornerRadius(16)
                             }
-                            .foregroundColor(.primary)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.primary.opacity(0.1))
-                            .cornerRadius(16)
                         }
                     }
                     
@@ -492,7 +451,7 @@ struct HomeView: View {
                             coordinator.navigate(to: .budgetCategories(budgetCategories: viewModel.budgetCategories, totalBudget: viewModel.totalBudget, totalSpent: viewModel.totalSpent, expenses: viewModel.recentExpenses, month: selectedMonth, year: selectedYear))
                         } label: {
                             HStack(alignment: .center, spacing: 12) {
-                                VStack(alignment: .leading, spacing: 8) {
+                                VStack(alignment: .leading, spacing: 3) {
                                     Group {
                                         Text(isOverBudget ? "Overspent": "Remaining")
                                             .font(.appFont(14, weight: .medium))
@@ -523,8 +482,8 @@ struct HomeView: View {
     
     // MARK: - Options Section
     private var optionsSection: some View {
-        CardView {
-            VStack(spacing: 16) {
+        CardView(padding: EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)) {
+            VStack(spacing: 0) {
                 // Header
                 HStack {
                     Text("Quick Actions")
@@ -533,13 +492,15 @@ struct HomeView: View {
                     
                     Spacer()
                 }
+                .padding(16)
                 
                 // Options content
                 VStack(spacing: 0) {
-                    OptionRow(
+                    SettingsRow(
                         icon: "chart.pie",
-                        iconColor: Color.primary,
+                        iconColor: Color.secondary,
                         title: "Savings Analysis",
+                        showChevron: true,
                         action: {
                             let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
                                              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -590,21 +551,6 @@ struct HomeView: View {
             }
         }
         .redacted(reason: .placeholder)
-    }
-    
-    // MARK: - Helper Functions
-    private func isPastMonth(month: Int, year: Int) -> Bool {
-        let currentDate = Date()
-        let calendar = Calendar.current
-        let currentMonth = calendar.component(.month, from: currentDate)
-        let currentYear = calendar.component(.year, from: currentDate)
-        
-        if year < currentYear {
-            return true
-        } else if year == currentYear && month < currentMonth {
-            return true
-        }
-        return false
     }
     
     // MARK: - Past Month No Budget State
@@ -662,43 +608,6 @@ struct HomeView: View {
         .padding(.vertical, 20)
     }
 }
-
-
-struct OptionRow: View {
-    let icon: String
-    let iconColor: Color
-    let title: String
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            HStack {
-                Circle()
-                    .fill(iconColor.opacity(0.2))
-                    .frame(width: 40, height: 40)
-                    .overlay(
-                        Image(systemName: icon)
-                            .foregroundColor(iconColor)
-                            .font(.system(size: 16))
-                    )
-                
-                Text(title)
-                    .font(.appFont(16, weight: .medium))
-                    .foregroundColor(.primaryText)
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12)) 
-                    .foregroundColor(.secondaryText)
-            }
-            .padding(.vertical, 16)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(PlainButtonStyle())
-    }
-}
-
 
 // MARK: - Preview
 struct HomeView_Previews: PreviewProvider {

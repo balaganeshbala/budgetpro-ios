@@ -62,8 +62,6 @@ struct SavingsAnalysisScreen: View {
             } else {
                 ScrollView {
                     VStack(spacing: 24) {
-                        SectionHeader(text: "Savings Analysis")
-                        
                         SavingsSummaryCard(
                             totalIncome: totalIncome,
                             effectiveExpenses: effectiveExpenses,
@@ -120,44 +118,46 @@ struct SavingsSummaryCard: View {
     
     var body: some View {
         CardView {
-            VStack(spacing: 12) {
-                // First row: Net Savings and Savings Rate
-                HStack(spacing: 12) {
-                    ModernSummaryItem(
-                        title: "Net Savings",
-                        value: CommonHelpers.formatCurrencyWithSign(savings),
-                        color: savings >= 0 ? .adaptiveGreen : .adaptiveRed,
-                        icon: savings >= 0 ? "arrow.up.circle.fill" : "arrow.down.circle.fill",
-                        isPositive: savings >= 0
-                    )
+            VStack(spacing: 20) {
+                HStack {
+                    Text("Savings Analysis")
+                        .font(.appFont(18, weight: .semibold))
+                        .foregroundColor(.primaryText)
                     
-                    ModernSummaryItem(
-                        title: "Savings Rate",
-                        value: String(format: "%.1f%%", savingsRate),
-                        color: CommonHelpers.getSavingsRateColor(savingsRate),
-                        icon: "percent",
-                        isPositive: savingsRate >= 0
-                    )
+                    Spacer()
                 }
                 
-                // Second row: Income and Expenses
-                HStack(spacing: 12) {
-                    ModernSummaryItem(
-                        title: "Income",
-                        value: CommonHelpers.formatCurrency(totalIncome),
-                        color: .adaptiveGreen,
-                        icon: "plus.circle.fill",
-                        isPositive: true
-                    )
-                    
-                    ModernSummaryItem(
-                        title: "Expenses",
-                        value: CommonHelpers.formatCurrency(effectiveExpenses),
-                        color: .adaptiveRed,
-                        icon: "minus.circle.fill",
-                        isPositive: false
-                    )
-                }
+                ModernSummaryItem(
+                    title: "Net Savings",
+                    value: CommonHelpers.formatCurrencyWithSign(savings),
+                    color: savings >= 0 ? .adaptiveGreen : .adaptiveRed,
+                    icon: "suitcase",
+                    isPositive: savings >= 0
+                )
+                
+                ModernSummaryItem(
+                    title: "Savings Rate",
+                    value: String(format: "%.1f%%", savingsRate),
+                    color: CommonHelpers.getSavingsRateColor(savingsRate),
+                    icon: "percent",
+                    isPositive: savingsRate >= 0
+                )
+
+                ModernSummaryItem(
+                    title: "Income",
+                    value: CommonHelpers.formatCurrency(totalIncome),
+                    color: .primaryText,
+                    icon: "plus.circle.fill",
+                    isPositive: true
+                )
+                
+                ModernSummaryItem(
+                    title: "Expenses",
+                    value: CommonHelpers.formatCurrency(effectiveExpenses),
+                    color: .primaryText,
+                    icon: "minus.circle.fill",
+                    isPositive: false
+                )
             }
         }
     }
@@ -212,32 +212,28 @@ struct ModernSummaryItem: View {
     let isPositive: Bool
     
     var body: some View {
-        VStack(spacing: 12) {
+        HStack(spacing: 12) {
             // Icon with background
             Image(systemName: icon)
-                .font(.appFont(20, weight: .medium))
-                .foregroundColor(color)
+                .font(.appFont(20, weight: .regular))
+                .foregroundColor(.secondary)
                 .frame(width: 40, height: 40)
-                .background(color.opacity(0.1))
+                .background(Color.primary.opacity(0.1))
                 .clipShape(Circle())
+        
+            Text(title)
+                .font(.appFont(14, weight: .regular))
+                .foregroundColor(.primaryText)
             
-            VStack(spacing: 4) {
-                Text(title)
-                    .font(.appFont(12, weight: .medium))
-                    .foregroundColor(.primaryText)
-                
-                Text(value)
-                    .font(.appFont(16, weight: .bold))
-                    .foregroundColor(color)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-            }
+            Spacer()
+            
+            Text(value)
+                .font(.appFont(16, weight: .bold))
+                .foregroundColor(color)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 16)
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(12)
-        .shadow(color: color.opacity(0.1), radius: 2, x: 0, y: 1)
     }
 }
 
@@ -286,7 +282,7 @@ struct SavingsRateIndicator: View {
             VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Savings Rate")
-                        .font(.appFont(16, weight: .semibold))
+                        .font(.appFont(18, weight: .semibold))
                         .foregroundColor(.primaryText)
                     
                     Text("Financial experts recommend saving at least 20% of your income.")
@@ -356,17 +352,17 @@ struct SavingsRateIndicator: View {
                     // Savings rate message container
                     HStack(spacing: 12) {
                         Image(systemName: CommonHelpers.getSavingsRateIcon(savingsRate))
-                            .foregroundColor(CommonHelpers.getSavingsRateColor(savingsRate))
+                            .foregroundColor(.secondary)
                             .font(.appFont(16))
                         
                         Text(CommonHelpers.getSavingsRateMessage(savingsRate))
                             .font(.appFont(14))
-                            .foregroundColor(CommonHelpers.getSavingsRateColor(savingsRate))
+                            .foregroundColor(.secondary)
                             .lineSpacing(4)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .padding(12)
-                    .background(CommonHelpers.getSavingsRateColor(savingsRate).opacity(0.1))
+                    .background(Color.groupedBackground)
                     .cornerRadius(8)
                 }
             }
@@ -401,7 +397,7 @@ struct SavingsRecommendations: View {
         CardView {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Recommendations")
-                    .font(.appFont(16, weight: .semibold))
+                    .font(.appFont(18, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
                 VStack(spacing: 16) {
@@ -498,14 +494,14 @@ struct SavingsAnalysisScreen_Previews: PreviewProvider {
         Expense(
             id: 1,
             name: "Groceries",
-            amount: 5000,
+            amount: 20000,
             category: .groceries,
             date: Date()
         ),
         Expense(
             id: 2,
             name: "Fuel",
-            amount: 4000,
+            amount: 40000,
             category: .travel,
             date: Date()
         ),
@@ -535,3 +531,4 @@ struct SavingsAnalysisScreen_Previews: PreviewProvider {
         )
     ]
 }
+

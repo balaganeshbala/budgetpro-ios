@@ -99,7 +99,7 @@ struct BarChartView: View {
                         if showValues {
                             Text("₹\(CommonHelpers.formatAmount(item.value))")
                                 .font(.appFont(14, weight: .regular))
-                                .foregroundColor(item.color)
+                                .foregroundColor(.primaryText)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.8)
                         }
