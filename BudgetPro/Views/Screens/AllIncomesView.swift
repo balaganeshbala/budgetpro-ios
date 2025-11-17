@@ -196,12 +196,12 @@ struct IncomeSummaryView: View {
             
             Divider()
             
-            HStack(spacing: 12) {
+            VStack(spacing: 12) {
                 ModernSummaryItem(
                     title: "Primary",
                     value: CommonHelpers.formatCurrency(totalPrimary),
                     color: .green,
-                    icon: "plus.circle.fill",
+                    icon: "plus.circle",
                     isPositive: true
                 )
                 
@@ -209,7 +209,7 @@ struct IncomeSummaryView: View {
                     title: "Secondary",
                     value: CommonHelpers.formatCurrency(totalSecondary),
                     color: .orange,
-                    icon: "star.circle.fill",
+                    icon: "star.circle",
                     isPositive: false
                 )
             }
@@ -315,6 +315,9 @@ struct IncomeCategoryBreakdownRow: View {
 
 // MARK: - Preview
 struct AllIncomesView_Previews: PreviewProvider {
+    
+    @StateObject static var coordinator = MainCoordinator(userId: "userId")
+    
     static var sampleIncomes: [Income] {
         [
             Income(
@@ -379,5 +382,6 @@ struct AllIncomesView_Previews: PreviewProvider {
             .preferredColorScheme(.dark)
             .previewDisplayName("Dark Theme")
         }
+        .environmentObject(coordinator)
     }
 }

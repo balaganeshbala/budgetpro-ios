@@ -129,16 +129,34 @@ struct ProfileView: View {
 struct SettingsRow: View {
     let icon: String
     let iconColor: Color
+    let backgroundColor: Color?
     let title: String
     let showChevron: Bool
     let action: () -> Void
+
+    // Custom initializer to make backgroundColor optional at call sites
+    init(
+        icon: String,
+        iconColor: Color,
+        backgroundColor: Color? = nil,
+        title: String,
+        showChevron: Bool,
+        action: @escaping () -> Void
+    ) {
+        self.icon = icon
+        self.iconColor = iconColor
+        self.backgroundColor = backgroundColor
+        self.title = title
+        self.showChevron = showChevron
+        self.action = action
+    }
     
     var body: some View {
         Button(action: action) {
             HStack(spacing: 16) {
                 // Icon
                 Circle()
-                    .fill(iconColor.opacity(0.2))
+                    .fill(backgroundColor ?? iconColor.opacity(0.2))
                     .frame(width: 40, height: 40)
                     .overlay(
                         Image(systemName: icon)

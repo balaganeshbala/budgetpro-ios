@@ -499,6 +499,7 @@ struct HomeView: View {
                     SettingsRow(
                         icon: "chart.pie",
                         iconColor: Color.secondary,
+                        backgroundColor: Color.primary.opacity(0.1),
                         title: "Savings Analysis",
                         showChevron: true,
                         action: {

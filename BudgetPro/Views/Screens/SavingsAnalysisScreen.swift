@@ -147,7 +147,7 @@ struct SavingsSummaryCard: View {
                     title: "Income",
                     value: CommonHelpers.formatCurrency(totalIncome),
                     color: .primaryText,
-                    icon: "plus.circle.fill",
+                    icon: "plus.circle",
                     isPositive: true
                 )
                 
@@ -155,7 +155,7 @@ struct SavingsSummaryCard: View {
                     title: "Expenses",
                     value: CommonHelpers.formatCurrency(effectiveExpenses),
                     color: .primaryText,
-                    icon: "minus.circle.fill",
+                    icon: "minus.circle",
                     isPositive: false
                 )
             }
