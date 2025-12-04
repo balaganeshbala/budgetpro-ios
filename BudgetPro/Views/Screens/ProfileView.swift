@@ -155,14 +155,10 @@ struct SettingsRow: View {
         Button(action: action) {
             HStack(spacing: 16) {
                 // Icon
-                Circle()
-                    .fill(backgroundColor ?? iconColor.opacity(0.2))
-                    .frame(width: 40, height: 40)
-                    .overlay(
-                        Image(systemName: icon)
-                            .font(.system(size: 16))
-                            .foregroundColor(iconColor)
-                    )
+                RowItemIcon(categoryIcon: icon,
+                            iconShape: .circle,
+                            iconColor: iconColor,
+                            backgroundColor: backgroundColor)
                 
                 // Title
                 Text(title)

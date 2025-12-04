@@ -22,11 +22,15 @@ struct AllExpensesView: View {
     
     @StateObject private var viewModel: AllExpensesViewModel
     
+    let budgetCategories: [BudgetCategory]
+    let totalBudget: Double
     let expenses: [Expense]
     let month: Int
     let year: Int
     
-    init(expenses: [Expense], month: Int, year: Int) {
+    init(budgetCategories: [BudgetCategory], totalBudget: Double, expenses: [Expense], month: Int, year: Int) {
+        self.budgetCategories = budgetCategories
+        self.totalBudget = totalBudget
         self.expenses = expenses
         self.month = month
         self.year = year
@@ -39,10 +43,13 @@ struct AllExpensesView: View {
                 // Expense Summary Section
                 ExpenseSummaryView(expenses: expenses)
                 
+                // Expenses by categories
+                categoriesSection
+                
                 // Sort Section
                 sortSection
                 
-                // Expenses List
+                // All expenses List
                 expensesListSection
                 
                 Spacer(minLength: 20)
@@ -54,6 +61,30 @@ struct AllExpensesView: View {
         .background(Color.groupedBackground)
         .navigationTitle(monthYearTitle(month: month, year: year))
         .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    // MARK: - Categories Section
+    private var categoriesSection: some View {
+        VStack(spacing: 16) {
+            HStack {
+                Text("Expense by Category")
+                    .font(.appFont(18, weight: .semibold))
+                    .foregroundColor(.primaryText)
+                
+                Spacer()
+            }
+            
+            LazyVStack(spacing: 12) {
+                ForEach(sortedCategories) { category in
+                    Button(action: {
+                        coordinator.navigate(to: .categoryDetail(category: category, expenses: expenses, month: month, year: year))
+                    }) {
+                        BudgetCategoryCard(category: category, totalBudget: totalBudget)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+            }
+        }
     }
     
     // MARK: - Sort Section
@@ -129,6 +160,27 @@ struct AllExpensesView: View {
     }
 }
 
+extension AllExpensesView {
+    private var sortedCategories: [BudgetCategory] {
+        // Filter out unknown categories
+        let validCategories = budgetCategories.filter { category in
+            ExpenseCategory.from(categoryName: category.name) != .unknown
+        }
+        
+        let unplannedCategories = validCategories.filter { $0.budget == 0 && $0.spent > 0 }
+        let noBudgetCategories = validCategories.filter { $0.budget == 0 && $0.spent == 0 }
+        let plannedCategories = validCategories.filter { $0.budget > 0 }
+        
+        let sortedPlanned = plannedCategories.sorted { first, second in
+            let firstPercentage = first.spent / first.budget
+            let secondPercentage = second.spent / second.budget
+            return firstPercentage > secondPercentage
+        }
+        
+        return unplannedCategories + sortedPlanned + noBudgetCategories
+    }
+}
+
 // MARK: - All Expenses View Model
 @MainActor
 class AllExpensesViewModel: ObservableObject {
@@ -171,19 +223,6 @@ struct ExpenseSummaryView: View {
         expenses.reduce(0) { $0 + $1.amount }
     }
     
-    private var categoryTotals: [String: Double] {
-        var totals: [String: Double] = [:]
-        for expense in expenses {
-            totals[expense.category.displayName, default: 0] += expense.amount
-        }
-        return totals
-    }
-    
-    private var sortedCategories: [(category: String, amount: Double)] {
-            categoryTotals.map { (category: $0.key, amount: $0.value) }
-                .sorted { $0.amount > $1.amount }
-        }
-    
     var body: some View {
         CardView {
             VStack(spacing: 16) {
@@ -197,85 +236,14 @@ struct ExpenseSummaryView: View {
                     }
                     
                     HStack {
-                        Text("₹\(formatAmount(totalExpense))")
+                        Text("₹\(CommonHelpers.formatAmount(totalExpense))")
                             .font(.appFont(24, weight: .bold))
                             .foregroundColor(Color.primaryText)
                         Spacer()
                     }
                 }
-                
-                if !sortedCategories.isEmpty {
-                    Divider()
-                    
-                    // Category Breakdown Section
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Expenses by Category")
-                            .font(.appFont(16, weight: .medium))
-                            .foregroundColor(.secondaryText)
-                        
-                        LazyVStack(spacing: 12) {
-                            ForEach(sortedCategories, id: \.category) { categoryData in
-                                CategoryBreakdownRow(
-                                    category: categoryData.category,
-                                    amount: categoryData.amount,
-                                    percentage: totalExpense > 0 ? (categoryData.amount / totalExpense) * 100 : 0
-                                )
-                            }
-                        }
-                    }
-                }
             }
         }
-    }
-    
-    private func formatAmount(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "0"
-    }
-}
-
-// MARK: - Category Breakdown Row
-struct CategoryBreakdownRow: View {
-    let category: String
-    let amount: Double
-    let percentage: Double
-    
-    private var categoryColor: Color {
-        return ExpenseCategory.from(categoryName: category).color
-    }
-    
-    var body: some View {
-        HStack {
-            // Category indicator
-            Circle()
-                .fill(categoryColor)
-                .frame(width: 8, height: 8)
-            
-            Text(category)
-                .font(.appFont(14, weight: .medium))
-                .foregroundColor(.primaryText)
-            
-            Spacer()
-            
-            VStack(alignment: .trailing, spacing: 2) {
-                Text("₹\(formatAmount(amount))")
-                    .font(.appFont(14, weight: .semibold))
-                    .foregroundColor(.primaryText)
-                
-                Text("\(String(format: "%.1f", percentage))%")
-                    .font(.appFont(12))
-                    .foregroundColor(.secondaryText)
-            }
-        }
-    }
-    
-    private func formatAmount(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
 }
 
@@ -284,6 +252,18 @@ struct CategoryBreakdownRow: View {
 struct AllExpensesView_Previews: PreviewProvider {
     
     @StateObject static var coordinator = MainCoordinator(userId: "userId")
+    
+    static var sampleBudgetCategories: [BudgetCategory] {
+        [
+            BudgetCategory(id: "1", name: "Food", budget: 4000, spent: 3500),
+            BudgetCategory(id: "2", name: "Travel", budget: 2000, spent: 800),
+            BudgetCategory(id: "3", name: "Entertainment", budget: 1500, spent: 600)
+        ]
+    }
+    
+    static var sampleTotalBudget: Double {
+        sampleBudgetCategories.reduce(0) { $0 + $1.budget }
+    }
     
     static var sampleExpenses: [Expense] {
         [
@@ -330,6 +310,8 @@ struct AllExpensesView_Previews: PreviewProvider {
             // Light Theme Preview
             NavigationView {
                 AllExpensesView(
+                    budgetCategories: sampleBudgetCategories,
+                    totalBudget: sampleTotalBudget,
                     expenses: sampleExpenses,
                     month: 7,
                     year: 2025
@@ -341,6 +323,8 @@ struct AllExpensesView_Previews: PreviewProvider {
             // Dark Theme Preview
             NavigationView {
                 AllExpensesView(
+                    budgetCategories: sampleBudgetCategories,
+                    totalBudget: sampleTotalBudget,
                     expenses: sampleExpenses,
                     month: 7,
                     year: 2025

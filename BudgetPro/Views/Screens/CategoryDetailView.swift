@@ -141,15 +141,6 @@ struct CategoryDetailView: View {
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 1)
     }
     
-    // MARK: - Helper Functions
-    private func formatAmount(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.minimumFractionDigits = 0
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "0"
-    }
-    
     private var categoryColor: Color {
         return ExpenseCategory.from(categoryName: category.name).color
     }

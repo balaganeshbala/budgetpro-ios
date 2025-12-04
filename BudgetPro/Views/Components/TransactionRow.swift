@@ -12,38 +12,11 @@ struct TransactionRow<T, Destination: View>: View {
     let showChevron: Bool
     let destination: () -> Destination
     
-    enum IconShape {
-        case circle
-        case roundedRectangle
-    }
-    
     var body: some View {
         NavigationLink(destination: destination()) {
             HStack(spacing: 10) {
-                // Category icon with dynamic shape and gradient
-                Group {
-                    switch iconShape {
-                    case .circle:
-                        Circle()
-                            .fill(
-                                Color.primary.opacity(0.1)
-                            )
-                            .frame(width: 40, height: 40)
-                    case .roundedRectangle:
-                        RoundedRectangle(cornerRadius: 10, style: .circular)
-                            .fill(
-                                Color.primary.opacity(0.1)
-                            )
-                            .frame(width: 40, height: 40)
-                    }
-                }
-                .overlay(
-                    Image(systemName: categoryIcon)
-                        .foregroundStyle(
-                            Color.secondary
-                        )
-                        .font(.system(size: 16, weight: .bold))
-                )
+                
+                RowItemIcon(categoryIcon: categoryIcon, iconShape: iconShape)
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
@@ -57,7 +30,7 @@ struct TransactionRow<T, Destination: View>: View {
                 
                 Spacer()
                 
-                Text("₹\(formatAmount(amount))")
+                Text("₹\(CommonHelpers.formatAmount(amount))")
                     .font(.appFont(14, weight: .semibold))
                     .foregroundColor(amountColor)
                 
@@ -72,13 +45,6 @@ struct TransactionRow<T, Destination: View>: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
-    }
-    
-    private func formatAmount(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
 }
 

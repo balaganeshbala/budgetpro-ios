@@ -214,12 +214,7 @@ struct ModernSummaryItem: View {
     var body: some View {
         HStack(spacing: 12) {
             // Icon with background
-            Image(systemName: icon)
-                .font(.appFont(20, weight: .regular))
-                .foregroundColor(.secondary)
-                .frame(width: 40, height: 40)
-                .background(Color.primary.opacity(0.1))
-                .clipShape(Circle())
+            RowItemIcon(categoryIcon: icon, iconShape: .circle)
         
             Text(title)
                 .font(.appFont(14, weight: .regular))

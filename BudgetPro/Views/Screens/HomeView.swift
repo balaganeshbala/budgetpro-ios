@@ -13,6 +13,8 @@ struct HomeView: View {
     @State private var tempYear = Calendar.current.component(.year, from: Date())
     @State private var hasLoadedInitialData = false
     
+    @State private var isbudgetOverviewExpanded: Bool = false
+    
     // New: Tab selection for combined transactions section
     private enum TransactionsTab: String, CaseIterable, Identifiable {
         case expenses = "Expenses"
@@ -237,7 +239,11 @@ struct HomeView: View {
                     VStack {
                         Divider()
                         Button(action: {
-                            coordinator.navigate(to: .allExpenses(expenses: viewModel.recentExpenses, month: selectedMonth, year: selectedYear))
+                            coordinator.navigate(to: .allExpenses(budgetCategories: viewModel.budgetCategories,
+                                                                  totalBudget: viewModel.totalBudget,
+                                                                  expenses: viewModel.recentExpenses,
+                                                                  month: selectedMonth,
+                                                                  year: selectedYear))
                         }) {
                             moreDetailsButton
                         }
@@ -367,6 +373,14 @@ struct HomeView: View {
         isOverBudget ? .adaptiveRed : .primaryText
     }
     
+    private var percentageSpent: Int {
+        Int((viewModel.totalSpent / max(viewModel.totalBudget, 1)) * 100)
+    }
+    
+    private var usageBasedColor: Color {
+        isOverBudget ? .adaptiveRed : percentageSpent > 80 ? .warningColor : .adaptiveGreen
+    }
+    
     private var isPastMonth: Bool {
         let currentDate = Date()
         let calendar = Calendar.current
@@ -409,7 +423,7 @@ struct HomeView: View {
         } else {
             // Budget exists
             CardView {
-                VStack {
+                VStack(spacing: 16) {
                     // Header
                     HStack {
                         
@@ -446,9 +460,11 @@ struct HomeView: View {
                     Divider()
                     
                     // Remaining Amount - Highlighted at the top
-                    VStack(spacing: 0) {
+                    VStack(spacing: 16) {
                         Button {
-                            coordinator.navigate(to: .budgetCategories(budgetCategories: viewModel.budgetCategories, totalBudget: viewModel.totalBudget, totalSpent: viewModel.totalSpent, expenses: viewModel.recentExpenses, month: selectedMonth, year: selectedYear))
+                            withAnimation {
+                                isbudgetOverviewExpanded.toggle()
+                            }
                         } label: {
                             HStack(alignment: .center, spacing: 12) {
                                 VStack(alignment: .leading, spacing: 3) {
@@ -466,13 +482,87 @@ struct HomeView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 
                                 // Chevron on right side
-                                Image(systemName: "chevron.right")
+                                Image(systemName: "chevron.down")
                                     .font(.system(size: 16, weight: .semibold))
                                     .foregroundColor(.secondaryText)
+                                    .rotationEffect(isbudgetOverviewExpanded ? .degrees(180) : .degrees(0))
                             }
                             .contentShape(Rectangle())
                         }
-                        .buttonStyle(.plain)
+                        
+                        if isbudgetOverviewExpanded {
+                            Divider()
+                            
+                            HStack(spacing: 16) {
+                                // Total Budget
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Total Budget")
+                                        .font(.appFont(14))
+                                        .foregroundColor(.secondaryText)
+                                    
+                                    Text("₹\(CommonHelpers.formatAmount(viewModel.totalBudget))")
+                                        .font(.appFont(20, weight: .semibold))
+                                        .foregroundColor(.primaryText)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                                Divider()
+                                    .frame(width: 1, height: 40)
+                                
+                                // Total Spent
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Total Spent")
+                                        .font(.appFont(14))
+                                        .foregroundColor(.secondaryText)
+                                    
+                                    Text("₹\(CommonHelpers.formatAmount(viewModel.totalSpent))")
+                                        .font(.appFont(20, weight: .semibold))
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            
+                            VStack(spacing: 8) {
+                                HStack {
+                                    Text("Budget Usage")
+                                        .font(.appFont(14, weight: .medium))
+                                        .foregroundColor(.secondaryText)
+                                    
+                                    Spacer()
+                                    
+                                    Text("\(percentageSpent)%")
+                                        .font(.appFont(16, weight: .bold))
+                                        .foregroundColor(isOverBudget ? .adaptiveRed : percentageSpent > 80 ? .warningColor : .adaptiveGreen)
+                                }
+                                
+                                GeometryReader { geometry in
+                                    ZStack(alignment: .leading) {
+                                        Rectangle()
+                                            .fill(Color.secondarySystemFill)
+                                            .frame(height: 10)
+                                            .cornerRadius(5)
+                                        
+                                        Rectangle()
+                                            .fill(
+                                                LinearGradient(
+                                                    gradient: Gradient(colors: [
+                                                        usageBasedColor,
+                                                        usageBasedColor.opacity(0.8)
+                                                    ]),
+                                                    startPoint: .leading,
+                                                    endPoint: .trailing
+                                                )
+                                            )
+                                            .frame(width: min(geometry.size.width, geometry.size.width * (viewModel.totalSpent / max(viewModel.totalBudget, 1))), height: 10)
+                                            .cornerRadius(5)
+                                            .animation(
+                                                .easeInOut(duration: 0.5),
+                                                value: viewModel.totalSpent
+                                            )
+                                    }
+                                }
+                                .frame(height: 10)
+                            }
+                        }
                     }
                 }
             }

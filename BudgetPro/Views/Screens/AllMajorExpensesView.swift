@@ -217,7 +217,7 @@ struct MajorExpenseSummaryView: View {
                     }
                     
                     HStack {
-                        Text("₹\(formatAmount(totalMajorExpense))")
+                        Text("₹\(CommonHelpers.formatAmount(totalMajorExpense))")
                             .font(.appFont(24, weight: .bold))
                             .foregroundColor(Color.primaryText)
                         Spacer()
@@ -247,13 +247,6 @@ struct MajorExpenseSummaryView: View {
             }
         }
     }
-    
-    private func formatAmount(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "0"
-    }
 }
 
 // MARK: - Major Category Breakdown Row
@@ -280,7 +273,7 @@ struct MajorCategoryBreakdownRow: View {
             Spacer()
             
             VStack(alignment: .trailing, spacing: 2) {
-                Text("₹\(formatAmount(amount))")
+                Text("₹\(CommonHelpers.formatAmount(amount))")
                     .font(.appFont(14, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
@@ -289,13 +282,6 @@ struct MajorCategoryBreakdownRow: View {
                     .foregroundColor(.secondaryText)
             }
         }
-    }
-    
-    private func formatAmount(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
 }
 

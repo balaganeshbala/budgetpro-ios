@@ -121,14 +121,6 @@ struct AllIncomesView: View {
             }
         }
     }
-    
-    // MARK: - Helper Methods
-    private func formatAmount(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "0"
-    }
 }
 
 // MARK: - All Incomes View Model
@@ -229,7 +221,7 @@ struct IncomeSummaryView: View {
                     }
                     
                     HStack {
-                        Text("₹\(formatAmount(totalIncome))")
+                        Text("₹\(CommonHelpers.formatAmount(totalIncome))")
                             .font(.appFont(24, weight: .bold))
                             .foregroundColor(.primaryText)
                         Spacer()
@@ -261,13 +253,6 @@ struct IncomeSummaryView: View {
             }
         }
     }
-    
-    private func formatAmount(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "0"
-    }
 }
 
 // MARK: - Income Category Breakdown Row
@@ -294,7 +279,7 @@ struct IncomeCategoryBreakdownRow: View {
             Spacer()
             
             VStack(alignment: .trailing, spacing: 2) {
-                Text("₹\(formatAmount(amount))")
+                Text("₹\(CommonHelpers.formatAmount(amount))")
                     .font(.appFont(14, weight: .semibold))
                     .foregroundColor(.primaryText)
                 
@@ -303,13 +288,6 @@ struct IncomeCategoryBreakdownRow: View {
                     .foregroundColor(.secondaryText)
             }
         }
-    }
-    
-    private func formatAmount(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
 }
 
