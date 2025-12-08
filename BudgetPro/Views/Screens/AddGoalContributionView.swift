@@ -35,6 +35,9 @@ struct AddGoalContributionView: View {
                 .padding(.bottom, 20)
             }
             .disableScrollViewBounce()
+            .onTapGesture {
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            }
             
             // Error overlay
             if let error = viewModel.errorMessage {
@@ -123,9 +126,8 @@ struct AddGoalContributionView: View {
                 
                 // Date Selector
                 Button {
-                    withAnimation {
-                        showingDatePicker = true
-                    }
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    showingDatePicker = true
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "calendar")
