@@ -86,6 +86,19 @@ struct ProfileView: View {
     private var settingsOptionsCard: some View {
         CardView(padding: EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)) {
             VStack(spacing: 0) {
+                // Financial Goals Button
+                SettingsRow(
+                    icon: "target",
+                    iconColor: .purple,
+                    title: "Financial Goals",
+                    showChevron: true
+                ) {
+                    coordinator.navigate(to: .financialGoals)
+                }
+                
+                Divider()
+                    .padding(.horizontal, 16)
+                
                 // Major Expenses Button
                 SettingsRow(
                     icon: "creditcard.trianglebadge.exclamationmark",

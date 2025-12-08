@@ -11,15 +11,21 @@ class MainCoordinator: Coordinator {
     let userId: String
     let expenseRepo: TransactionRepoService
     let incomeRepo: TransactionRepoService
-    let majorExpenseRepo: TransactionRepoService
     let dataFetchRepo: DataFetchRepoService
+
+    lazy var majorExpenseRepo: TransactionRepoService = {
+        SupabaseTransactionRepoService(transactionType: .majorExpense)
+    }()
+    
+    private lazy var financialGoalRepo: FinancialGoalRepoService = {
+        SupabaseFinancialGoalRepoService()
+    }()
     
     init(userId: String) {
         self.userId = userId
         self.dataFetchRepo = SupabaseDataFetchRepoService()
         self.expenseRepo = SupabaseTransactionRepoService(transactionType: .expense)
         self.incomeRepo = SupabaseTransactionRepoService(transactionType: .income)
-        self.majorExpenseRepo = SupabaseTransactionRepoService(transactionType: .majorExpense)
     }
     
     enum Tab: CaseIterable {
@@ -58,6 +64,12 @@ class MainCoordinator: Coordinator {
         case categoryDetail(category: BudgetCategory, expenses: [Expense], month: Int, year: Int)
         case savingsAnalysis(expenses: [Expense], incomes: [Income], totalBudget: Double, month: String, year: String)
         case about
+        case financialGoals
+        case addFinancialGoal
+        case financialGoalDetails(goal: FinancialGoal)
+        case editFinancialGoal(goal: FinancialGoal)
+        case addContribution(goalId: UUID, goalTitle: String)
+        case editContribution(goalId: UUID, goalTitle: String, contribution: GoalContribution)
     }
     
     enum Sheet: Identifiable {
@@ -83,7 +95,7 @@ class MainCoordinator: Coordinator {
         case .allMajorExpenses:
             selectedTab = .profile
             profileNavigationPath.append(route)
-        case .addMajorExpense, .majorExpenseDetails:
+        case .addMajorExpense, .majorExpenseDetails, .financialGoals, .addFinancialGoal, .financialGoalDetails, .editFinancialGoal, .addContribution, .editContribution:
             profileNavigationPath.append(route)
         default:
             // Use the appropriate navigation path based on current tab
@@ -177,6 +189,24 @@ class MainCoordinator: Coordinator {
                 .environmentObject(self)
         case .about:
             AboutView()
+                .environmentObject(self)
+        case .financialGoals:
+            FinancialGoalListView(repoService: financialGoalRepo)
+                .environmentObject(self)
+        case .addFinancialGoal:
+            AddFinancialGoalView(repoService: financialGoalRepo)
+                .environmentObject(self)
+        case .financialGoalDetails(let goal):
+            FinancialGoalDetailsView(goal: goal, repoService: financialGoalRepo)
+                .environmentObject(self)
+        case .editFinancialGoal(let goal):
+            AddFinancialGoalView(repoService: financialGoalRepo, goalToEdit: goal)
+                .environmentObject(self)
+        case .addContribution(let goalId, let goalTitle):
+            AddGoalContributionView(repoService: financialGoalRepo, goalId: goalId, goalTitle: goalTitle)
+                .environmentObject(self)
+        case .editContribution(let goalId, let goalTitle, let contribution):
+            AddGoalContributionView(repoService: financialGoalRepo, goalId: goalId, goalTitle: goalTitle, contributionToEdit: contribution)
                 .environmentObject(self)
         }
     }
