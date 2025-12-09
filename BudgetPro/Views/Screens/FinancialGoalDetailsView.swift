@@ -67,13 +67,12 @@ struct FinancialGoalDetailsView: View {
                         .fill(Color(hex: viewModel.goal.colorHex) ?? .blue)
                         .frame(width: 60, height: 60)
                         .overlay(
-                            Image(systemName: "target")
-                                .font(.system(size: 24))
-                                .foregroundColor(.white)
+                            Text(viewModel.goal.icon)
+                                .font(.system(size: 30))
                         )
                     VStack(alignment: .leading, spacing: 5) {
                         Text(viewModel.goal.title)
-                            .font(.appFont(24, weight: .bold))
+                            .font(.appFont(20, weight: .semibold))
                             .foregroundColor(.primaryText)
                         
                         StatusPill(status: viewModel.goal.status)
@@ -123,7 +122,7 @@ struct FinancialGoalDetailsView: View {
     }
     
     private var contributionsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text("Contributions")
                     .font(.appFont(18, weight: .semibold))
@@ -153,10 +152,9 @@ struct FinancialGoalDetailsView: View {
                     .cornerRadius(16)
                 }
             }
-            .padding(.horizontal, 4)
             
             if let contributions = viewModel.goal.contributions, !contributions.isEmpty {
-                VStack(spacing: 12) {
+                VStack(spacing: 10) {
                     ForEach(contributions.sorted(by: { $0.id! > $1.id! })) { contribution in
                         ContributionRow(contribution: contribution)
                             .onTapGesture {
@@ -172,6 +170,7 @@ struct FinancialGoalDetailsView: View {
                     .padding(.vertical, 20)
             }
         }
+        .padding(.bottom, 16)
     }
 }
 
@@ -208,14 +207,13 @@ struct ContributionRow: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
+                Text(contribution.name)
+                    .font(.appFont(16, weight: .medium))
+                    .foregroundColor(.primaryText)
+                
                 Text(contribution.transactionDate.formatted(date: .abbreviated, time: .omitted))
                     .font(.appFont(14))
-                    .foregroundColor(.primaryText)
-                if let note = contribution.note, !note.isEmpty {
-                    Text(note)
-                        .font(.appFont(12))
-                        .foregroundColor(.secondaryText)
-                }
+                    .foregroundColor(.secondaryText)
             }
             
             Spacer()
@@ -223,6 +221,10 @@ struct ContributionRow: View {
             Text("+\(CommonHelpers.formatCurrency(NSDecimalNumber(decimal: contribution.amount).doubleValue))")
                 .font(.appFont(16, weight: .semibold))
                 .foregroundColor(.green)
+            
+            Image(systemName: "chevron.right")
+                .font(.appFont(14, weight: .regular))
+                .foregroundStyle(Color.gray)
         }
         .padding()
         .background(Color.cardBackground)
@@ -249,13 +251,14 @@ struct FinancialGoalDetailsView_Previews: PreviewProvider {
                     id: UUID(),
                     userId: UUID(),
                     title: "Dream Car",
+                    icon: "🚗",
                     colorHex: "#216DF3",
                     targetAmount: 50000,
                     targetDate: Date().addingTimeInterval(86400 * 365),
                     status: .active,
                     contributions: [
-                        GoalContribution(id: 0, goalId: UUID(), amount: 15000, transactionDate: Date(), note: "Initial Savings"),
-                        GoalContribution(id: 1, goalId: UUID(), amount: 5000, transactionDate: Date().addingTimeInterval(-86400 * 10), note: "Bonus")
+                        GoalContribution(id: 0, goalId: UUID(), name: "Initial Savings", amount: 15000, transactionDate: Date()),
+                        GoalContribution(id: 1, goalId: UUID(), name: "Bonus", amount: 5000, transactionDate: Date().addingTimeInterval(-86400 * 10))
                     ]
                 ),
                 repoService: MockRepoService()

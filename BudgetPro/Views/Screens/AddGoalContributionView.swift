@@ -117,6 +117,14 @@ struct AddGoalContributionView: View {
             // Form Fields
             VStack(spacing: 24) {
                 AppTextField(
+                    hint: "Name",
+                    iconName: "text.quote",
+                    text: $viewModel.name,
+                    submitLabel: .next,
+                    textCapitalization: .words
+                )
+                
+                AppTextField(
                     hint: "Amount",
                     iconName: "indianrupeesign",
                     text: $viewModel.amountString,
@@ -152,13 +160,6 @@ struct AddGoalContributionView: View {
                             .stroke(Color.inputBorder, lineWidth: 1)
                     )
                 }
-                
-                AppTextField(
-                    hint: "Note (Optional)",
-                    iconName: "note.text",
-                    text: $viewModel.note,
-                    submitLabel: .done
-                )
             }
             
             // Save Button

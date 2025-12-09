@@ -11,32 +11,32 @@ import Foundation
 struct GoalContribution: Identifiable, Codable, Hashable {
     let id: Int?
     let goalId: UUID
+    let name: String
     let amount: Decimal
     let transactionDate: Date
-    let note: String?
     
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case goalId = "goal_id"
+        case name
         case amount
         case transactionDate = "date"
-        case note
     }
     
-    init(id: Int?, goalId: UUID, amount: Decimal, transactionDate: Date, note: String?) {
+    init(id: Int?, goalId: UUID, name: String, amount: Decimal, transactionDate: Date) {
         self.id = id
         self.goalId = goalId
+        self.name = name
         self.amount = amount
         self.transactionDate = transactionDate
-        self.note = note
     }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(Int.self, forKey: .id)
         goalId = try container.decode(UUID.self, forKey: .goalId)
+        name = try container.decode(String.self, forKey: .name)
         amount = try container.decode(Decimal.self, forKey: .amount)
-        note = try container.decodeIfPresent(String.self, forKey: .note)
         
         let dateString = try container.decode(String.self, forKey: .transactionDate)
         let formatter = DateFormatter()
@@ -57,8 +57,8 @@ struct GoalContribution: Identifiable, Codable, Hashable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(id, forKey: .id)
         try container.encode(goalId, forKey: .goalId)
+        try container.encode(name, forKey: .name)
         try container.encode(amount, forKey: .amount)
-        try container.encode(note, forKey: .note)
         
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"

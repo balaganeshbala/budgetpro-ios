@@ -99,6 +99,10 @@ struct GoalCardView: View {
         CardView(padding: EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)) {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
+                    // Emoji Icon
+                    Text(goal.icon)
+                        .font(.system(size: 28))
+                    
                     Text(goal.title)
                         .font(.appFont(18, weight: .semibold))
                         .foregroundColor(.primaryText)
@@ -185,24 +189,26 @@ class MockFinancialGoalListRepoService: FinancialGoalRepoService {
                 id: UUID(),
                 userId: UUID(),
                 title: "Dream Car",
+                icon: "🚗",
                 colorHex: "#216DF3",
                 targetAmount: 50000,
                 targetDate: Date().addingTimeInterval(86400 * 365), // 1 year from now
                 status: .active,
                 contributions: [
-                    GoalContribution(id: 0, goalId: UUID(), amount: 15000, transactionDate: Date(), note: "Initial Savings")
+                    GoalContribution(id: 0, goalId: UUID(), name: "Initial Savings", amount: 15000, transactionDate: Date())
                 ]
             ),
              FinancialGoal(
                 id: UUID(),
                 userId: UUID(),
-                title: "Europe Trip",
+                title: "Vacation Fund",
+                icon: "✈️",
                 colorHex: "#428F7D",
                 targetAmount: 5000,
                 targetDate: Date().addingTimeInterval(86400 * 180), // 6 months from now
                 status: .completed,
                 contributions: [
-                    GoalContribution(id: 1, goalId: UUID(), amount: 5000, transactionDate: Date(), note: "Full amount")
+                    GoalContribution(id: 1, goalId: UUID(), name: "Full amount", amount: 5000, transactionDate: Date())
                 ]
             )
         ]

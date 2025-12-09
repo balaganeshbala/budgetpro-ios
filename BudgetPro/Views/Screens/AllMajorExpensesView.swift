@@ -218,7 +218,7 @@ struct MajorExpenseSummaryView: View {
                     
                     HStack {
                         Text("₹\(CommonHelpers.formatAmount(totalMajorExpense))")
-                            .font(.appFont(24, weight: .bold))
+                            .font(.appFont(20, weight: .bold))
                             .foregroundColor(Color.primaryText)
                         Spacer()
                     }

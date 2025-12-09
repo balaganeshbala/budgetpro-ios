@@ -15,6 +15,7 @@ struct FinancialGoal: Identifiable, Codable, Hashable {
     let id: UUID          // Maps to goal_id
     let userId: UUID      // Maps to user_id
     var title: String
+    let icon: String
     var colorHex: String
     var targetAmount: Double
     var targetDate: Date
@@ -26,6 +27,7 @@ struct FinancialGoal: Identifiable, Codable, Hashable {
         case id = "goal_id"
         case userId = "user_id"
         case title
+        case icon
         case colorHex = "color_hex"
         case targetAmount = "target_amount"
         case targetDate = "target_date"
@@ -34,10 +36,11 @@ struct FinancialGoal: Identifiable, Codable, Hashable {
     }
 
     
-    init(id: UUID, userId: UUID, title: String, colorHex: String, targetAmount: Double, targetDate: Date, status: FinancialGoalStatus, contributions: [GoalContribution]? = nil) {
+    init(id: UUID, userId: UUID, title: String, icon: String, colorHex: String, targetAmount: Double, targetDate: Date, status: FinancialGoalStatus, contributions: [GoalContribution]? = nil) {
         self.id = id
         self.userId = userId
         self.title = title
+        self.icon = icon
         self.colorHex = colorHex
         self.targetAmount = targetAmount
         self.targetDate = targetDate
@@ -50,6 +53,7 @@ struct FinancialGoal: Identifiable, Codable, Hashable {
         id = try container.decode(UUID.self, forKey: .id)
         userId = try container.decode(UUID.self, forKey: .userId)
         title = try container.decode(String.self, forKey: .title)
+        icon = try container.decodeIfPresent(String.self, forKey: .icon) ?? "🎯"
         colorHex = try container.decode(String.self, forKey: .colorHex)
         targetAmount = try container.decode(Double.self, forKey: .targetAmount)
         status = try container.decode(FinancialGoalStatus.self, forKey: .status)
@@ -77,6 +81,7 @@ struct FinancialGoal: Identifiable, Codable, Hashable {
         try container.encode(id, forKey: .id)
         try container.encode(userId, forKey: .userId)
         try container.encode(title, forKey: .title)
+        try container.encode(icon, forKey: .icon)
         try container.encode(colorHex, forKey: .colorHex)
         try container.encode(targetAmount, forKey: .targetAmount)
         try container.encode(status, forKey: .status)

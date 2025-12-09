@@ -11,7 +11,7 @@ import Foundation
 class AddGoalContributionViewModel: ObservableObject {
     @Published var amountString: String = ""
     @Published var transactionDate: Date = Date()
-    @Published var note: String = ""
+    @Published var name: String = ""
     
     @Published var isLoading = false
     @Published var errorMessage: String?
@@ -32,13 +32,14 @@ class AddGoalContributionViewModel: ObservableObject {
         if let contribution = contributionToEdit {
             self.amountString = String(NSDecimalNumber(decimal: contribution.amount).doubleValue)
             self.transactionDate = contribution.transactionDate
-            self.note = contribution.note ?? ""
+            self.name = contribution.name
         }
     }
     
     var isValid: Bool {
         !amountString.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-        (Double(amountString) ?? 0) > 0
+        (Double(amountString) ?? 0) > 0 &&
+        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
     
     func saveContribution() async throws {
@@ -55,9 +56,9 @@ class AddGoalContributionViewModel: ObservableObject {
                 let updated = GoalContribution(
                     id: existing.id,
                     goalId: existing.goalId,
+                    name: name,
                     amount: Decimal(amount),
-                    transactionDate: transactionDate,
-                    note: note.isEmpty ? nil : note
+                    transactionDate: transactionDate
                 )
                 
                 try await repoService.updateContribution(updated)
@@ -66,9 +67,9 @@ class AddGoalContributionViewModel: ObservableObject {
                 let newContribution = GoalContribution(
                     id: nil, // DB will auto-generate
                     goalId: goalId,
+                    name: name,
                     amount: Decimal(amount),
-                    transactionDate: transactionDate,
-                    note: note.isEmpty ? nil : note
+                    transactionDate: transactionDate
                 )
                 
                 try await repoService.addContribution(newContribution)

@@ -139,7 +139,8 @@ struct AddFinancialGoalView: View {
                     hint: "Goal Title",
                     iconName: "target",
                     text: $viewModel.title,
-                    submitLabel: .next
+                    submitLabel: .next,
+                    textCapitalization: .words
                 )
                 
                 AppTextField(
@@ -178,6 +179,33 @@ struct AddFinancialGoalView: View {
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(Color.inputBorder, lineWidth: 1)
                     )
+                }
+                
+                // Emoji Icon Picker
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Goal Icon")
+                        .font(.appFont(14, weight: .medium))
+                        .foregroundColor(.secondaryText)
+                        .padding(.leading, 4)
+                    
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 50))], spacing: 12) {
+                        ForEach(viewModel.availableIcons, id: \.self) { icon in
+                            Text(icon)
+                                .font(.system(size: 32))
+                                .frame(width: 50, height: 50)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(viewModel.selectedIcon == icon ? Color.primary.opacity(0.1) : Color.clear)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(viewModel.selectedIcon == icon ? Color.primary : Color.clear, lineWidth: 2)
+                                )
+                                .onTapGesture {
+                                    viewModel.selectedIcon = icon
+                                }
+                        }
+                    }
                 }
                 
                 // Color Picker

@@ -13,6 +13,7 @@ class AddFinancialGoalViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var targetAmountString: String = ""
     @Published var targetDate: Date = Date().addingTimeInterval(86400 * 30) // Default 30 days
+    @Published var selectedIcon: String = "🎯"
     @Published var selectedColorHex: String = "#216DF3" // Default Primary Blue
     
     @Published var isLoading = false
@@ -30,6 +31,39 @@ class AddFinancialGoalViewModel: ObservableObject {
         "#008080"  // Teal
     ]
     
+    // Predefined emojis for selection
+    let availableIcons: [String] = [
+        // Child's Education
+        "🎓", "📚", "🧑‍🎓",
+        
+        // Child's Marriage
+        "💍", "👰", "🎊",
+        
+        // Retirement Planning
+        "🌴", "🧘", "👵",
+        
+        // Buying a Home
+        "🏠", "🔑", "🏡",
+        
+        // Emergency Fund
+        "🏥", "🛡️", "☔",
+        
+        // Debt Payoff / Clearance
+        "🔗", "❌", "💸",
+        
+        // Wealth Accumulation
+        "📈", "💰", "🚀",
+        
+        // Tax Savings
+        "🧾", "📉", "✅",
+        
+        // Major Purchase
+        "🚗", "🛋️", "💻",
+        
+        // Travel / Vacation
+        "✈️", "🗺️", "🏖️"
+    ]
+    
     private let repoService: FinancialGoalRepoService
     private let goalToEdit: FinancialGoal?
     
@@ -43,6 +77,7 @@ class AddFinancialGoalViewModel: ObservableObject {
         
         if let goal = goalToEdit {
             self.title = goal.title
+            self.selectedIcon = goal.icon
             self.targetAmountString = String(goal.targetAmount)
             self.targetDate = goal.targetDate
             self.selectedColorHex = goal.colorHex
@@ -60,11 +95,12 @@ class AddFinancialGoalViewModel: ObservableObject {
         // Compare current values with initial goal values
         let amount = Double(targetAmountString) ?? 0
         let isTitleChanged = title != goal.title
+        let isIconChanged = selectedIcon != goal.icon
         let isAmountChanged = abs(amount - goal.targetAmount) > 0.01
-        let isDateChanged = !Calendar.current.isDate(targetDate, inSameDayAs: goal.targetDate) // Ignore time differences if any
+        let isDateChanged = !Calendar.current.isDate(targetDate, inSameDayAs: goal.targetDate)
         let isColorChanged = selectedColorHex != goal.colorHex
         
-        return isTitleChanged || isAmountChanged || isDateChanged || isColorChanged
+        return isTitleChanged || isIconChanged || isAmountChanged || isDateChanged || isColorChanged
     }
     
     func saveGoal() async throws {
@@ -99,6 +135,7 @@ class AddFinancialGoalViewModel: ObservableObject {
                     id: UUID(),
                     userId: userId,
                     title: title,
+                    icon: selectedIcon,
                     colorHex: selectedColorHex,
                     targetAmount: amount,
                     targetDate: targetDate,
