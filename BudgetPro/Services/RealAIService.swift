@@ -48,9 +48,7 @@ class RealAIService: AIService {
         self.tool = tool
         self.userId = userId
         
-        // In a real app, fetch these from Info.plist or Config
-        // Ideally we shouldn't hardcode them, but for this implementation we'll assume they are available via Bundle or Config.
-        // For now, I'll use placeholders that the user must replace or inject.
+        // Configured with user's keys
         self.supabaseUrl = "https://YOUR_PROJECT_REF.supabase.co/functions/v1/budget-assistant"
         self.supabaseKey = "YOUR_ANON_KEY"
     }
@@ -76,86 +74,35 @@ class RealAIService: AIService {
         
         // 3. Handle Tool Calls
         if let toolCalls = message.tool_calls, !toolCalls.isEmpty {
-            // Append Assistant Message with Tool Calls to History
-            // We need to match the format expected by OpenAI API (even if proxied)
-            // Ideally the Edge Function handles history, but if we send full history from client, we mimic the structure.
-            // Simplified: We assume the backend is stateless for this request or we send what we have.
-            
-            // For this implementation, let's treat history as local state we send up.
-            // Note: Swift Dictionary<String, Any> is tricky with JSONSerialization if not careful.
-            
-            // Let's Execute Tools
+            // Execute Tools
             for toolCall in toolCalls {
                  let result = await executeTool(call: toolCall)
                  
-                 // Append Tool Result to History
-                 // Note: We need to append the ASSISTANT's tool_calls message first, then the TOOL result.
-                 // This complexity is handled better if we strictly model the messages.
-            }
-            
-            // For simplicity in this demo, we will:
-            // 1. Send the tool result back in a new message context (mimicking the flow).
-            // WARNING: Proper OpenAI "Tool use" requires sending the PREVIOUS assistant message + the TOOL output.
-            
-            // Refined Approach:
-            // We will do a recursive call or simply a second request.
-            // Let's assume the Edge Function creates a 'run' effectively.
-            
-            // Since we are managing history on Client:
-            // We must add the assistant message that requested the tool.
-            
-            // Since `EdgeMessage` is Codable, let's convert it to Dictionary for history storage
-            // (Skipping deep JSON conversion for brevity in this snippet, using simplified flow)
-            
-            // 3b. Execute Tool
-            let toolCall = toolCalls[0] // Simplify to handle first tool call for now
-            let resultString = await executeTool(call: toolCall)
-            
-            // 3c. Update History for Round 2
-            // We need to send:
-            // - User: "Spend on food?"
-            // - Assistant: (Tool Call)
-            // - Tool: "4500"
-            
-            // Awaiting second response...
-            // To make this robust without huge boilerplate, we'll send a structured "Follow Up"
-            // For now, let's assume the Edge Function is stateless request-response.
-            // We send [User, Assistant(ToolCall), ToolResult]
-            
-            var round2Messages = history
-            
-            // Add Assistant Message (Simplified representation)
-            round2Messages.append([
-                "role": "assistant",
-                "content": message.content ?? "",
-                "tool_calls": [
-                    [
-                        "id": toolCall.id,
-                        "type": "function",
-                        "function": [
-                            "name": toolCall.function.name,
-                            "arguments": toolCall.function.arguments
-                        ]
-                    ]
-                ]
-            ])
-            
-            // Add Tool Message
-            round2Messages.append([
-                "role": "tool",
-                "tool_call_id": toolCall.id,
-                "name": toolCall.function.name,
-                "content": resultString // Result from our local DB
-            ])
-            
-            // 4. Call Edge Function (Round 2)
-            let response2 = try await callEdgeFunction(messages: round2Messages)
-            
-            if let finalContent = response2.choices.first?.message.content {
-                // Update local history with final answer
-                history = round2Messages
-                history.append(["role": "assistant", "content": finalContent])
-                return AIResponse(text: finalContent, isError: false)
+                 // 3b. Update History for Round 2
+                 var round2Messages = history
+                 
+                 // IMPORTANT: The simplified Edge Function ignores 'assistant' and 'tool' roles.
+                 // It only looks at the last 'user' message.
+                 // So we must "cheat" and send the tool result as a USER Prompt to force Gemini to see it.
+                 // This effectively simulates: User: "The tool returned X. Please answer."
+                 
+                 // REFINED FIX: Include the ORIGINAL QUESTION because key backend only sees the last message.
+                 let toolResultPrompt = "Original Question: \"\(text)\"\n\nContext: The tool call '\(toolCall.function.name)' returned the result: '\(result)'.\n\nPlease answer the Original Question using this information."
+                 
+                 round2Messages.append([
+                     "role": "user",
+                     "content": toolResultPrompt
+                 ])
+                 
+                 // 4. Call Edge Function (Round 2)
+                 let response2 = try await callEdgeFunction(messages: round2Messages)
+                 
+                 if let finalContent = response2.choices.first?.message.content {
+                     // Update local history with final answer
+                     history = round2Messages
+                     history.append(["role": "assistant", "content": finalContent])
+                     return AIResponse(text: finalContent, isError: false)
+                 }
             }
         }
         
