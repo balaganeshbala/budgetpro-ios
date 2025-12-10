@@ -1,3 +1,9 @@
+//
+//  HomeView_Extensions.swift
+//  BudgetPro
+//
+//  Created by Balaganesh S on 09/12/25.
+//
 
 import SwiftUI
 

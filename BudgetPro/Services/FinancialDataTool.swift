@@ -71,7 +71,6 @@ class FinancialDataTool {
         }
     }
 
-
     // Calculates total income matching the criteria
     func getIncomeTotal(category: String?, month: Int?, year: Int?) async -> Double {
         do {
@@ -145,7 +144,6 @@ class FinancialDataTool {
             return "Error retrieving goals. (Table 'financial_goals' might be missing or inaccessible)"
         }
     }
-    }
     
     // Fetches budget details (Categories, Budgeted, Spent) for a given month
     func getBudgetCategories(month: Int, year: Int) async -> String {
@@ -185,12 +183,11 @@ class FinancialDataTool {
             
             // 1. Process Set Budgets
             for budgetItem in budgetResponse {
-                let catName = ExpenseCategory.from(categoryName: budgetItem.category).displayName
+                // Defensive: Ensure category exists or fallback
+                let catName = budgetItem.category
                 let budgetAmount = budgetItem.amount
                 
                 // Find matching expenses (loosely matching category name)
-                // Note: ExpenseResponse category is raw string, BudgetResponse category is raw string. 
-                // We assume they match or use the enum mapping.
                 
                 let spent = expensesByCategory[budgetItem.category]?.reduce(0) { $0 + $1.amount } ?? 0
                 let remaining = budgetAmount - spent
@@ -204,8 +201,7 @@ class FinancialDataTool {
             for (catRaw, expenses) in expensesByCategory {
                 if !budgetedCategories.contains(catRaw) {
                     let total = expenses.reduce(0) { $0 + $1.amount }
-                    let catName = ExpenseCategory.from(categoryName: catRaw).displayName
-                    reportLines.append("- \(catName): No Budget, Spent ₹\(total) (Unplanned)")
+                    reportLines.append("- \(catRaw): No Budget, Spent ₹\(total) (Unplanned)")
                 }
             }
             
@@ -217,5 +213,3 @@ class FinancialDataTool {
         }
     }
 }
-
-

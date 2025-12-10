@@ -20,6 +20,8 @@ struct CommonHelpers {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.maximumFractionDigits = 0
+        formatter.currencyCode = "INR"
+        formatter.currencySymbol = "₹"
         return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
     
@@ -110,7 +112,7 @@ struct CommonHelpers {
     /// - Parameter amount: The amount to format
     /// - Returns: Formatted string with currency symbol
     static func formatCurrency(_ amount: Double) -> String {
-        return "₹\(formatAmount(amount))"
+        formatAmount(amount)
     }
     
     /// Formats amount with currency symbol and sign prefix
@@ -125,6 +127,41 @@ struct CommonHelpers {
             return "\(sign)₹\(formattedAmount)"
         }
         return "₹0"
+    }
+    
+    static func getMonthName(_ month: Int) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM"
+        let date = Calendar.current.date(from: DateComponents(year: 2024, month: month, day: 1)) ?? Date()
+        return formatter.string(from: date)
+    }
+    
+    static func getMonthStartDate(month: Int, year: Int) -> String {
+        let startDate = Calendar.current.date(from: DateComponents(year: year, month: month, day: 1)) ?? Date()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: startDate)
+    }
+    
+    static func getMonthEndDate(month: Int, year: Int) -> String {
+        let startDate = Calendar.current.date(from: DateComponents(year: year, month: month, day: 1)) ?? Date()
+        let endDate = Calendar.current.date(byAdding: .month, value: 1, to: startDate) ?? Date()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: endDate)
+    }
+    
+    static func parseDate(_ dateString: String) -> Date {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        if let date = formatter.date(from: dateString) {
+            return date
+        }
+        let isoFormatter = ISO8601DateFormatter()
+        if let date = isoFormatter.date(from: dateString) {
+            return date
+        }
+        return Date()
     }
 }
 

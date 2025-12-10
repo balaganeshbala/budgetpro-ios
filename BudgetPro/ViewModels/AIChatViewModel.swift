@@ -22,13 +22,10 @@ class AIChatViewModel: ObservableObject {
     @Published var inputText = ""
     @Published var errorMessage: String?
     
-    // In a real app, we'd inject this via Dependency Injection.
-    // For now, we'll initialize it here or pass it in.
     private let aiService: AIService
     
     init(aiService: AIService) {
         self.aiService = aiService
-        
         // Initial greeting
         messages.append(ChatMessage(text: "Hello! I'm your Budget Assistant. Ask me about your expenses.", isUser: false))
     }

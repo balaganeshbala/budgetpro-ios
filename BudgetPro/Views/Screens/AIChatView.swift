@@ -16,7 +16,6 @@ struct AIChatView: View {
         // Compose the service graph here (or in a DI container/Coordinator)
         let repo = SupabaseDataFetchRepoService() // Or Mock if we want purely offline
         let tool = FinancialDataTool(repoService: repo, userId: userId)
-        // let service = MockAIService(tool: tool)
         
         // REAL AI SERVICE (Connects to Supabase Edge Function)
         // IMPORTANT: Update RealAIService.swift with your actual Supabase URL and Anon Key!
@@ -88,6 +87,7 @@ struct AIChatView: View {
                     .padding(12)
                     .background(Color.secondarySystemFill)
                     .cornerRadius(20)
+                    .submitLabel(.send)
                     .onSubmit {
                         viewModel.sendMessage()
                     }
@@ -97,9 +97,9 @@ struct AIChatView: View {
                 }) {
                     Image(systemName: "paperplane.fill")
                         .font(.system(size: 20))
-                        .foregroundColor(.primary)
+                        .foregroundColor(viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .secondaryText : .blue)
                         .padding(10)
-                        .background(Color.primary.opacity(0.1))
+                        .background(viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? Color.secondaryText.opacity(0.1) : Color.blue.opacity(0.1))
                         .clipShape(Circle())
                 }
                 .disabled(viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
