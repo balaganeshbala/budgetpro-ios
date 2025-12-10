@@ -17,7 +17,7 @@ class HomeViewModel: ObservableObject {
     // Incomes data
     @Published var recentIncomes: [Income] = []
     
-    private let userId: String
+    let userId: String
     private let repoService: DataFetchRepoService
     
     private var currentLoadingTask: Task<Void, Never>?

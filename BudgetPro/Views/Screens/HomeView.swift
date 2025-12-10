@@ -2,15 +2,16 @@ import SwiftUI
 
 struct HomeView: View {
     
-    @StateObject private var viewModel: HomeViewModel
+    @StateObject var viewModel: HomeViewModel
     
     @EnvironmentObject private var coordinator: MainCoordinator
-    @State private var selectedMonth = Calendar.current.component(.month, from: Date())
-    @State private var selectedYear = Calendar.current.component(.year, from: Date())
+    @State var selectedMonth = Calendar.current.component(.month, from: Date())
+    @State var selectedYear = Calendar.current.component(.year, from: Date())
 
-    @State private var showingMonthPicker = false
-    @State private var tempMonth = Calendar.current.component(.month, from: Date())
-    @State private var tempYear = Calendar.current.component(.year, from: Date())
+    @State var showingMonthPicker = false
+    @State var tempMonth = Calendar.current.component(.month, from: Date())
+    @State var tempYear = Calendar.current.component(.year, from: Date())
+    @State var showingAIChat = false
     @State private var hasLoadedInitialData = false
     
     @State private var isbudgetOverviewExpanded: Bool = false
@@ -68,27 +69,11 @@ struct HomeView: View {
             await viewModel.refreshData(month: selectedMonth, year: selectedYear)
         }
 
-        .overlay(
-            Group {
-                if showingMonthPicker {
-                    MonthYearPickerDialog(
-                        selectedMonth: $tempMonth,
-                        selectedYear: $tempYear,
-                        isPresented: $showingMonthPicker,
-                        months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                        years: Array(2023...Calendar.current.component(.year, from: Date())),
-                        onDone: {
-                            selectedMonth = tempMonth
-                            selectedYear = tempYear
-                            Task {
-                                await viewModel.loadData(month: tempMonth, year: tempYear)
-                            }
-                            showingMonthPicker = false
-                        }
-                    )
-                }
-            }
-        )
+        .overlay(overlayContent)
+        .sheet(isPresented: $showingAIChat) {
+            aiChatSheet
+        }
+
         .onAppear {
             // Only load data on first launch
             if !hasLoadedInitialData {
