@@ -13,25 +13,7 @@ extension HomeView {
     var overlayContent: some View {
         Group {
             // Floating AI Assistant Button
-            VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Button(action: {
-                        showingAIChat = true
-                    }) {
-                        Image(systemName: "sparkles")
-                            .font(.system(size: 24))
-                            .foregroundColor(.white)
-                            .frame(width: 56, height: 56)
-                            .background(Color.blue) // Use app tint color
-                            .clipShape(Circle())
-                            .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 4)
-                    }
-                    .padding(.trailing, 20)
-                    .padding(.bottom, 20)
-                }
-            }
+            // Floating AI Assistant Button - REMOVED (Moved to Toolbar)
             
             if showingMonthPicker {
                 MonthYearPickerDialog(

@@ -72,6 +72,13 @@ struct HomeView: View {
         .overlay(overlayContent)
         .sheet(isPresented: $showingAIChat) {
             aiChatSheet
+                .modify {
+                    if #available(iOS 16.4, *) {
+                        $0.presentationCornerRadius(15)
+                    } else {
+                        $0
+                    }
+                }
         }
 
         .onAppear {
@@ -336,6 +343,30 @@ struct HomeView: View {
                 }
                 
                 Spacer()
+                
+                // AI Chat Button
+                Button(action: {
+                    showingAIChat = true
+                }) {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(.primary)
+                        .padding(5)
+                }
+                .modify {
+                    if #available(iOS 26.0, *) {
+                        $0.liquidGlass()
+                    } else {
+                        $0.buttonStyle(.bordered)
+                    }
+                }
+                .modify {
+                    if #available(iOS 17.0, *) {
+                        $0.buttonBorderShape(.circle)
+                    } else {
+                        $0.buttonBorderShape(.roundedRectangle)
+                    }
+                }
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)

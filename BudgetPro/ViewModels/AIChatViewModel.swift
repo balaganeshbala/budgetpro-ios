@@ -27,7 +27,7 @@ class AIChatViewModel: ObservableObject {
     init(aiService: AIService) {
         self.aiService = aiService
         // Initial greeting
-        messages.append(ChatMessage(text: "Hello! I'm your Budget Assistant. Ask me about your expenses.", isUser: false))
+        messages.append(ChatMessage(text: "Hello! I'm your Budget Assistant. Ask me about your finance.", isUser: false))
     }
     
     func sendMessage() {
