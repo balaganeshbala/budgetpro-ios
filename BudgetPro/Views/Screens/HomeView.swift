@@ -473,8 +473,6 @@ struct HomeView: View {
                         }
                     }
                     
-                    Divider()
-                    
                     // Remaining Amount - Highlighted at the top
                     VStack(spacing: 16) {
                         Button {

@@ -118,23 +118,74 @@ struct MessageBubble: View {
         HStack {
             if message.isUser {
                 Spacer()
-                Text(message.text)
-                    .font(.appFont(16))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(Color.blue)
-                    .cornerRadius(16, corners: [.topLeft, .topRight, .bottomLeft])
-            } else {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(message.text)
-                        .font(.appFont(16))
-                        .foregroundColor(.primaryText)
+                // Safely convert to AttributedString for Markdown support
+                if let attributedString = try? AttributedString(markdown: message.text) {
+                    Text(attributedString)
+                        .font(.system(size: 16)) // Use system font for reliable Markdown
+                        .foregroundColor(.white)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 10)
-                        .background(Color.cardBackground)
-                        .cornerRadius(16, corners: [.topLeft, .topRight, .bottomRight])
-                        .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
+                        .background(Color.blue)
+                        .cornerRadius(16, corners: [.topLeft, .topRight, .bottomLeft])
+                        .contextMenu {
+                            Button(action: {
+                                UIPasteboard.general.string = message.text
+                            }) {
+                                Label("Copy", systemImage: "doc.on.doc")
+                            }
+                        }
+                } else {
+                    // Fallback if parsing fails
+                    Text(message.text)
+                        .font(.system(size: 16))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(Color.blue)
+                        .cornerRadius(16, corners: [.topLeft, .topRight, .bottomLeft])
+                        .contextMenu {
+                            Button(action: {
+                                UIPasteboard.general.string = message.text
+                            }) {
+                                Label("Copy", systemImage: "doc.on.doc")
+                            }
+                        }
+                }
+            } else {
+                VStack(alignment: .leading, spacing: 4) {
+                    if let attributedString = try? AttributedString(markdown: message.text) {
+                        Text(attributedString)
+                            .font(.system(size: 16)) // Use system font for reliable Markdown
+                            .foregroundColor(.primaryText)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                            .background(Color.cardBackground)
+                            .cornerRadius(16, corners: [.topLeft, .topRight, .bottomRight])
+                            .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
+                            .contextMenu {
+                                Button(action: {
+                                    UIPasteboard.general.string = message.text
+                                }) {
+                                    Label("Copy", systemImage: "doc.on.doc")
+                                }
+                            }
+                    } else {
+                        Text(message.text)
+                            .font(.system(size: 16))
+                            .foregroundColor(.primaryText)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                            .background(Color.cardBackground)
+                            .cornerRadius(16, corners: [.topLeft, .topRight, .bottomRight])
+                            .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
+                            .contextMenu {
+                                Button(action: {
+                                    UIPasteboard.general.string = message.text
+                                }) {
+                                    Label("Copy", systemImage: "doc.on.doc")
+                                }
+                            }
+                    }
                     
                     Text("AI Assistant")
                         .font(.appFont(10))
