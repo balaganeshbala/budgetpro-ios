@@ -17,7 +17,7 @@ class HomeViewModel: ObservableObject {
     // Incomes data
     @Published var recentIncomes: [Income] = []
     
-    private let userId: String
+    let userId: String
     private let repoService: DataFetchRepoService
     
     private var currentLoadingTask: Task<Void, Never>?
@@ -76,7 +76,7 @@ class HomeViewModel: ObservableObject {
     
     private func loadBudgetData(month: Int, year: Int, expenses: [Expense]) async throws -> (categories: [BudgetCategory], total: Double, spent: Double) {
         do {
-            let targetDate = getMonthStartDate(month: month, year: year)
+            let targetDate = CommonHelpers.getMonthStartDate(month: month, year: year)
             let filters = [
                 RepoQueryFilter(column: "user_id", op: .eq, value: userId),
                 RepoQueryFilter(column: "date", op: .eq, value: targetDate)
@@ -128,8 +128,8 @@ class HomeViewModel: ObservableObject {
         do {
             let filters = [
                 RepoQueryFilter(column: "user_id", op: .eq, value: userId),
-                RepoQueryFilter(column: "date", op: .gte, value: getMonthStartDate(month: month, year: year)),
-                RepoQueryFilter(column: "date", op: .lt, value: getMonthEndDate(month: month, year: year))
+                RepoQueryFilter(column: "date", op: .gte, value: CommonHelpers.getMonthStartDate(month: month, year: year)),
+                RepoQueryFilter(column: "date", op: .lt, value: CommonHelpers.getMonthEndDate(month: month, year: year))
             ]
             let response: [ExpenseResponse] = try await repoService.fetchAll(from: "expenses", filters: filters)
             return response.map { expenseResponse in
@@ -139,7 +139,7 @@ class HomeViewModel: ObservableObject {
                     name: expenseResponse.name,
                     amount: expenseResponse.amount,
                     category: categoryEnum,
-                    date: parseDate(expenseResponse.date)
+                    date: CommonHelpers.parseDate(expenseResponse.date)
                 )
             }
         } catch {
@@ -151,8 +151,8 @@ class HomeViewModel: ObservableObject {
         do {
             let filters = [
                 RepoQueryFilter(column: "user_id", op: .eq, value: userId),
-                RepoQueryFilter(column: "date", op: .gte, value: getMonthStartDate(month: month, year: year)),
-                RepoQueryFilter(column: "date", op: .lt, value: getMonthEndDate(month: month, year: year))
+                RepoQueryFilter(column: "date", op: .gte, value: CommonHelpers.getMonthStartDate(month: month, year: year)),
+                RepoQueryFilter(column: "date", op: .lt, value: CommonHelpers.getMonthEndDate(month: month, year: year))
             ]
             let response: [IncomeResponse] = try await repoService.fetchAll(from: "incomes", filters: filters)
             return response.map { incomeResponse in
@@ -162,7 +162,7 @@ class HomeViewModel: ObservableObject {
                     source: incomeResponse.source,
                     amount: incomeResponse.amount,
                     category: categoryEnum,
-                    date: parseDate(incomeResponse.date)
+                    date: CommonHelpers.parseDate(incomeResponse.date)
                 )
             }
         } catch {
@@ -171,41 +171,6 @@ class HomeViewModel: ObservableObject {
     }
     
     // MARK: - Helper Functions
-    
-    private func getMonthName(_ month: Int) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM"
-        let date = Calendar.current.date(from: DateComponents(year: 2024, month: month, day: 1)) ?? Date()
-        return formatter.string(from: date)
-    }
-    
-    private func getMonthStartDate(month: Int, year: Int) -> String {
-        let startDate = Calendar.current.date(from: DateComponents(year: year, month: month, day: 1)) ?? Date()
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: startDate)
-    }
-    
-    private func getMonthEndDate(month: Int, year: Int) -> String {
-        let startDate = Calendar.current.date(from: DateComponents(year: year, month: month, day: 1)) ?? Date()
-        let endDate = Calendar.current.date(byAdding: .month, value: 1, to: startDate) ?? Date()
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: endDate)
-    }
-    
-    private func parseDate(_ dateString: String) -> Date {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        if let date = formatter.date(from: dateString) {
-            return date
-        }
-        let isoFormatter = ISO8601DateFormatter()
-        if let date = isoFormatter.date(from: dateString) {
-            return date
-        }
-        return Date()
-    }
     
     private func getCategoryStatus(_ category: BudgetCategory) -> String {
         if category.budget == 0 && category.spent > 0 {
