@@ -99,6 +99,19 @@ struct ProfileView: View {
                 Divider()
                     .padding(.horizontal, 16)
                 
+                // Subscriptions Button
+                SettingsRow(
+                    icon: "arrow.triangle.2.circlepath",
+                    iconColor: .green,
+                    title: "Subscriptions",
+                    showChevron: true
+                ) {
+                    coordinator.navigate(to: .subscriptions)
+                }
+                
+                Divider()
+                    .padding(.horizontal, 16)
+                
                 // Major Expenses Button
                 SettingsRow(
                     icon: "creditcard.trianglebadge.exclamationmark",

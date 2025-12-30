@@ -49,6 +49,7 @@ class MainCoordinator: Coordinator {
     
     enum Route: Hashable {
         case home
+        case subscriptions
         case profile
         case addExpense
         case addIncome
@@ -88,6 +89,9 @@ class MainCoordinator: Coordinator {
             selectedTab = .home
             homeNavigationPath.removeLast(homeNavigationPath.count)
             profileNavigationPath.removeLast(profileNavigationPath.count)
+        case .subscriptions:
+            selectedTab = .profile
+            profileNavigationPath.append(Route.subscriptions)
         case .profile:
             presentedSheet = .profile
         case .addExpense, .addIncome:
@@ -144,6 +148,9 @@ class MainCoordinator: Coordinator {
         switch route {
         case .home:
             HomeView(userId: userId, repoService: dataFetchRepo)
+                .environmentObject(self)
+        case .subscriptions:
+            SubscriptionListView()
                 .environmentObject(self)
         case .profile:
             ProfileView()
