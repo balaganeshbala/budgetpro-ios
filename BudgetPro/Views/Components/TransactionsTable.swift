@@ -253,21 +253,24 @@ struct TransactionsTable_Previews: PreviewProvider {
                         name: "Grocery Shopping",
                         amount: 2500,
                         category: .food,
-                        date: Date()
+                        date: Date(),
+                        userId: "preview-user"
                     ),
                     Expense(
                         id: 2,
                         name: "Uber Ride",
                         amount: 350,
                         category: .travel,
-                        date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date()
+                        date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date(),
+                        userId: "preview-user"
                     ),
                     Expense(
                         id: 3,
                         name: "Movie Tickets",
                         amount: 800,
                         category: .entertainment,
-                        date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date()
+                        date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date(),
+                        userId: "preview-user"
                     )
                 ])
                 
@@ -284,21 +287,24 @@ struct TransactionsTable_Previews: PreviewProvider {
                         name: "Grocery Shopping",
                         amount: 2500,
                         category: .food,
-                        date: Date()
+                        date: Date(),
+                        userId: "preview-user"
                     ),
                     Expense(
                         id: 2,
                         name: "Uber Ride",
                         amount: 350,
                         category: .travel,
-                        date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date()
+                        date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date(),
+                        userId: "preview-user"
                     ),
                     Expense(
                         id: 3,
                         name: "Movie Tickets",
                         amount: 800,
                         category: .entertainment,
-                        date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date()
+                        date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date(),
+                        userId: "preview-user"
                     )
                 ])
                 

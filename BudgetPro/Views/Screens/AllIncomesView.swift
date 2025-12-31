@@ -303,35 +303,40 @@ struct AllIncomesView_Previews: PreviewProvider {
                 source: "Monthly Salary",
                 amount: 50000,
                 category: .salary,
-                date: Date()
+                date: Date(),
+                userId: "preview-user"
             ),
             Income(
                 id: 2,
                 source: "Freelance Project",
                 amount: 15000,
                 category: .sideHustle,
-                date: Calendar.current.date(byAdding: .day, value: -5, to: Date()) ?? Date()
+                date: Calendar.current.date(byAdding: .day, value: -5, to: Date()) ?? Date(),
+                userId: "preview-user"
             ),
             Income(
                 id: 3,
                 source: "Investment Returns",
                 amount: 5000,
                 category: .investment,
-                date: Calendar.current.date(byAdding: .day, value: -10, to: Date()) ?? Date()
+                date: Calendar.current.date(byAdding: .day, value: -10, to: Date()) ?? Date(),
+                userId: "preview-user"
             ),
             Income(
                 id: 4,
                 source: "Rental Income",
                 amount: 12000,
                 category: .investment,
-                date: Calendar.current.date(byAdding: .day, value: -15, to: Date()) ?? Date()
+                date: Calendar.current.date(byAdding: .day, value: -15, to: Date()) ?? Date(),
+                userId: "preview-user"
             ),
             Income(
                 id: 5,
                 source: "Bonus",
                 amount: 8000,
                 category: .salary,
-                date: Calendar.current.date(byAdding: .day, value: -20, to: Date()) ?? Date()
+                date: Calendar.current.date(byAdding: .day, value: -20, to: Date()) ?? Date(),
+                userId: "preview-user"
             )
         ]
     }

@@ -50,32 +50,15 @@ class AllMajorExpensesViewModel: ObservableObject {
             let session = try await supabaseManager.client.auth.session
             let userId = session.user.id.uuidString
             
-            // Fetch rows using the repo service
-            let response: [MajorExpenseResponse] = try await repoService.fetchAll(
+            // Fetch rows using the repo service with automatic decoding
+            let response: [MajorExpense] = try await repoService.fetchAll(
                 from: "major_expenses",
                 filters: [
                     RepoQueryFilter(column: "user_id", op: .eq, value: userId)
                 ]
             )
             
-            // Map to domain model
-            majorExpenses = response.compactMap { responseItem in
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy-MM-dd"
-                
-                guard let date = dateFormatter.date(from: responseItem.date) else {
-                    return nil
-                }
-                
-                return MajorExpense(
-                    id: responseItem.id,
-                    name: responseItem.name,
-                    category: MajorExpenseCategory.from(categoryName: responseItem.category),
-                    date: date,
-                    amount: responseItem.amount,
-                    notes: responseItem.notes
-                )
-            }
+            majorExpenses = response
             
             sortMajorExpenses()
             
@@ -109,23 +92,4 @@ class AllMajorExpensesViewModel: ObservableObject {
     }
 }
 
-// MARK: - Data Models
-struct MajorExpenseResponse: Codable {
-    let id: Int
-    let name: String
-    let amount: Double
-    let category: String
-    let date: String
-    let notes: String?
-    let userId: String
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case name
-        case amount
-        case category
-        case date
-        case notes
-        case userId = "user_id"
-    }
-}
+

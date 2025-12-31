@@ -301,28 +301,32 @@ struct PieChartView_Previews: PreviewProvider {
             name: "Groceries",
             amount: 5000,
             category: .groceries,
-            date: Date()
+            date: Date(),
+            userId: "preview-user"
         ),
         Expense(
             id: 2,
             name: "Fuel",
             amount: 4000,
             category: .travel,
-            date: Date()
+            date: Date(),
+            userId: "preview-user"
         ),
         Expense(
             id: 3,
             name: "Movie Tickets",
             amount: 3000,
             category: .entertainment,
-            date: Date()
+            date: Date(),
+            userId: "preview-user"
         ),
         Expense(
             id: 4,
             name: "Shopping",
             amount: 8000,
             category: .shopping,
-            date: Date()
+            date: Date(),
+            userId: "preview-user"
         )
     ]
     
@@ -332,14 +336,16 @@ struct PieChartView_Previews: PreviewProvider {
             source: "Salary",
             amount: 60000,
             category: .salary,
-            date: Date()
+            date: Date(),
+            userId: "preview-user"
         ),
         Income(
             id: 2,
             source: "Freelance",
             amount: 15000,
             category: .sideHustle,
-            date: Date()
+            date: Date(),
+            userId: "preview-user"
         )
     ]
 }

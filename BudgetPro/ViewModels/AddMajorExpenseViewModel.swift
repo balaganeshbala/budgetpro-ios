@@ -120,23 +120,7 @@ class AddMajorExpenseViewModel: ObservableObject, TransactionFormStateProtocol, 
 }
 
 // MARK: - Data Models
-struct MajorExpenseInsertData: Codable {
-    let name: String
-    let amount: Double
-    let category: String
-    let date: String
-    let notes: String?
-    let userId: String
-    
-    enum CodingKeys: String, CodingKey {
-        case name
-        case amount
-        case category
-        case date
-        case notes
-        case userId = "user_id"
-    }
-}
+
 
 // MARK: - Error Handling
 enum AddMajorExpenseError: LocalizedError {

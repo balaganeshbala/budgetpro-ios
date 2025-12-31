@@ -45,7 +45,7 @@ class EditBudgetViewModel: ObservableObject {
                 
                 // Use the ExpenseCategory's displayName as the key for consistency
                 originalBudgetMap[expenseCategory.displayName] = budgetCategory.budget
-                // budgetCategory.id now contains the actual database ID from BudgetResponse
+                // budgetCategory.id now contains the actual database ID from BudgetEntry
                 originalIdMap[expenseCategory.displayName] = budgetCategory.id
             }
         }

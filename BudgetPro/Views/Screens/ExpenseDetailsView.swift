@@ -33,7 +33,8 @@ struct ExpenseDetailsView_Previews: PreviewProvider {
                 name: "Lunch",
                 amount: 250.0,
                 category: .food,
-                date: Date()
+                date: Date(),
+                userId: "preview-user"
             ),
             repoService: SupabaseTransactionRepoService(transactionType: .expense)
         )

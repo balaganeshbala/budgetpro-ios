@@ -64,7 +64,7 @@ class CreateBudgetViewModel: ObservableObject {
             let targetDate = getMonthStartDate()
             
             // First, check if any budget exists for this month/year
-            let existingBudgets: [BudgetResponse] = try await supabaseManager.client
+            let existingBudgets: [BudgetEntry] = try await supabaseManager.client
                 .from("budget")
                 .select("*")
                 .eq("user_id", value: userId)

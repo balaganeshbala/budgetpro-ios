@@ -41,7 +41,8 @@ struct MajorExpenseDetailsView_Previews: PreviewProvider {
                     category: .vehicle,
                     date: Date(),
                     amount: 15000.0,
-                    notes: "Engine repair and maintenance"
+                    notes: "Engine repair and maintenance",
+                    userId: "preview-user"
                 ),
                 repoService: SupabaseTransactionRepoService(transactionType: .majorExpense)
             )

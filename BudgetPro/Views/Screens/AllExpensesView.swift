@@ -272,35 +272,40 @@ struct AllExpensesView_Previews: PreviewProvider {
                 name: "Lunch at Restaurant",
                 amount: 850,
                 category: .food,
-                date: Date()
+                date: Date(),
+                userId: "preview-user"
             ),
             Expense(
                 id: 2,
                 name: "Metro Card Recharge",
                 amount: 500,
                 category: .travel,
-                date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date()
+                date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date(),
+                userId: "preview-user"
             ),
             Expense(
                 id: 3,
                 name: "Movie Tickets",
                 amount: 600,
                 category: .entertainment,
-                date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date()
+                date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date(),
+                userId: "preview-user"
             ),
             Expense(
                 id: 4,
                 name: "Grocery Shopping",
                 amount: 2500,
                 category: .food,
-                date: Calendar.current.date(byAdding: .day, value: -3, to: Date()) ?? Date()
+                date: Calendar.current.date(byAdding: .day, value: -3, to: Date()) ?? Date(),
+                userId: "preview-user"
             ),
             Expense(
                 id: 5,
                 name: "Coffee",
                 amount: 150,
                 category: .food,
-                date: Calendar.current.date(byAdding: .day, value: -4, to: Date()) ?? Date()
+                date: Calendar.current.date(byAdding: .day, value: -4, to: Date()) ?? Date(),
+                userId: "preview-user"
             )
         ]
     }

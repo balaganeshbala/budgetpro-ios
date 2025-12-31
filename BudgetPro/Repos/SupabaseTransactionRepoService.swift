@@ -120,7 +120,7 @@ final class SupabaseTransactionRepoService: TransactionRepoService {
     private func formatDateForDatabase(_ date: Date) -> String {
         // Current inserts elsewhere write "MM/dd/yyyy"
         let formatter = DateFormatter()
-        formatter.dateFormat = "MM/dd/yyyy"
+        formatter.dateFormat = "yyyy-MM-dd"
         return formatter.string(from: date)
     }
 }

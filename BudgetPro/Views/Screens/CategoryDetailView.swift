@@ -169,35 +169,40 @@ struct CategoryDetailView_Previews: PreviewProvider {
                         name: "Grocery Shopping",
                         amount: 2500,
                         category: .food,
-                        date: Date().addingTimeInterval(-86400 * 2) // 2 days ago
+                        date: Date().addingTimeInterval(-86400 * 2), // 2 days ago
+                        userId: "preview-user"
                     ),
                     Expense(
                         id: 2,
                         name: "Restaurant Dinner",
                         amount: 1800,
                         category: .food,
-                        date: Date().addingTimeInterval(-86400 * 5) // 5 days ago
+                        date: Date().addingTimeInterval(-86400 * 5), // 5 days ago
+                        userId: "preview-user"
                     ),
                     Expense(
                         id: 3,
                         name: "Coffee Shop",
                         amount: 450,
                         category: .food,
-                        date: Date().addingTimeInterval(-86400 * 1) // 1 day ago
+                        date: Date().addingTimeInterval(-86400 * 1), // 1 day ago
+                        userId: "preview-user"
                     ),
                     Expense(
                         id: 4,
                         name: "Lunch Delivery",
                         amount: 650,
                         category: .food,
-                        date: Date().addingTimeInterval(-86400 * 3) // 3 days ago
+                        date: Date().addingTimeInterval(-86400 * 3), // 3 days ago
+                        userId: "preview-user"
                     ),
                     Expense(
                         id: 5,
                         name: "Snacks & Beverages",
                         amount: 320,
                         category: .food,
-                        date: Date().addingTimeInterval(-86400 * 7) // 1 week ago
+                        date: Date().addingTimeInterval(-86400 * 7), // 1 week ago
+                        userId: "preview-user"
                     )
                 ],
                 month: 7,

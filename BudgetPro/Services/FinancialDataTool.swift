@@ -29,7 +29,7 @@ class FinancialDataTool {
             // Fetch all expenses for user (Mock implementation limitation: handling Date filtering in memory for simplicity 
             // because Supabase date filtering on stored strings requires precise formatting)
             // In a production app, we would push date filters to the DB.
-            let responses: [ExpenseResponse] = try await repoService.fetchAll(from: "expenses", filters: filters)
+            let responses: [Expense] = try await repoService.fetchAll(from: "expenses", filters: filters)
             
             // Filter in memory
             let filtered = responses.filter { expense in
@@ -37,22 +37,20 @@ class FinancialDataTool {
                 
                 // Date Filtering
                 if let month = month, let year = year {
-                    // expense.date is "YYYY-MM-DD"
-                    // Simple string parsing
-                    let components = expense.date.split(separator: "-")
-                    if components.count == 3 {
-                        if let expYear = Int(components[0]), let expMonth = Int(components[1]) {
-                             if expYear != year || expMonth != month {
-                                 matches = false
-                             }
+                    let components = Calendar.current.dateComponents([.year, .month], from: expense.date)
+                    if let expYear = components.year, let expMonth = components.month {
+                        if expYear != year || expMonth != month {
+                            matches = false
                         }
+                    } else {
+                        matches = false
                     }
                 }
                 
                 // Category Filtering
                 if let category = category, matches {
                      // Normalize strings
-                    let expCat = expense.category.lowercased().trimmingCharacters(in: .whitespaces)
+                    let expCat = expense.category.displayName.lowercased().trimmingCharacters(in: .whitespaces)
                     let queryCat = category.lowercased().trimmingCharacters(in: .whitespaces)
                     
                     // Allow partial match
@@ -77,26 +75,26 @@ class FinancialDataTool {
             var filters = [RepoQueryFilter]()
             filters.append(RepoQueryFilter(column: "user_id", op: .eq, value: userId))
             
-            let responses: [IncomeResponse] = try await repoService.fetchAll(from: "incomes", filters: filters)
+            let responses: [Income] = try await repoService.fetchAll(from: "incomes", filters: filters)
             
             let filtered = responses.filter { income in
                 var matches = true
                 
                 // Date Filtering
                 if let month = month, let year = year {
-                    let components = income.date.split(separator: "-")
-                    if components.count == 3 {
-                        if let incYear = Int(components[0]), let incMonth = Int(components[1]) {
-                             if incYear != year || incMonth != month {
-                                 matches = false
-                             }
+                    let components = Calendar.current.dateComponents([.year, .month], from: income.date)
+                    if let incYear = components.year, let incMonth = components.month {
+                        if incYear != year || incMonth != month {
+                            matches = false
                         }
+                    } else {
+                        matches = false
                     }
                 }
                 
                 // Category Filtering
                 if let category = category, matches {
-                    let incCat = income.category.lowercased().trimmingCharacters(in: .whitespaces)
+                    let incCat = income.category.displayName.lowercased().trimmingCharacters(in: .whitespaces)
                     let queryCat = category.lowercased().trimmingCharacters(in: .whitespaces)
                     if !incCat.contains(queryCat) {
                         matches = false
@@ -153,28 +151,28 @@ class FinancialDataTool {
                 RepoQueryFilter(column: "user_id", op: .eq, value: userId),
                 RepoQueryFilter(column: "date", op: .eq, value: targetDate)
             ]
-            let budgetResponse: [BudgetResponse] = try await repoService.fetchAll(from: "budget", filters: filters)
+            let budgetEntries: [BudgetEntry] = try await repoService.fetchAll(from: "budget", filters: filters)
             
             // We also need expenses for this month to calculate spent vs budget
             // Reusing local logic similar to HomeViewModel to be self-contained in tool
              var expFilters = [RepoQueryFilter]()
              expFilters.append(RepoQueryFilter(column: "user_id", op: .eq, value: userId))
              // ... Date filtering requires fetching all as before or specific range if DB supports
-             let allExpenses: [ExpenseResponse] = try await repoService.fetchAll(from: "expenses", filters: expFilters)
+             let allExpenses: [Expense] = try await repoService.fetchAll(from: "expenses", filters: expFilters)
             
             // Filter expenses for month/year in memory (same as getExpensesTotal)
             let monthExpenses = allExpenses.filter { expense in
-                let components = expense.date.split(separator: "-")
-                if components.count == 3, let expYear = Int(components[0]), let expMonth = Int(components[1]) {
+                let components = Calendar.current.dateComponents([.year, .month], from: expense.date)
+                if let expYear = components.year, let expMonth = components.month {
                     return expYear == year && expMonth == month
                 }
                 return false
             }
             
             // Group expenses
-            let expensesByCategory = Dictionary(grouping: monthExpenses) { $0.category } // Category Name
+            let expensesByCategory = Dictionary(grouping: monthExpenses) { $0.category.rawValue } // Category Raw Value matches BudgetEntry
             
-            if budgetResponse.isEmpty && monthExpenses.isEmpty {
+            if budgetEntries.isEmpty && monthExpenses.isEmpty {
                  return "No budget or expenses found for this month."
             }
             
@@ -182,7 +180,7 @@ class FinancialDataTool {
             reportLines.append("Budget Report for \(month)/\(year):")
             
             // 1. Process Set Budgets
-            for budgetItem in budgetResponse {
+            for budgetItem in budgetEntries {
                 // Defensive: Ensure category exists or fallback
                 let catName = budgetItem.category
                 let budgetAmount = budgetItem.amount
@@ -197,7 +195,7 @@ class FinancialDataTool {
             }
             
             // 2. Identify Unbudgeted Spending
-            let budgetedCategories = Set(budgetResponse.map { $0.category })
+            let budgetedCategories = Set(budgetEntries.map { $0.category })
             for (catRaw, expenses) in expensesByCategory {
                 if !budgetedCategories.contains(catRaw) {
                     let total = expenses.reduce(0) { $0 + $1.amount }

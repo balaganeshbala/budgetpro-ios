@@ -81,17 +81,17 @@ class HomeViewModel: ObservableObject {
                 RepoQueryFilter(column: "user_id", op: .eq, value: userId),
                 RepoQueryFilter(column: "date", op: .eq, value: targetDate)
             ]
-            let budgetResponse: [BudgetResponse] = try await repoService.fetchAll(from: "budget", filters: filters)
+            let budgetEntries: [BudgetEntry] = try await repoService.fetchAll(from: "budget", filters: filters)
             
             var categories: [BudgetCategory] = []
             var totalBudget: Double = 0
             
             let expensesByCategory = Dictionary(grouping: expenses) { $0.category.displayName }
-            let budgetsByCategory = Dictionary(uniqueKeysWithValues: budgetResponse.map {
+            let budgetsByCategory = Dictionary(uniqueKeysWithValues: budgetEntries.map {
                 (ExpenseCategory.from(categoryName: $0.category).displayName, $0.amount)
             })
-            let budgetIdsByCategory = Dictionary(uniqueKeysWithValues: budgetResponse.map {
-                (ExpenseCategory.from(categoryName: $0.category).displayName, String($0.id))
+            let budgetIdsByCategory = Dictionary(uniqueKeysWithValues: budgetEntries.map {
+                (ExpenseCategory.from(categoryName: $0.category).displayName, $0.id.map(String.init) ?? UUID().uuidString)
             })
             let allCategoryNames = Set(expensesByCategory.keys).union(Set(budgetsByCategory.keys))
             
@@ -131,16 +131,10 @@ class HomeViewModel: ObservableObject {
                 RepoQueryFilter(column: "date", op: .gte, value: CommonHelpers.getMonthStartDate(month: month, year: year)),
                 RepoQueryFilter(column: "date", op: .lt, value: CommonHelpers.getMonthEndDate(month: month, year: year))
             ]
-            let response: [ExpenseResponse] = try await repoService.fetchAll(from: "expenses", filters: filters)
-            return response.map { expenseResponse in
-                let categoryEnum = ExpenseCategory.from(categoryName: expenseResponse.category)
-                return Expense(
-                    id: expenseResponse.id,
-                    name: expenseResponse.name,
-                    amount: expenseResponse.amount,
-                    category: categoryEnum,
-                    date: CommonHelpers.parseDate(expenseResponse.date)
-                )
+            let response: [Expense] = try await repoService.fetchAll(from: "expenses", filters: filters)
+            return response.map { expense in
+                // Ensure date is set correctly if using custom decoding
+                return expense
             }
         } catch {
             throw HomeError.decodingError
@@ -154,17 +148,8 @@ class HomeViewModel: ObservableObject {
                 RepoQueryFilter(column: "date", op: .gte, value: CommonHelpers.getMonthStartDate(month: month, year: year)),
                 RepoQueryFilter(column: "date", op: .lt, value: CommonHelpers.getMonthEndDate(month: month, year: year))
             ]
-            let response: [IncomeResponse] = try await repoService.fetchAll(from: "incomes", filters: filters)
-            return response.map { incomeResponse in
-                let categoryEnum = IncomeCategory.from(categoryName: incomeResponse.category)
-                return Income(
-                    id: incomeResponse.id,
-                    source: incomeResponse.source,
-                    amount: incomeResponse.amount,
-                    category: categoryEnum,
-                    date: CommonHelpers.parseDate(incomeResponse.date)
-                )
-            }
+            let response: [Income] = try await repoService.fetchAll(from: "incomes", filters: filters)
+            return response
         } catch {
             throw HomeError.decodingError
         }

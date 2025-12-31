@@ -119,21 +119,7 @@ class AddIncomeViewModel: ObservableObject, TransactionFormStateProtocol, AddTra
 }
 
 // MARK: - Data Models
-struct IncomeInsertData: Codable {
-    let source: String
-    let amount: Double
-    let category: String
-    let date: String
-    let userId: String
-    
-    enum CodingKeys: String, CodingKey {
-        case source
-        case amount
-        case category
-        case date
-        case userId = "user_id"
-    }
-}
+
 
 // MARK: - Error Handling
 enum AddIncomeError: LocalizedError {

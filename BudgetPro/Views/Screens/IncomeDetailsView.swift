@@ -38,7 +38,8 @@ struct IncomeDetailsView_Previews: PreviewProvider {
                 source: "Salary",
                 amount: 50000.0,
                 category: .salary,
-                date: Date()
+                date: Date(),
+                userId: "preview-user"
             ),
             repoSerice: SupabaseTransactionRepoService(transactionType: .income)
         )

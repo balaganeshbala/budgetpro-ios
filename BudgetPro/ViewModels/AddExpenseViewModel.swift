@@ -117,21 +117,7 @@ class AddExpenseViewModel: ObservableObject, TransactionFormStateProtocol, AddTr
 }
 
 // MARK: - Data Models
-struct ExpenseInsertData: Codable {
-    let name: String
-    let amount: Double
-    let category: String
-    let date: String
-    let userId: String
-    
-    enum CodingKeys: String, CodingKey {
-        case name
-        case amount
-        case category
-        case date
-        case userId = "user_id"
-    }
-}
+
 
 // MARK: - Error Handling
 enum AddExpenseError: LocalizedError {

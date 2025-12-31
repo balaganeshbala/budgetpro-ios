@@ -726,28 +726,28 @@ struct HomeView_Previews: PreviewProvider {
             let previewUserId = "preview-user"
             
             // Return concrete arrays only when T matches exactly.
-            if T.self == BudgetResponse.self, table == "budget" {
-                let result: [BudgetResponse] = [
-                    BudgetResponse(id: 1, category: ExpenseCategory.food.rawValue, amount: 20000, date: "2025-07-01", userId: previewUserId),
-                    BudgetResponse(id: 2, category: ExpenseCategory.housing.rawValue, amount: 30000, date: "2025-07-01", userId: previewUserId),
-                    BudgetResponse(id: 3, category: ExpenseCategory.travel.rawValue, amount: 10000, date: "2025-07-01", userId: previewUserId)
+            if T.self == BudgetEntry.self, table == "budget" {
+                let result: [BudgetEntry] = [
+                    BudgetEntry(id: 1, date: "2025-07-01", category: ExpenseCategory.food.rawValue, amount: 20000, userId: previewUserId),
+                    BudgetEntry(id: 2, date: "2025-07-01", category: ExpenseCategory.housing.rawValue, amount: 30000, userId: previewUserId),
+                    BudgetEntry(id: 3, date: "2025-07-01", category: ExpenseCategory.travel.rawValue, amount: 10000, userId: previewUserId)
                 ]
                 if let typed = result as? [T] { return typed }
             }
             
-            if T.self == ExpenseResponse.self, table == "expenses" {
-                let result: [ExpenseResponse] = [
-                    ExpenseResponse(id: 10, date: "2025-07-12", name: "Groceries", category: ExpenseCategory.groceries.rawValue, amount: 2500, userId: previewUserId),
-                    ExpenseResponse(id: 11, date: "2025-07-10", name: "Fuel", category: ExpenseCategory.vehicle.rawValue, amount: 1200, userId: previewUserId),
-                    ExpenseResponse(id: 12, date: "2025-07-08", name: "Dinner", category: ExpenseCategory.food.rawValue, amount: 1800, userId: previewUserId)
+            if T.self == Expense.self, table == "expenses" {
+                let result: [Expense] = [
+                    Expense(id: 10, name: "Groceries", amount: 2500, category: .groceries, date: CommonHelpers.parseDate("2025-07-12"), userId: previewUserId),
+                    Expense(id: 11, name: "Fuel", amount: 1200, category: .vehicle, date: CommonHelpers.parseDate("2025-07-10"), userId: previewUserId),
+                    Expense(id: 12, name: "Dinner", amount: 1800, category: .food, date: CommonHelpers.parseDate("2025-07-08"), userId: previewUserId)
                 ]
                 if let typed = result as? [T] { return typed }
             }
             
-            if T.self == IncomeResponse.self, table == "incomes" {
-                let result: [IncomeResponse] = [
-                    IncomeResponse(id: 21, source: "Salary", amount: 60000, category: IncomeCategory.salary.rawValue, date: "2025-07-01", userId: previewUserId),
-                    IncomeResponse(id: 22, source: "Freelance", amount: 15000, category: IncomeCategory.sideHustle.rawValue, date: "2025-07-08", userId: previewUserId)
+            if T.self == Income.self, table == "incomes" {
+                let result: [Income] = [
+                    Income(id: 21, source: "Salary", amount: 60000, category: .salary, date: CommonHelpers.parseDate("2025-07-01"), userId: previewUserId),
+                    Income(id: 22, source: "Freelance", amount: 15000, category: .sideHustle, date: CommonHelpers.parseDate("2025-07-08"), userId: previewUserId)
                 ]
                 if let typed = result as? [T] { return typed }
             }
