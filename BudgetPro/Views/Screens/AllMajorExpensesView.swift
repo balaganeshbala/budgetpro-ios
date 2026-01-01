@@ -17,26 +17,31 @@ struct AllMajorExpensesView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                if viewModel.isLoading && viewModel.majorExpenses.isEmpty {
-                    loadingView
-                } else if viewModel.majorExpenses.isEmpty && !viewModel.isLoading {
-                    emptyStateView
-                } else {
-                    // Major Expense Summary Section
-                    MajorExpenseSummaryView(majorExpenses: viewModel.majorExpenses)
+        VStack(spacing: 0) {
+            // Fixed Year Picker Header
+            yearPickerHeader
+            
+            ScrollView {
+                VStack(spacing: 16) {
+                    if viewModel.isLoading && viewModel.majorExpenses.isEmpty {
+                        loadingView
+                    } else if viewModel.majorExpenses.isEmpty && !viewModel.isLoading {
+                        emptyStateView
+                    } else {
+                        // Major Expense Summary Section
+                        MajorExpenseSummaryView(majorExpenses: viewModel.majorExpenses)
+                        
+                        // Sort Section
+                        sortSection
+                        
+                        // Major Expenses List
+                        majorExpensesListSection
+                    }
                     
-                    // Sort Section
-                    sortSection
-                    
-                    // Major Expenses List
-                    majorExpensesListSection
+                    Spacer(minLength: 20)
                 }
-                
-                Spacer(minLength: 20)
+                .padding(.horizontal, 16)
             }
-            .padding(.horizontal, 16)
             .padding(.top, 16)
         }
         .background(Color.groupedBackground)
@@ -110,6 +115,47 @@ struct AllMajorExpensesView: View {
         .padding(.top, 100)
     }
     
+    // MARK: - Year Picker Header
+    private var yearPickerHeader: some View {
+        HStack {
+            Spacer()
+            
+            Menu {
+                ForEach(viewModel.availableYears, id: \.self) { year in
+                    Button(action: {
+                        viewModel.selectedYear = year
+                    }) {
+                        HStack {
+                            Text(String(year))
+                            if viewModel.selectedYear == year {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    Text(String(viewModel.selectedYear))
+                        .font(.appFont(14, weight: .medium))
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 12))
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color.cardBackground)
+                .cornerRadius(8)
+                .foregroundColor(.primary)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 16)
+        .onChange(of: viewModel.selectedYear) { _ in
+            Task {
+                await viewModel.loadMajorExpenses()
+            }
+        }
+    }
+    
     // MARK: - Sort Section
     private var sortSection: some View {
         VStack(spacing: 8) {
@@ -120,6 +166,7 @@ struct AllMajorExpensesView: View {
                 
                 Spacer()
                 
+                // Sort Menu
                 Menu {
                     ForEach(SortType.allCases, id: \.self) { sortType in
                         Button(action: {

@@ -13,6 +13,8 @@ import SwiftUI
 class AllMajorExpensesViewModel: ObservableObject {
     @Published var majorExpenses: [MajorExpense] = []
     @Published var sortedMajorExpenses: [MajorExpense] = []
+    @Published var selectedYear: Int = Calendar.current.component(.year, from: Date())
+    @Published var availableYears: [Int] = []
     @Published var currentSortType: SortType = .dateNewest
     @Published var isLoading = false
     @Published var errorMessage = ""
@@ -22,11 +24,18 @@ class AllMajorExpensesViewModel: ObservableObject {
     
     init(repoService: DataFetchRepoService) {
         self.repoService = repoService
+        setupAvailableYears()
         setupNotificationObserver()
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    private func setupAvailableYears() {
+        let currentYear = Calendar.current.component(.year, from: Date())
+        // Available years from 2023 to current year + 1 (for future planning)
+        availableYears = (2023...currentYear).reversed().map { $0 }
     }
     
     private func setupNotificationObserver() {
@@ -50,11 +59,30 @@ class AllMajorExpensesViewModel: ObservableObject {
             let session = try await supabaseManager.client.auth.session
             let userId = session.user.id.uuidString
             
+            // Construct date range for the selected year
+            let calendar = Calendar.current
+            var components = DateComponents()
+            components.year = selectedYear
+            components.month = 1
+            components.day = 1
+            
+            guard let startDate = calendar.date(from: components),
+                  let endDate = calendar.date(byAdding: .year, value: 1, to: startDate) else {
+                throw NSError(domain: "DateError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to construct date range"])
+            }
+            
+            let dateFormatter = ISO8601DateFormatter()
+            dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            let startDateString = dateFormatter.string(from: startDate)
+            let endDateString = dateFormatter.string(from: endDate)
+            
             // Fetch rows using the repo service with automatic decoding
             let response: [MajorExpense] = try await repoService.fetchAll(
                 from: "major_expenses",
                 filters: [
-                    RepoQueryFilter(column: "user_id", op: .eq, value: userId)
+                    RepoQueryFilter(column: "user_id", op: .eq, value: userId),
+                    RepoQueryFilter(column: "date", op: .gte, value: startDateString),
+                    RepoQueryFilter(column: "date", op: .lt, value: endDateString)
                 ]
             )
             
