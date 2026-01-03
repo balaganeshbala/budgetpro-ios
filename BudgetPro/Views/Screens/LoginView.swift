@@ -16,7 +16,7 @@ struct LoginView: View {
                 VStack(spacing: 8) {
                     Text("Welcome Back!")
                         .font(.appFont(32, weight: .bold))
-                        .foregroundColor(Color.primary)
+                        .foregroundColor(Color.secondary)
                     
                     Text("Sign in to continue")
                         .font(.appFont(16))
@@ -138,6 +138,33 @@ struct LoginView: View {
                     Rectangle()
                         .fill(Color.separator)
                         .frame(height: 1)
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 32)
+                
+                // Google Sign In
+                Button(action: {
+                    viewModel.signInWithGoogle()
+                }) {
+                    HStack(spacing: 12) {
+                        // Google Logo
+                        Image("GoogleLogo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                        
+                        Text("Sign in with Google")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(Color.primaryText)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background(Color.appBackground)
+                    .cornerRadius(25)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 25)
+                            .stroke(Color.primaryText, lineWidth: 0.5)
+                    )
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 32)

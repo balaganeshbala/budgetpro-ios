@@ -18,7 +18,7 @@ struct SignUpView: View {
                     VStack(spacing: 8) {
                         Text("Create Account")
                             .font(.appFont(32, weight: .bold))
-                            .foregroundColor(.primary)
+                            .foregroundColor(.secondary)
                         
                         Text("Sign up to get started")
                             .font(.appFont(16))

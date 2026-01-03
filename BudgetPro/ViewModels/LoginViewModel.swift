@@ -55,9 +55,9 @@ class LoginViewModel: ObservableObject {
     }
     
     var isFormValid: Bool {
-        !email.isEmpty && 
-        !password.isEmpty && 
-        emailError.isEmpty && 
+        !email.isEmpty &&
+        !password.isEmpty &&
+        emailError.isEmpty &&
         passwordError.isEmpty &&
         email.contains("@")
     }
@@ -86,7 +86,21 @@ class LoginViewModel: ObservableObject {
             do {
                 try await supabaseManager.signIn(email: email, password: password)
                 isLoading = false
-                clearForm()
+            } catch {
+                isLoading = false
+                errorMessage = getErrorMessage(from: error)
+            }
+        }
+    }
+    
+    func signInWithGoogle() {
+        errorMessage = ""
+        isLoading = true
+        
+        Task {
+            do {
+                try await supabaseManager.signInWithGoogle()
+                isLoading = false
             } catch {
                 isLoading = false
                 errorMessage = getErrorMessage(from: error)
@@ -103,16 +117,7 @@ class LoginViewModel: ObservableObject {
     }
     
     private func getErrorMessage(from error: Error) -> String {
-        let errorString = error.localizedDescription.lowercased()
-        
-        if errorString.contains("invalid") && errorString.contains("credentials") {
-            return "Invalid email or password. Please check your credentials."
-        } else if errorString.contains("network") || errorString.contains("connection") {
-            return "Network error. Please check your internet connection."
-        } else if errorString.contains("email") && errorString.contains("not found") {
-            return "No account found with this email address."
-        } else {
-            return "Sign in failed. Please try again."
-        }
+        let errorMessage = SupabaseManager.shared.getAuthErrorMessage(error: error)
+        return errorMessage ?? "Something went wrong! Please try again."
     }
 }

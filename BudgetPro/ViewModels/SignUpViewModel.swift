@@ -211,19 +211,8 @@ class SignUpViewModel: ObservableObject {
     }
     
     private func getErrorMessage(from error: Error) -> String {
-        let errorString = error.localizedDescription.lowercased()
-        
-        if errorString.contains("email") && errorString.contains("already") {
-            return "An account with this email already exists. Please try signing in instead."
-        } else if errorString.contains("weak") && errorString.contains("password") {
-            return "Password is too weak. Please choose a stronger password."
-        } else if errorString.contains("network") || errorString.contains("connection") {
-            return "Network error. Please check your internet connection."
-        } else if errorString.contains("invalid") && errorString.contains("email") {
-            return "Please enter a valid email address."
-        } else {
-            return "Account creation failed. Please try again."
-        }
+        let errorMessage = SupabaseManager.shared.getAuthErrorMessage(error: error)
+        return errorMessage ?? "Something went wrong! Please try again."
     }
 }
 

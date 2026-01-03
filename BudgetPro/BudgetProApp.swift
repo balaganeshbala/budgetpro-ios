@@ -22,6 +22,15 @@ struct BudgetProApp: App {
         WindowGroup {
             ContentView()
                 .tint(Color.primary)
+                .onOpenURL { url in
+                    Task {
+                        do {
+                            try await SupabaseManager.shared.handleAuthCallback(url: url)
+                        } catch {
+                            print("Auth callback error: \(error)")
+                        }
+                    }
+                }
         }
     }
 }

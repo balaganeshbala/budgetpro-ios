@@ -1,5 +1,6 @@
 import Foundation
 import Supabase
+import UIKit.UIApplication
 
 class SupabaseManager: ObservableObject {
     static let shared = SupabaseManager()
@@ -79,5 +80,27 @@ class SupabaseManager: ObservableObject {
     
     func resetPassword(email: String) async throws {
         try await client.auth.resetPasswordForEmail(email)
+    }
+    
+    func signInWithGoogle() async throws {
+        let url = try client.auth.getOAuthSignInURL(
+            provider: .google,
+            redirectTo: URL(string: "com.googleusercontent.apps.693496673208-a7g528ok23je4ng530koslimpbp1dvg8://login-callback")
+        )
+        DispatchQueue.main.async {
+            UIApplication.shared.open(url)
+        }
+    }
+    
+    func getAuthErrorMessage(error: Error) -> String? {
+        if let authError = error as? Supabase.AuthError {
+            return authError.message
+        }
+        return nil
+    }
+    
+    func handleAuthCallback(url: URL) async throws {
+        _ = try await client.auth.session(from: url)
+        checkAuthStatus()
     }
 }
