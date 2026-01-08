@@ -47,6 +47,16 @@ protocol DataFetchRepoService {
     // Fetch
     func fetchAll<T: Decodable>(
         from table: String,
-        filters: [RepoQueryFilter]
+        filters: [RepoQueryFilter],
+        orderBy: String?
     ) async throws -> [T]
+}
+
+extension DataFetchRepoService {
+    func fetchAll<T: Decodable>(
+        from table: String,
+        filters: [RepoQueryFilter]
+    ) async throws -> [T] {
+        return try await fetchAll(from: table, filters: filters, orderBy: "date")
+    }
 }

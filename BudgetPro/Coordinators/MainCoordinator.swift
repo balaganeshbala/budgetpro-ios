@@ -70,6 +70,7 @@ class MainCoordinator: Coordinator {
         case editFinancialGoal(goal: FinancialGoal)
         case addContribution(goalId: UUID, goalTitle: String)
         case editContribution(goalId: UUID, goalTitle: String, contribution: GoalContribution)
+        case monthlyTrends
     }
     
     enum Sheet: Identifiable {
@@ -207,6 +208,9 @@ class MainCoordinator: Coordinator {
                 .environmentObject(self)
         case .editContribution(let goalId, let goalTitle, let contribution):
             AddGoalContributionView(repoService: financialGoalRepo, goalId: goalId, goalTitle: goalTitle, contributionToEdit: contribution)
+                .environmentObject(self)
+        case .monthlyTrends:
+            MonthlyTrendsView(userId: userId, repoService: dataFetchRepo)
                 .environmentObject(self)
         }
     }

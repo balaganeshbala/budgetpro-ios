@@ -95,20 +95,6 @@ struct SavingsAnalysisScreen: View {
 
 }
 
-// MARK: - Section Header
-struct SectionHeader: View {
-    let text: String
-    
-    var body: some View {
-        HStack {
-            Text(text)
-                .font(.appFont(20, weight: .bold))
-                .foregroundColor(.primaryText)
-            Spacer()
-        }
-    }
-}
-
 // MARK: - Redesigned Savings Summary Card
 struct SavingsSummaryCard: View {
     let totalIncome: Double
@@ -160,111 +146,6 @@ struct SavingsSummaryCard: View {
                 )
             }
         }
-    }
-}
-
-// MARK: - Compact Metric Card
-struct CompactMetricCard: View {
-    let title: String
-    let value: String
-    let color: Color
-    let icon: String
-    
-    var body: some View {
-        HStack(spacing: 10) {
-            // Icon
-            Image(systemName: icon)
-                .font(.appFont(16, weight: .medium))
-                .foregroundColor(color)
-                .frame(width: 28, height: 28)
-                .background(color.opacity(0.1))
-                .clipShape(Circle())
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.appFont(11, weight: .medium))
-                    .foregroundColor(.secondaryText)
-                
-                Text(value)
-                    .font(.appFont(14, weight: .bold))
-                    .foregroundColor(color)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-            }
-            
-            Spacer()
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .background(Color.cardBackground)
-        .cornerRadius(10)
-        .shadow(color: color.opacity(0.08), radius: 1, x: 0, y: 1)
-    }
-}
-
-// MARK: - Modern Summary Item
-struct ModernSummaryItem: View {
-    let title: String
-    let value: String
-    let color: Color
-    let icon: String
-    let isPositive: Bool
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            // Icon with background
-            RowItemIcon(categoryIcon: icon, iconShape: .circle)
-        
-            Text(title)
-                .font(.appFont(14, weight: .regular))
-                .foregroundColor(.primaryText)
-            
-            Spacer()
-            
-            Text(value)
-                .font(.appFont(16, weight: .bold))
-                .foregroundColor(color)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
-
-// MARK: - Summary Item (Legacy - keeping for compatibility)
-struct SummaryItem: View {
-    let title: String
-    let value: String
-    let color: Color
-    let icon: String
-    let prefix: String
-    
-    init(title: String, value: String, color: Color, icon: String, prefix: String = "") {
-        self.title = title
-        self.value = value
-        self.color = color
-        self.icon = icon
-        self.prefix = prefix
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 6) {
-                Image(systemName: icon)
-                    .font(.appFont(14))
-                    .foregroundColor(color)
-                
-                Text(title)
-                    .font(.appFont(14))
-                    .foregroundColor(.secondaryText)
-            }
-            
-            Text(prefix + value)
-                .font(.appFont(16, weight: .bold))
-                .foregroundColor(color)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

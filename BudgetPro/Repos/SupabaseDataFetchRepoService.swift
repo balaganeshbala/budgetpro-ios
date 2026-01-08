@@ -15,7 +15,7 @@ final class SupabaseDataFetchRepoService: DataFetchRepoService {
         self.supabase = SupabaseManager.shared
     }
     
-    func fetchAll<T>(from table: String, filters: [RepoQueryFilter]) async throws -> [T] where T : Decodable {
+    func fetchAll<T>(from table: String, filters: [RepoQueryFilter], orderBy: String? = "date") async throws -> [T] where T : Decodable {
         var query = supabase.client.from(table).select("*")
         
         // Apply filters
@@ -30,8 +30,10 @@ final class SupabaseDataFetchRepoService: DataFetchRepoService {
             }
         }
         
+        let sortColumn = orderBy ?? "date"
+        
         return try await query
-                .order("date", ascending: false)
+                .order(sortColumn, ascending: false)
                 .order("id", ascending: false)
                 .execute()
                 .value as [T]

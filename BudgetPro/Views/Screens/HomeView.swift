@@ -59,7 +59,7 @@ struct HomeView: View {
                         }
                         .padding(.horizontal, 16)
                         .padding(.top, 20)
-                        .padding(.bottom, 20)
+                        .padding(.bottom, 30)
                     }
                 }
             }
@@ -621,6 +621,20 @@ struct HomeView: View {
                             ))
                         }
                     )
+                    
+                    Divider()
+                        .padding(.leading, 56)
+                    
+                    SettingsRow(
+                        icon: "chart.line.uptrend.xyaxis",
+                        iconColor: Color.secondary,
+                        backgroundColor: Color.primary.opacity(0.1),
+                        title: "Monthly Trends",
+                        showChevron: true,
+                        action: {
+                             coordinator.navigate(to: .monthlyTrends)
+                        }
+                    )
                 }
             }
         }
@@ -719,7 +733,7 @@ struct HomeView_Previews: PreviewProvider {
     // Simple mock that returns empty or sample data and never hits the network.
     private final class MockDataFetchRepoService: DataFetchRepoService {
         
-        func fetchAll<T>(from table: String, filters: [RepoQueryFilter]) async throws -> [T] where T : Decodable {
+        func fetchAll<T>(from table: String, filters: [RepoQueryFilter], orderBy: String?) async throws -> [T] where T : Decodable {
             // Simulate small async latency for previews
             try? await Task.sleep(nanoseconds: 100_000_000) // 100 ms
             
