@@ -11,7 +11,10 @@ struct HomeView: View {
     @State var showingMonthPicker = false
     @State var tempMonth = Calendar.current.component(.month, from: Date())
     @State var tempYear = Calendar.current.component(.year, from: Date())
+#if ENABLE_AI_FEATURE
     @State var showingAIChat = false
+#endif
+
     @State private var hasLoadedInitialData = false
     
     @State private var isbudgetOverviewExpanded: Bool = false
@@ -70,6 +73,7 @@ struct HomeView: View {
         }
 
         .overlay(overlayContent)
+#if ENABLE_AI_FEATURE
         .sheet(isPresented: $showingAIChat) {
             aiChatSheet
                 .modify {
@@ -80,6 +84,7 @@ struct HomeView: View {
                     }
                 }
         }
+#endif
 
         .onAppear {
             // Only load data on first launch
@@ -345,6 +350,8 @@ struct HomeView: View {
                 Spacer()
                 
                 // AI Chat Button
+                // AI Chat Button removed for App Store submission
+#if ENABLE_AI_FEATURE
                 Button(action: {
                     showingAIChat = true
                 }) {
@@ -367,6 +374,7 @@ struct HomeView: View {
                         $0.buttonBorderShape(.roundedRectangle)
                     }
                 }
+#endif
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)

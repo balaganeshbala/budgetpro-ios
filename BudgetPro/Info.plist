@@ -23,5 +23,7 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSFaceIDUsageDescription</key>
+	<string>We use FaceID to secure the app from unauthorized access.</string>
 </dict>
 </plist>

@@ -24,6 +24,9 @@ struct ProfileView: View {
                 // Settings Options
                 settingsOptionsCard
                 
+                // General Options
+                generalOptionsCard
+                
                 Spacer(minLength: 100)
             }
             .padding(.horizontal, 16)
@@ -107,6 +110,23 @@ struct ProfileView: View {
                     showChevron: true
                 ) {
                     coordinator.navigate(to: .allMajorExpenses)
+                }
+            }
+        }
+    }
+    
+    // MARK: - General Options Card
+    private var generalOptionsCard: some View {
+        CardView(padding: EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)) {
+            VStack(spacing: 0) {
+                 // Settings Button
+                SettingsRow(
+                    icon: "gear",
+                    iconColor: .gray,
+                    title: "Settings",
+                    showChevron: true
+                ) {
+                    coordinator.navigate(to: .settings)
                 }
                 
                 Divider()

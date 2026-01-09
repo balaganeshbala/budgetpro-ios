@@ -71,6 +71,7 @@ class MainCoordinator: Coordinator {
         case addContribution(goalId: UUID, goalTitle: String)
         case editContribution(goalId: UUID, goalTitle: String, contribution: GoalContribution)
         case monthlyTrends
+        case settings
     }
     
     enum Sheet: Identifiable {
@@ -96,7 +97,7 @@ class MainCoordinator: Coordinator {
         case .allMajorExpenses:
             selectedTab = .profile
             profileNavigationPath.append(route)
-        case .addMajorExpense, .majorExpenseDetails, .financialGoals, .addFinancialGoal, .financialGoalDetails, .editFinancialGoal, .addContribution, .editContribution:
+        case .addMajorExpense, .majorExpenseDetails, .financialGoals, .addFinancialGoal, .financialGoalDetails, .editFinancialGoal, .addContribution, .editContribution, .settings:
             profileNavigationPath.append(route)
         default:
             // Use the appropriate navigation path based on current tab
@@ -211,6 +212,9 @@ class MainCoordinator: Coordinator {
                 .environmentObject(self)
         case .monthlyTrends:
             MonthlyTrendsView(userId: userId, repoService: dataFetchRepo)
+                .environmentObject(self)
+        case .settings:
+            SettingsView()
                 .environmentObject(self)
         }
     }
