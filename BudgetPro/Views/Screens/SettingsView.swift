@@ -70,11 +70,44 @@ struct SettingsView: View {
                     Text("Appearance")
                 }
                 .listRowBackground(Color.cardBackground)
+                
+                Section {
+                    Button(role: .destructive) {
+                        viewModel.showDeleteConfirmation = true
+                    } label: {
+                        if viewModel.isDeleting {
+                            HStack {
+                                Text("Deleting Account...")
+                                Spacer()
+                                ProgressView()
+                            }
+                        } else {
+                            Text("Delete Account")
+                        }
+                    }
+                    .disabled(viewModel.isDeleting)
+                } header: {
+                    Text("Account")
+                }
+                .listRowBackground(Color.cardBackground)
             }
             .scrollContentBackground(.hidden)
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
+        .alert("Delete Account", isPresented: $viewModel.showDeleteConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
+                viewModel.deleteAccount()
+            }
+        } message: {
+            Text("Are you sure you want to delete your account? This action cannot be undone and all your data will be lost.")
+        }
+        .alert("Error", isPresented: $viewModel.showError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(viewModel.errorMessage ?? "Unknown error occurred")
+        }
     }
 }
 

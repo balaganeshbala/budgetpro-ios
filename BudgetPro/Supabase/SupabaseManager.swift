@@ -40,6 +40,16 @@ class SupabaseManager: ObservableObject {
     
     func checkAuthStatus() {
         Task { @MainActor in
+            // Check for fresh install to prevent auto-login from Keychain persistence
+            let hasRunBefore = UserDefaults.standard.bool(forKey: "hasRunBefore")
+            if !hasRunBefore {
+                UserDefaults.standard.set(true, forKey: "hasRunBefore")
+                try? await client.auth.signOut()
+                self.currentUser = nil
+                self.isAuthenticated = false
+                return
+            }
+            
             do {
                 let session = try await client.auth.session
                 self.currentUser = session.user
@@ -102,5 +112,33 @@ class SupabaseManager: ObservableObject {
     func handleAuthCallback(url: URL) async throws {
         _ = try await client.auth.session(from: url)
         checkAuthStatus()
+    }
+    
+    struct DeleteAccountResponse: Decodable {
+        let success: Bool?
+        let error: String?
+    }
+    
+    func deleteAccount() async throws {
+        do {
+            // invoke returns Data decoded as the generic type you pass; assume `DeleteAccountResponse`
+            let response: DeleteAccountResponse = try await client.functions.invoke("delete-user-account")
+
+            // 2xx reached: check body
+            if let success = response.success, success == true {
+                // Only sign out if deletion was successful
+                try await signOut()
+                return
+            }
+
+            // No success flag — surface backend error message or generic message
+            let message = response.error ?? "Account deletion failed."
+            throw NSError(domain: "SupabaseManager", code: 0, userInfo: [NSLocalizedDescriptionKey: message])
+
+        } catch {
+            // If the invoke threw, it's a network or non-2xx response — rethrow or map to user-friendly error
+            print("Delete account failed: \(error)")
+            throw error
+        }
     }
 }

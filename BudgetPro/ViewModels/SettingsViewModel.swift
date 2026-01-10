@@ -23,8 +23,30 @@ class SettingsViewModel: ObservableObject {
     @Published var biometricIcon: String = "faceid"
     @Published var biometricColor: Color = .green
     
+    @Published var showDeleteConfirmation = false
+    @Published var isDeleting = false
+    @Published var errorMessage: String?
+    @Published var showError = false
+    
     init() {
         decideBiometricType()
+    }
+    
+    func deleteAccount() {
+        isDeleting = true
+        Task {
+            do {
+                try await SupabaseManager.shared.deleteAccount()
+                // Successful deletion will trigger signOut, which updates AppCoordinator
+                // No need to manually navigate
+            } catch {
+                await MainActor.run {
+                    self.errorMessage = error.localizedDescription
+                    self.showError = true
+                    self.isDeleting = false
+                }
+            }
+        }
     }
     
     private func decideBiometricType() {

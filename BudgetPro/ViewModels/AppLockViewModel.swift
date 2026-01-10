@@ -103,11 +103,16 @@ class AppLockViewModel: ObservableObject {
             // This happens when FaceID prompt appears (app becomes inactive).
             if isAuthenticating { return }
             
+            // Only set element entry time if we aren't already locked.
+            // This prevents resetting the timer when transitioning Background -> Inactive -> Active
+            if !isLocked {
+                backgroundEntryTime = Date()
+            }
+            
             isLocked = true
             isAuthenticating = false
             // Reset auto-authentication permission when locking (e.g. entering background)
             allowAutoAuthentication = true
-            backgroundEntryTime = Date()
         }
     }
 }
