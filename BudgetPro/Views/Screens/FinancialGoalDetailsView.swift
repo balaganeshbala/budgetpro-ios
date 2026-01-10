@@ -163,7 +163,7 @@ struct FinancialGoalDetailsView: View {
                     }
                 }
             } else {
-                Text("No contributions yet.")
+                Text("No Contributions Yet")
                     .font(.appFont(16))
                     .foregroundColor(.secondaryText)
                     .frame(maxWidth: .infinity, alignment: .center)

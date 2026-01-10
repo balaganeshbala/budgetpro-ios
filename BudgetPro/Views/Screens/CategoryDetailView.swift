@@ -66,7 +66,7 @@ struct CategoryDetailView: View {
     
     // MARK: - Budget Overview Card (Reusable Component)
     private var budgetOverviewCard: some View {
-        BudgetOverviewCard(
+        CategoryBudgetOverviewCard(
             totalBudget: category.budget,
             totalSpent: category.spent
         )

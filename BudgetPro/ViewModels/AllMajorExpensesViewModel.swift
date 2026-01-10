@@ -55,10 +55,6 @@ class AllMajorExpensesViewModel: ObservableObject {
         errorMessage = ""
         
         do {
-            // Obtain current user id from SupabaseManager (auth source of truth)
-            let session = try await supabaseManager.client.auth.session
-            let userId = session.user.id.uuidString
-            
             // Construct date range for the selected year
             let calendar = Calendar.current
             var components = DateComponents()
@@ -80,7 +76,6 @@ class AllMajorExpensesViewModel: ObservableObject {
             let response: [MajorExpense] = try await repoService.fetchAll(
                 from: "major_expenses",
                 filters: [
-                    RepoQueryFilter(column: "user_id", op: .eq, value: userId),
                     RepoQueryFilter(column: "date", op: .gte, value: startDateString),
                     RepoQueryFilter(column: "date", op: .lt, value: endDateString)
                 ]

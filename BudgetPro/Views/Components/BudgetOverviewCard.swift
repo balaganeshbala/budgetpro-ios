@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - Budget Overview Card Component
 
-struct BudgetOverviewCard: View {
+struct CategoryBudgetOverviewCard: View {
     let title: String?
     let totalBudget: Double
     let totalSpent: Double
@@ -168,9 +168,9 @@ struct BudgetOverviewCard: View {
 
 #Preview {
     VStack {
-        BudgetOverviewCard(totalBudget: 150000, totalSpent: 165000)
+        CategoryBudgetOverviewCard(totalBudget: 150000, totalSpent: 165000)
         
-        BudgetOverviewCard(title: "Overview", totalBudget: 120000, totalSpent: 95000)
+        CategoryBudgetOverviewCard(title: "Overview", totalBudget: 120000, totalSpent: 95000)
         
         Spacer()
         
@@ -179,9 +179,9 @@ struct BudgetOverviewCard: View {
 
 #Preview {
     VStack {
-        BudgetOverviewCard(totalBudget: 150000, totalSpent: 165000)
+        CategoryBudgetOverviewCard(totalBudget: 150000, totalSpent: 165000)
         
-        BudgetOverviewCard(title: "Overview", totalBudget: 120000, totalSpent: 115000)
+        CategoryBudgetOverviewCard(title: "Overview", totalBudget: 120000, totalSpent: 115000)
         
         Spacer()
         

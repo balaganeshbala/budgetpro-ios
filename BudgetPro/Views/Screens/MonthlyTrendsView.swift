@@ -26,7 +26,9 @@ struct MonthlyTrendsView: View {
                         .scaleEffect(1.2)
                         .frame(maxHeight: .infinity)
                 } else if viewModel.trendData.isEmpty {
-                    emptyStateView
+                    EmptyDataIndicatorView(icon: "chart.xyaxis.line",
+                                           title: "No Data Available",
+                                           bodyText: "Add some expenses and income to see your trends")
                 } else {
                     ScrollView {
                         VStack(spacing: 20) {
@@ -144,26 +146,6 @@ struct MonthlyTrendsView: View {
                 )
             }
         }
-    }
-
-    
-    // MARK: - Empty State
-    private var emptyStateView: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "chart.xyaxis.line")
-                .font(.system(size: 60))
-                .foregroundColor(.secondaryText.opacity(0.5))
-            
-            Text("No Data Available")
-                .font(.appFont(18, weight: .semibold))
-                .foregroundColor(.primaryText)
-            
-            Text("Add some expenses and income to see your trends.")
-                .font(.appFont(14))
-                .foregroundColor(.secondaryText)
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxHeight: .infinity)
     }
 }
 
@@ -362,7 +344,18 @@ struct MonthlyTrendsView_Previews: PreviewProvider {
     // Mock Service for Monthly Trends
     private final class MockMonthlyTrendsRepoService: DataFetchRepoService {
         
+        let shouldReturnEmptyData: Bool
+        
+        init(shouldReturnEmptyData: Bool = false) {
+            self.shouldReturnEmptyData = shouldReturnEmptyData
+        }
+                
         func fetchAll<T>(from table: String, filters: [RepoQueryFilter], orderBy: String?) async throws -> [T] where T : Decodable {
+            
+            if shouldReturnEmptyData {
+                return []
+            }
+            
             // Simulate latency
             try? await Task.sleep(nanoseconds: 100_000_000)
             
@@ -418,7 +411,7 @@ struct MonthlyTrendsView_Previews: PreviewProvider {
             .preferredColorScheme(.light)
             .previewDisplayName("Monthly Trends - Light")
         
-        MonthlyTrendsView(userId: "preview-user", repoService: MockMonthlyTrendsRepoService())
+        MonthlyTrendsView(userId: "preview-user", repoService: MockMonthlyTrendsRepoService(shouldReturnEmptyData: true))
             .preferredColorScheme(.dark)
             .previewDisplayName("Monthly Trends - Dark")
     }

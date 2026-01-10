@@ -82,22 +82,11 @@ struct AllMajorExpensesView: View {
     
     // MARK: - Empty State View
     private var emptyStateView: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "creditcard.trianglebadge.exclamationmark")
-                .font(.system(size: 60))
-                .foregroundColor(.secondaryText)
+        VStack(spacing: 16) {
             
-            VStack(spacing: 8) {
-                Text("No Major Expenses")
-                    .font(.appFont(20, weight: .semibold))
-                    .foregroundColor(.primaryText)
-                
-                Text("Start tracking your major expenses by adding your first one.")
-                    .font(.appFont(14))
-                    .foregroundColor(.secondaryText)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
-            }
+            EmptyDataIndicatorView(icon: "creditcard.trianglebadge.exclamationmark",
+                                   title: "No Major Expenses",
+                                   bodyText: "Start tracking your major expenses by adding your first one")
             
             Button(action: {
                 coordinator.navigate(to: .addMajorExpense)
@@ -134,7 +123,7 @@ struct AllMajorExpensesView: View {
                     }
                 }
             } label: {
-                HStack(spacing: 4) {
+                HStack(spacing: 10) {
                     Text(String(viewModel.selectedYear))
                         .font(.appFont(14, weight: .medium))
                     Image(systemName: "chevron.down")
@@ -334,9 +323,45 @@ struct MajorCategoryBreakdownRow: View {
 
 // MARK: - Preview
 struct AllMajorExpensesView_Previews: PreviewProvider {
+    
+    // Simple mock
+    private final class MockDataFetchRepoService: DataFetchRepoService {
+        
+        let shouldReturnEmptyData: Bool
+        
+        init(shouldReturnEmptyData: Bool = false) {
+            self.shouldReturnEmptyData = shouldReturnEmptyData
+        }
+        
+        func fetchAll<T>(from table: String, filters: [RepoQueryFilter], orderBy: String?) async throws -> [T] where T : Decodable {
+            
+            if shouldReturnEmptyData {
+                return []
+            }
+            
+            try? await Task.sleep(nanoseconds: 100_000_000)
+            let previewUserId = "preview-user"
+            
+            if T.self == MajorExpense.self, table == "major_expenses" {
+                let result: [MajorExpense] = [
+                    MajorExpense(id: 1, name: "New Laptop", category: .electronics, date: Date(), amount: 150000, notes: "Work laptop", userId: previewUserId),
+                    MajorExpense(id: 2, name: "Europe Trip", category: .travel, date: Date().addingTimeInterval(-86400 * 30), amount: 250000, notes: "Vacation", userId: previewUserId),
+                    MajorExpense(id: 3, name: "Car Downpayment", category: .vehicle, date: Date().addingTimeInterval(-86400 * 60), amount: 300000, notes: "New Car", userId: previewUserId)
+                ]
+                if let typed = result as? [T] { return typed }
+            }
+            
+            return []
+        }
+    }
+    
     static var previews: some View {
-        NavigationView {
-            AllMajorExpensesView(repoService: SupabaseDataFetchRepoService())
+        let coordinator = MainCoordinator(userId: "preview-user")
+        let mockRepo = MockDataFetchRepoService(shouldReturnEmptyData: true)
+        
+        return NavigationView {
+            AllMajorExpensesView(repoService: mockRepo)
+                .environmentObject(coordinator)
         }
     }
 }

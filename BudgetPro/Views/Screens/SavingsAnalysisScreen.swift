@@ -44,21 +44,9 @@ struct SavingsAnalysisScreen: View {
                 .ignoresSafeArea(.all)
             
             if incomes.isEmpty {
-                VStack(spacing: 16) {
-                    Image(systemName: "chart.line.uptrend.xyaxis")
-                        .font(.appFont(60))
-                        .foregroundColor(.secondaryText)
-                    
-                    Text("No Income Data Available")
-                        .font(.appFont(18, weight: .semibold))
-                        .foregroundColor(.primaryText)
-                    
-                    Text("Add income entries to view your savings analysis.")
-                        .font(.appFont(14))
-                        .foregroundColor(.secondaryText)
-                        .multilineTextAlignment(.center)
-                }
-                .padding()
+                EmptyDataIndicatorView(icon: "chart.line.uptrend.xyaxis",
+                                       title: "No Income Data Available",
+                                       bodyText: "Add income entries to view your savings analysis")
             } else {
                 ScrollView {
                     VStack(spacing: 24) {

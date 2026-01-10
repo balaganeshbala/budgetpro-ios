@@ -64,8 +64,9 @@ class MonthlyTrendsViewModel: ObservableObject {
             self.incomeSummaries = try await repoService.fetchAll(from: "monthly_income_summaries", filters: incomeFilters, orderBy: "year")
             
             // 3. Process Data
-            filterData()
-            
+            if !self.expenseSummaries.isEmpty || !self.incomeSummaries.isEmpty {
+                filterData()
+            }
         } catch {
             print("Error loading trend data: \(error)")
             errorMessage = "Failed to load trend data. Please try again."
