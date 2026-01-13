@@ -146,85 +146,52 @@ class MainCoordinator: Coordinator {
         switch route {
         case .home:
             HomeView(userId: userId, repoService: dataFetchRepo)
-                .environmentObject(self)
         case .profile:
             ProfileView()
-                .environmentObject(self)
         case .addExpense:
             AddExpenseView(repoService: expenseRepo)
-                .environmentObject(self)
         case .addIncome:
             AddIncomeView(repoService: incomeRepo)
-                .environmentObject(self)
         case .createBudget(let month, let year):
             CreateBudgetView(month: month, year: year)
-                .environmentObject(self)
         case .editBudget(let budgetCategories, let month, let year):
             EditBudgetView(budgetCategories: budgetCategories, month: month, year: year)
-                .environmentObject(self)
         case .expenseDetails(let expense):
             ExpenseDetailsView(expense: expense, repoService: expenseRepo)
-                .environmentObject(self)
         case .incomeDetails(let income):
             IncomeDetailsView(income: income, repoSerice: incomeRepo)
-                .environmentObject(self)
         case .allExpenses(let budgetCategories, let totalBudget, let expenses, let month, let year):
             AllExpensesView(budgetCategories: budgetCategories, totalBudget: totalBudget, expenses: expenses, month: month, year: year)
-                .environmentObject(self)
         case .allIncomes(let incomes, let month, let year):
             AllIncomesView(incomes: incomes, month: month, year: year)
-                .environmentObject(self)
         case .allMajorExpenses:
             AllMajorExpensesView(repoService: dataFetchRepo)
-                .environmentObject(self)
         case .addMajorExpense:
             AddMajorExpenseView(repoService: majorExpenseRepo)
-                .environmentObject(self)
         case .majorExpenseDetails(let majorExpense):
             MajorExpenseDetailsView(majorExpense: majorExpense, repoService: majorExpenseRepo)
-                .environmentObject(self)
         case .categoryDetail(let category, let expenses, let month, let year):
             CategoryDetailView(category: category, expenses: expenses, month: month, year: year)
-                .environmentObject(self)
         case .savingsAnalysis(let expenses, let incomes, let totalBudget, let month, let year):
             SavingsAnalysisScreen(expenses: expenses, incomes: incomes, totalBudget: totalBudget, month: month, year: year)
-                .environmentObject(self)
         case .about:
             AboutView()
-                .environmentObject(self)
         case .financialGoals:
             FinancialGoalListView(repoService: financialGoalRepo)
-                .environmentObject(self)
         case .addFinancialGoal:
             AddFinancialGoalView(repoService: financialGoalRepo)
-                .environmentObject(self)
         case .financialGoalDetails(let goal):
             FinancialGoalDetailsView(goal: goal, repoService: financialGoalRepo)
-                .environmentObject(self)
         case .editFinancialGoal(let goal):
             AddFinancialGoalView(repoService: financialGoalRepo, goalToEdit: goal)
-                .environmentObject(self)
         case .addContribution(let goalId, let goalTitle):
             AddGoalContributionView(repoService: financialGoalRepo, goalId: goalId, goalTitle: goalTitle)
-                .environmentObject(self)
         case .editContribution(let goalId, let goalTitle, let contribution):
             AddGoalContributionView(repoService: financialGoalRepo, goalId: goalId, goalTitle: goalTitle, contributionToEdit: contribution)
-                .environmentObject(self)
         case .monthlyTrends:
             MonthlyTrendsView(userId: userId, repoService: dataFetchRepo)
-                .environmentObject(self)
         case .settings:
             SettingsView()
-                .environmentObject(self)
-        }
-    }
-    
-    @ViewBuilder
-    func sheet(for sheet: Sheet) -> some View {
-        switch sheet {
-        case .profile:
-            ProfileView()
-                .environmentObject(self)
         }
     }
 }

@@ -48,9 +48,6 @@ struct CoordinatedTabView: View {
             }
             .tag(MainCoordinator.Tab.profile)
         }
-        .sheet(item: $coordinator.presentedSheet) { sheet in
-            coordinator.sheet(for: sheet)
-        }
         .environmentObject(coordinator)
     }
 }
