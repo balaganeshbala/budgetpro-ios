@@ -154,12 +154,25 @@ struct FinancialGoalDetailsView: View {
             }
             
             if let contributions = viewModel.goal.contributions, !contributions.isEmpty {
-                VStack(spacing: 10) {
-                    ForEach(contributions.sorted(by: { $0.id! > $1.id! })) { contribution in
-                        ContributionRow(contribution: contribution)
-                            .onTapGesture {
-                                coordinator.navigate(to: .editContribution(goalId: viewModel.goal.id, goalTitle: viewModel.goal.title, contribution: contribution))
+                let sorted = contributions.sorted {
+                    if $0.transactionDate == $1.transactionDate {
+                        return ($0.id ?? 0) > ($1.id ?? 0)
+                    }
+                    return $0.transactionDate > $1.transactionDate
+                }
+                CardView(padding: EdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0)) {
+                    LazyVStack(spacing: 0) {
+                        ForEach(Array(sorted.enumerated()), id: \.offset) { index, contribution in
+                            ContributionRow(contribution: contribution)
+                                .onTapGesture {
+                                    coordinator.navigate(to: .editContribution(goalId: viewModel.goal.id, goalTitle: viewModel.goal.title, contribution: contribution))
+                                }
+                            
+                            if index < sorted.count - 1 {
+                                Divider()
+                                    .padding(.horizontal, 16)
                             }
+                        }
                     }
                 }
             } else {
@@ -208,7 +221,7 @@ struct ContributionRow: View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text(contribution.name)
-                    .font(.appFont(16, weight: .medium))
+                    .font(.appFont(14, weight: .medium))
                     .foregroundColor(.primaryText)
                 
                 Text(contribution.transactionDate.formatted(date: .abbreviated, time: .omitted))
@@ -219,7 +232,7 @@ struct ContributionRow: View {
             Spacer()
             
             Text("+\(CommonHelpers.formatCurrency(NSDecimalNumber(decimal: contribution.amount).doubleValue))")
-                .font(.appFont(16, weight: .semibold))
+                .font(.appFont(14, weight: .semibold))
                 .foregroundColor(.green)
             
             Image(systemName: "chevron.right")

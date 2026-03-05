@@ -20,7 +20,7 @@ struct ModernSummaryItem: View {
             RowItemIcon(categoryIcon: icon, iconShape: .circle)
         
             Text(title)
-                .font(.appFont(14, weight: .regular))
+                .font(.appFont(15, weight: .regular))
                 .foregroundColor(.primaryText)
             
             Spacer()

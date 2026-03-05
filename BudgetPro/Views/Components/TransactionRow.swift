@@ -20,11 +20,11 @@ struct TransactionRow<T, Destination: View>: View {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(.appFont(14, weight: .medium))
+                        .font(.appFont(14, weight: .regular))
                         .foregroundColor(.primaryText)
                     
                     Text(dateString)
-                        .font(.appFont(12))
+                        .font(.appFont(14, weight: .regular))
                         .foregroundColor(.gray)
                 }
                 

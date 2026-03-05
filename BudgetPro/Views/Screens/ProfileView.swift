@@ -195,7 +195,7 @@ struct SettingsRow: View {
                 
                 // Title
                 Text(title)
-                    .font(.appFont(16))
+                    .font(.appFont(15))
                     .foregroundColor(.primaryText)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 

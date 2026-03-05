@@ -303,10 +303,12 @@ struct TransactionsSectionView: View {
                     // Segmented control
                     Picker("Transactions", selection: $selectedTransactionsTab) {
                         ForEach(TransactionsTab.allCases) { tab in
-                            Text(tab.rawValue).tag(tab)
+                            Text(tab.rawValue)
+                                .tag(tab)
                         }
                     }
                     .pickerStyle(.segmented)
+                    .controlSize(.large)
                     .padding(.horizontal, 16)
                 }
                 

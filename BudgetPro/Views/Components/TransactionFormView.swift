@@ -355,27 +355,19 @@ struct TransactionFormView<ViewState: TransactionFormStateProtocol, CategoryType
     
     @ViewBuilder
     private func successAlertActions() -> some View {
-        if mode.isUpdate {
-            Button("OK") {
-                // Navigate back to root view (Home screen)
-                navigateToRoot()
-            }
-        } else {
-            Button("Add Another") {
-                showingSuccessAlert = false
-                viewModel.resetForm()
-            }
-            Button("Done") {
-                showingSuccessAlert = false
-                dismiss()
-            }
+        Button("Add Another") {
+            showingSuccessAlert = false
+            viewModel.resetForm()
+        }
+        Button("Done") {
+            showingSuccessAlert = false
+            dismiss()
         }
     }
     
     @ViewBuilder
     private func successAlertMessage() -> some View {
-        let message = mode.isUpdate ? viewModel.successMessage : "\(transactionName) added successfully!"
-        Text(message)
+        Text("\(transactionName) added successfully!")
     }
     
     @ViewBuilder
@@ -468,7 +460,11 @@ struct TransactionFormView<ViewState: TransactionFormStateProtocol, CategoryType
     
     private func handleSuccessChange(_ isSuccess: Bool) {
         if isSuccess {
-            showingSuccessAlert = true
+            if mode.isUpdate {
+                navigateToRoot()
+            } else {
+                showingSuccessAlert = true
+            }
         }
     }
     

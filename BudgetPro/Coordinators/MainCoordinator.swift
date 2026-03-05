@@ -2,7 +2,6 @@ import SwiftUI
 
 @MainActor
 class MainCoordinator: Coordinator {
-    @Published var navigationPath = NavigationPath()
     @Published var homeNavigationPath = NavigationPath()
     @Published var profileNavigationPath = NavigationPath()
     @Published var selectedTab: Tab = .home

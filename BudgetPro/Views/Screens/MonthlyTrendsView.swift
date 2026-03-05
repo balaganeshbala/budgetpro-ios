@@ -73,6 +73,7 @@ struct MonthlyTrendsView: View {
                 Text(mode.rawValue).tag(mode)
             }
         }
+        .controlSize(.large)
         .pickerStyle(.segmented)
     }
     

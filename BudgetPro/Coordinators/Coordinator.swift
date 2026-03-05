@@ -5,8 +5,6 @@ import Combine
 protocol Coordinator: ObservableObject {
     associatedtype Route
     
-    var navigationPath: NavigationPath { get set }
-    
     func navigate(to route: Route)
     func pop()
     func popToRoot()
